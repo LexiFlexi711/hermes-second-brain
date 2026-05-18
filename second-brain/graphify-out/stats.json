@@ -1,0 +1,11 @@
+{
+  "generated": "2026-05-18T04:00:01.242854",
+  "total_nodes": 5,
+  "total_edges": 6,
+  "nodes_by_type": {
+    "log": 1,
+    "source_summary": 1,
+    "fix": 2,
+    "project": 1
+  }
+}

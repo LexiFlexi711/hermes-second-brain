@@ -15,17 +15,11 @@ Het systeem bewaart projectkennis, beslissingen, fixes, prompts, serverstatus en
 
 ## Rollen
 
-Lexi is eigenaar en eindbeslisser.
+Lexi is eigenaar en beslist.
 
-Claude Code is de Director: hij ontwerpt plannen, analyseert complexe taken, splitst werk op en reviewt resultaten.
+Hermes/Noa is uitvoerder, beheerder en zoekassistent.
 
-Hermes/Noa is de Executor: zij verzamelt, archiveert, verwerkt raw notes naar wiki, werkt index/log bij, draait lint/graph en rapporteert.
-
-OpenClaw en ChatGPT mogen helpen analyseren, maar niets riskants wordt uitgevoerd zonder Lexi’s expliciete toestemming.
-
-Belangrijk principe uit dit systeem:
-
-Claude Code delegates. Hermes executes. Lexi decides.
+Claude, OpenClaw en ChatGPT mogen helpen analyseren, maar niets riskants wordt uitgevoerd zonder Lexi’s expliciete toestemming.
 
 ## Geheugenlagen
 
@@ -48,7 +42,6 @@ Claude Code delegates. Hermes executes. Lexi decides.
 8. Werk in kleine stappen.
 9. Geen projectstatus verzinnen; onbekend is onbekend.
 10. Antwoorden verwijzen waar mogelijk naar wiki-pagina’s met `[[link]]`.
-11. Bij vragen over het second brain zoekt Hermes eerst echt in bestanden met `find`, `grep` of `read_file` voordat ze zegt dat iets niet bestaat.
 
 ## Ingest-proces
 

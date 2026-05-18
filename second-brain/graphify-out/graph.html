@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LLM Wiki Knowledge Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #graph { width: 100vw; height: 100vh; }
+        .info { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h2>LLM Wiki Knowledge Graph</h2>
+        <p>Nodes: 5 | Edges: 6</p>
+        <p><small>Generated: 2026-05-18T04:00:01.242854</small></p>
+    </div>
+    <div id="graph"></div>
+    <script>
+        const data = {
+            nodes: new vis.DataSet([{"id": "log", "label": "Wiki Change Log", "type": "log", "path": "log.md"}, {"id": "composio-top-hermes-skills", "label": "Top Hermes Skills from Composio", "type": "source_summary", "path": "skills/composio-top-hermes-skills.md"}, {"id": "2026-05-17-hermes-yaml-prefix-fix", "label": "Hermes YAML prefix fix", "type": "fix", "path": "fixes/2026-05-17-hermes-yaml-prefix-fix.md"}, {"id": "2026-05-17-hermes-brain-read-test", "label": "Hermes Brain Read Test", "type": "fix", "path": "fixes/2026-05-17-hermes-brain-read-test.md"}, {"id": "hermes-openclaw-noa-agent", "label": "Hermes OpenClaw Noa Agent", "type": "project", "path": "projects/hermes-openclaw-noa-agent.md"}]),
+            edges: new vis.DataSet([{"source": "composio-top-hermes-skills", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-yaml-prefix-fix", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-brain-read-test", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-brain-read-test", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}, {"source": "hermes-openclaw-noa-agent", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}, {"source": "hermes-openclaw-noa-agent", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}])
+        };
+        const options = {
+            nodes: { shape: 'dot', size: 20, font: { size: 14 }, borderWidth: 2 },
+            edges: { width: 2, smooth: { type: 'continuous' }, arrows: { to: true } },
+            physics: { stabilization: true, barnesHut: { gravitationalConstant: -2000, springConstant: 0.04, springLength: 95 } }
+        };
+        new vis.Network(document.getElementById('graph'), data, options);
+    </script>
+</body>
+</html>

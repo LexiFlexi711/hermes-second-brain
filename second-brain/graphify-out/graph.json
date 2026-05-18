@@ -1,0 +1,66 @@
+{
+  "nodes": [
+    {
+      "id": "log",
+      "label": "Wiki Change Log",
+      "type": "log",
+      "path": "log.md"
+    },
+    {
+      "id": "composio-top-hermes-skills",
+      "label": "Top Hermes Skills from Composio",
+      "type": "source_summary",
+      "path": "skills/composio-top-hermes-skills.md"
+    },
+    {
+      "id": "2026-05-17-hermes-yaml-prefix-fix",
+      "label": "Hermes YAML prefix fix",
+      "type": "fix",
+      "path": "fixes/2026-05-17-hermes-yaml-prefix-fix.md"
+    },
+    {
+      "id": "2026-05-17-hermes-brain-read-test",
+      "label": "Hermes Brain Read Test",
+      "type": "fix",
+      "path": "fixes/2026-05-17-hermes-brain-read-test.md"
+    },
+    {
+      "id": "hermes-openclaw-noa-agent",
+      "label": "Hermes OpenClaw Noa Agent",
+      "type": "project",
+      "path": "projects/hermes-openclaw-noa-agent.md"
+    }
+  ],
+  "edges": [
+    {
+      "source": "composio-top-hermes-skills",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-17-hermes-yaml-prefix-fix",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-17-hermes-brain-read-test",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-17-hermes-brain-read-test",
+      "target": "2026-05-17-hermes-yaml-prefix-fix",
+      "type": "wiki-link"
+    },
+    {
+      "source": "hermes-openclaw-noa-agent",
+      "target": "2026-05-17-hermes-yaml-prefix-fix",
+      "type": "wiki-link"
+    },
+    {
+      "source": "hermes-openclaw-noa-agent",
+      "target": "2026-05-17-hermes-yaml-prefix-fix",
+      "type": "wiki-link"
+    }
+  ]
+}

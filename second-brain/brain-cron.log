@@ -1,0 +1,20 @@
+=== Wiki Lint Results ===
+Errors: 0
+Warnings: 0
+Info: 0
+Scanning wiki: /home/sjoe/system/second-brain/wiki
+Found 5 documents
+Found 7 links
+Graph written to: /home/sjoe/system/second-brain/graphify-out/graph.json
+Stats: {'log': 1, 'source_summary': 1, 'fix': 2, 'project': 1}
+HTML viewer written to: /home/sjoe/system/second-brain/graphify-out/graph.html
+=== Wiki Lint Results ===
+Errors: 0
+Warnings: 0
+Info: 0
+Scanning wiki: /home/sjoe/system/second-brain/wiki
+Found 5 documents
+Found 7 links
+Graph written to: /home/sjoe/system/second-brain/graphify-out/graph.json
+Stats: {'log': 1, 'source_summary': 1, 'fix': 2, 'project': 1}
+HTML viewer written to: /home/sjoe/system/second-brain/graphify-out/graph.html
