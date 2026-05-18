@@ -59,7 +59,7 @@ def lint_wiki(base_path):
                 issues['warning'].append(f"{rel_path}: missing title in frontmatter")
             if 'type' not in fm:
                 issues['warning'].append(f"{rel_path}: missing type in frontmatter")
-            elif fm['type'] not in ['concept', 'entity', 'source_summary', 'synthesis', 'log', 'index']:
+            elif fm['type'] not in ['concept', 'entity', 'source_summary', 'synthesis', 'log', 'index', 'project', 'fix', 'decision']:
                 issues['warning'].append(f"{rel_path}: invalid type '{fm['type']}'")
 
         links = extract_wiki_links(content)
