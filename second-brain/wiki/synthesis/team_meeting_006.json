@@ -1,0 +1,86 @@
+{
+  "meeting_id": "team_meeting_006",
+  "title": "Tradebot V1/V2 Audit & Fix Plan",
+  "purpose": "Audit pullback trading bot (V1+V2) op live logs en stel prompt op voor Claude Code voor overblijvende fixes",
+  "agenda_items_covered": [
+    "Log data verzamelen (Scout)",
+    "Runtime/screen/cache check (DevOps Guard)",
+    "Strategie analyse (Master Trader)",
+    "Kritische denkfouten (Critic)",
+    "Bewijsvalidatie (QA Agent)",
+    "Synthese en prioriteiten (Controller)",
+    "Prompt opstellen voor Claude Code"
+  ],
+  "participants": [
+    "Lexi (Owner)",
+    "Noa/Scout (Hermes)",
+    "DevOps Guard (Hermes)",
+    "Master Trader (Hermes+Pro)",
+    "Critic (Hermes+Pro)",
+    "QA Agent (Hermes+Pro)",
+    "Controller (Hermes+Pro)",
+    "Finance Guard (Hermes)",
+    "Claude Code (Director)",
+    "Secretary (Hermes)"
+  ],
+  "iteration_summary": {
+    "scout_data": {
+      "v2_wins": 15,
+      "v2_losses": 35,
+      "v2_cancelled": 11,
+      "v2_winrate_pct": 30.0,
+      "v2_shorts": 47,
+      "v2_longs": 14,
+      "short_pct": 77,
+      "viable_v1_pairs": 0,
+      "macro_scope_pct": 52,
+      "last_cycle": "2026-05-19 19:13:26",
+      "screens_alive": false,
+      "cache_stale": true,
+      "orphaned_positions": 2
+    },
+    "master_trader_findings": [
+      "monodirectioneel_77pct_short",
+      "SL_krimping_naar_0.16pct",
+      "V1_macro_paralysis_52pct",
+      "orphaned_positions_geen_heartbeat",
+      "entry_lateness_ontbrak_in_V2"
+    ],
+    "critic_findings": [
+      "trade_engine_geen_pullback_detectie",
+      "MIN_RR_mismatch_4.0_vs_2.0",
+      "SL_krimping_wiskundig_bewezen"
+    ],
+    "qa_validation": "alle_bronnen_geverifieerd_geen_fantasy",
+    "already_fixed_by_Lexi": [
+      "richting_bewuste_pullback_V2",
+      "MIN_IMPULSE_PCT_3pct",
+      "15M_bevestiging_2_richtingen",
+      "entry_lateness_V2",
+      "volume_check",
+      "1D_filter_shorts",
+      "pullback_fast_monitoring",
+      "multi_pair_scanner",
+      "MIN_RR_2.0_trade_engine",
+      "MIN_STOP_DIST_0.004_trade_engine"
+    ],
+    "remaining_fixes": [
+      "calc_sl_vaste_afstandsgrens",
+      "heartbeat_orphaned_recovery",
+      "V1_macro_paralysis_micro_scope",
+      "V1_entry_lateness_aanscherpen"
+    ],
+    "beslissingen": [
+      "Prompt voor Claude Code opgesteld voor overblijvende fixes",
+      "Eerst pullback_trader.py fixen (macro-paralysis)",
+      "Dan calc_sl() fix (harde MIN_STOP)",
+      "Heartbeat toevoegen (enkel logging)"
+    ]
+  },
+  "next_steps": [
+    "Lexi geeft prompt aan Claude Code in VS Code",
+    "Code patchen: calc_sl(), heartbeat, V1 macro fix",
+    "Screens herstarten: cache → V1 → V2",
+    "Monitor eerste trades na restart"
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 title: Noa Second Brain Index
 type: index
-updated: 2026-05-17
+updated: 2026-05-20
 ---
 
 # Noa Second Brain Index
@@ -9,10 +9,16 @@ updated: 2026-05-17
 ## Projects
 
 - [[hermes-openclaw-noa-agent]]
-- [[Crypto Tradebot]]
+- [[crypto-tradebot]]
 - [[Ubuntu Server]]
 - [[n8n Automation]]
 - [[Python Leerpad]]
+- [[pullback-trader-strategy]]
+
+## Entities
+
+- [[trade-specialist-agent]]
+- [[secretary-agent]]
 
 ## Fixes
 
@@ -28,7 +34,16 @@ Nog geen gecureerde concepten.
 
 ## Synthesis
 
-Nog geen syntheses.
+- [[team-meeting-006-tradebot-audit]] — V1/V2 audit, SL krimping, macro-paralysis, prompts
+
+- [[meeting_008]] — Tradebot audit: rampzalige resultaten (V1 0 trades, V2 30% WR, beide bots dood)
+
+- [[team_gap_analysis_002]]
+- [[team_meeting_003_accuracy]]
+- [[team_meeting_004_improvements]]
+- [[team_meeting_005_pullback_strategy]]
+- [[meeting_002_tradebot_audit]]
+
 
 ## Source Summaries
 
