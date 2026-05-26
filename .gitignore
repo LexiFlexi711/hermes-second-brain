@@ -1,0 +1,7 @@
+
+# Prevent accidental recursive second-brain copies
+second-brain/second-brain/
+second-brain/**/second-brain/
+
+# Prevent invalid generated artifacts
+second-brain/wiki/synthesis/*UTC*
