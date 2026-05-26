@@ -1,0 +1,59 @@
+{
+  "meeting_id": "meeting_009",
+  "title": "Volledige Diepte Analyse Alle Actieve Trades (23 Mei 2026)",
+  "purpose": "Multi-agent analyse van 16 actieve trades over V1, V2, V3 en Range trader. Identificeren van structurele problemen, SL-kwaliteit, marktcontext en prioritaire code fixes.",
+  "date": "2026-05-23",
+  "agenda_items_covered": [
+    "Trade data overzicht per script (V1, V2, V3, Range)",
+    "Winrate per script en per richting (LONG vs SHORT)",
+    "Netto P&L analyse",
+    "RR ratio en SL afstand per trade",
+    "Kelly criterion en position sizing",
+    "Correlatie-analyse (9 LONGs in 30 min, DOGEEUR double positie)",
+    "Marktcontext en directional bias",
+    "Edge vs tailwind per trade",
+    "Code review: SL logica, entry logic, productie-readiness",
+    "Prioritaire fixes en beslissingen"
+  ],
+  "participants": [
+    "Lexi (Owner)",
+    "Trade Analyst (Subagent)",
+    "MIT Math Professor (Subagent)",
+    "Master Trader (Subagent)",
+    "Software Architect (Subagent)",
+    "Noa (Hermes — Meeting Lead + Secretary)"
+  ],
+  "iteration_summary": {
+    "scoreboard": {
+      "V1": {"trades": 5, "winrate": "60%", "netto_pnl": "-1.127%", "kelly": "-34.8%"},
+      "V2": {"trades": 1, "winrate": "0%", "netto_pnl": "-1.5%", "kelly": "N/A"},
+      "V3": {"trades": 5, "winrate": "80%", "netto_pnl": "+2.792%", "kelly": "50%"},
+      "Range": {"trades": 5, "winrate": "60%", "netto_pnl": "+0.434%", "kelly": "56%"},
+      "totaal": {"trades": 16, "winrate": "66.7%", "netto_pnl": "+0.599%", "kelly": "5.8%"}
+    },
+    "correlatie_risico": {
+      "beschrijving": "9 LONG trades geopend tussen 08:00-08:30",
+      "pairs": ["DOGE (×2)", "ADA", "POL", "LTC", "XLM", "ICP", "BTC", "AI"],
+      "risico": "Bij 2% marktdaling: geschatte drawdown -8% tot -12%"
+    },
+    "beslissingen": [
+      "V1 stoppen of herzien (Kelly -34.8%)",
+      "V2 parkeren tot WR > 40%",
+      "V3 houden met MAX_CONCURRENT limiet",
+      "Correlatie beperken — max 1 trade per pair",
+      "Short bias verhogen — markt keert bearish",
+      "SL verbreden (ZIGEUR, BNBEUR, BTCEUR prioriteit)",
+      "Small-cap filter toevoegen",
+      "V3 PULLBACK_FAILED → PULLBACK_REJECTED hernoemen"
+    ],
+    "correcties_op_eerdere_aannames": {
+      "v1_trade_journal_leeg": "FOUT — 17.5KB met 45 gesloten trades",
+      "v3_pullback_failed_bug": "FOUT — ontwerpkeuze, geen bug",
+      "grteur_inverted_rr": "FOUT — RR is exact 2.0"
+    }
+  },
+  "next_steps": [
+    "Claude Code prompt opstellen voor hoog-prioriteit fixes",
+    "Wacht op Lexi's feedback vooraleer actie"
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "meeting_id": "009",
+  "title": "V1/V2 Pullback Scripts Analyse",
+  "date": "2026-05-20",
+  "status": "completed",
+  "reality_check": {
+    "live_multibot_meeting": true,
+    "fantasy_dialogue": false,
+    "claude_code_called": false,
+    "decisions_usable": true
+  },
+  "participants": [
+    "Lexi (Owner)",
+    "Noa/Scout (Hermes)",
+    "DevOps Guard (Hermes)",
+    "Master Trader (Hermes+Pro)",
+    "Critic (Hermes+Pro)",
+    "QA Agent (Hermes+Pro)",
+    "Controller (Hermes+Pro)",
+    "Finance Guard (Hermes)",
+    "Secretary (Hermes)"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "agent": "Master Trader",
+      "finding": "V1 100% short bias — _is_bullish_structure checkt lows i.p.v. highs",
+      "severity": "high",
+      "evidence": "Alle 15 scan_events direction=short, SOLEUR 4H UP ook short",
+      "risk": "Mist ALLE long trades",
+      "advice": "Fix _is_bullish_structure naar high check"
+    },
+    {
+      "id": "F2",
+      "agent": "Critic",
+      "finding": "calc_sl() in V2 returnt 0.0 i.p.v. hard_floor",
+      "severity": "high",
+      "evidence": "pull_backtrader_2.py lijn 187-188",
+      "risk": "Blokkeert geldige trades",
+      "advice": "return hard_floor ipv return 0.0"
+    },
+    {
+      "id": "F3",
+      "agent": "DevOps Guard",
+      "finding": "V1 heartbeat path mismatch",
+      "severity": "high",
+      "evidence": "/scripts/logs/ bestaat niet",
+      "risk": "Geen monitoring of V1 leeft",
+      "advice": "Fix _LOG_DIR naar _PROJECT_ROOT / logs"
+    },
+    {
+      "id": "F4",
+      "agent": "Critic",
+      "finding": "entry_lateness threshold inconsistent: V1 50%, V2 70%",
+      "severity": "medium",
+      "evidence": "V1 lijn 431, V2 lijn 347",
+      "risk": "V2 laat slechtere entries toe",
+      "advice": "Harmoniseer naar 50%"
+    }
+  ],
+  "runtime_status": {
+    "screens": {
+      "cache": {"status": "running", "pid": 2535956, "since": "16:45"},
+      "v1": {"status": "running", "pid": 2536221, "since": "16:45", "heartbeat": false},
+      "v2": {"status": "running", "pid": 2536594, "since": "16:45", "heartbeat": "18:04"}
+    },
+    "open_trades": 0
+  },
+  "decisions": [
+    {"id": "D1", "decision": "Prompt voor Claude Code voorbereid", "details": "4 fixes: calc_sl, heartbeat, direction, lateness"},
+    {"id": "D2", "decision": "Lexi beslist over timing", "details": "Prompt klaar voor copy-paste naar VS Code"}
+  ],
+  "next_steps": [
+    "✅ Prompt klaar voor Claude Code",
+    "✅ Meeting docs aangemaakt",
+    "⏳ Lexi geeft prompt aan Claude Code in VS Code",
+    "⏳ Screens herstarten na patches"
+  ],
+  "cost_report": {
+    "flash_calls": 2,
+    "pro_calls": 4,
+    "total_estimated": "$1.76",
+    "risk": "low"
+  }
+}

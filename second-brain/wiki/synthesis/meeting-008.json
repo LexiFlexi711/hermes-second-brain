@@ -1,0 +1,65 @@
+{
+  "meeting_id": "meeting_008",
+  "type": "tradebot_audit",
+  "date": "2026-05-20T08:20:00+02:00",
+  "trigger": "V1 0 trades / V2 1 trade op 12 uur — beide bots dood",
+  "model_used": "deepseek/deepseek-v4-flash",
+  "participants": ["Scout (Hermes)", "Critic (Hermes)", "Controller (Hermes)", "Secretary (Hermes)"],
+  "charts_consulted": ["v2_trades.jsonl", "v2_cycles.jsonl", "scan_events.jsonl", "v2_state.json"],
+  "v2_summary": {
+    "trades": 61,
+    "wins": 15,
+    "losses": 35,
+    "cancelled": 11,
+    "winrate_pct": 30.0,
+    "pnl_eur": -54.84,
+    "shorts": 47,
+    "longs": 14,
+    "short_winrate_pct": 28.0,
+    "long_winrate_pct": 40.0,
+    "rr_used": 2.0
+  },
+  "v1_summary": {
+    "scan_events": 93,
+    "scans_with_entry_ready": 21,
+    "trades_opened": 3,
+    "runtime_hours": 28,
+    "last_scan": "2026-05-19T19:14:04",
+    "trades_after_first_2h": 0
+  },
+  "crash_analysis": {
+    "status": "beide_screens_dood",
+    "last_activity_v1": "2026-05-19 21:14",
+    "last_activity_v2": "2026-05-19 21:07",
+    "server_uptime_days": 48,
+    "reboot_since": false,
+    "oom_killer": false,
+    "likely_cause": "python_exception_of_handmatig_stop",
+    "orphaned_positions": [
+      {"pair": "INJEUR", "direction": "long", "entry": 4.335},
+      {"pair": "RENDEREUR", "direction": "short", "entry": 1.577}
+    ]
+  },
+  "critical_findings": [
+    "V2 monodirectional: 77% SHORTS, ETHEUR 14/14 SHORT (17% WR) — verlies -52.13 EUR",
+    "V1 0 trades in laatste 24+ uur — macro-scope fib structuren te breed",
+    "Screen sessies dood zonder auto-restart",
+    "SL krimping tot 0.2% in V2",
+    "V1 schrijft geen trade data weg naar trade_journal",
+    "entry_lateness logging ontbreekt in V2"
+  ],
+  "recommendations": [
+    "Bots herstarten met screen --loop",
+    "Open posities INJEUR en RENDEREUR manueel evalueren",
+    "V2 pullback guard toevoegen — verbied SHORT tijdens bounce",
+    "SL floor 0.4% afdwingen in trade_engine.py",
+    "V1 trade logging fixen",
+    "Auto-restart via systemd of cron"
+  ],
+  "cost": {
+    "model": "deepseek/deepseek-v4-flash",
+    "expensive_model_used": false,
+    "estimated_context_size": "~8K",
+    "cost_risk": "low"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "meeting_id": "meeting_008",
+  "title": "Pullback Trader V1/V2/V3 Volledige Audit",
+  "purpose": "Volledige analyse van alle 3 pullback trade scripts — code, logs, resultaten, runtime status — met aanbevelingen voor fixes en Claude Code prompt",
+  "agenda_items_covered": [
+    "Runtime status: screens, heartbeats, cache",
+    "V2 trade stats: 62 trades, 33.3% winrate, 76% short bias",
+    "V1 scan status: 15/20 pairs stuck in macro forming",
+    "V3 state machine: observatie-only, 1260 log entries",
+    "Master Trader: 6 bevindingen (SL/TP, entry_lateness, direction bias)",
+    "Critic: 5 logische fouten (TP paradox, trend forcing, asym entry_lateness)",
+    "QA: alle claims bewezen met bronverwijzingen",
+    "Controller: prioriteiten en aanbevelingen"
+  ],
+  "participants": [
+    "Lexi (Owner)",
+    "Scout (Flash) — data gathering",
+    "DevOps Guard (Flash) — runtime check",
+    "Master Trader (Pro) — strategie audit",
+    "Critic (Pro) — logische fouten",
+    "QA Agent (Pro) — bewijscontrole",
+    "Controller (Pro) — synthese",
+    "Secretary (Flash) — notulen",
+    "Claude Code (Pro) — prompt voor VS Code"
+  ],
+  "iteration_summary": {
+    "ITERATIE_1_Scout_DevOps": {
+      "screens_running": false,
+      "v2_trades_total": 62,
+      "v2_win": 17,
+      "v2_loss": 34,
+      "v2_cancelled": 11,
+      "v2_winrate": "33.3%",
+      "v2_direction_bias": "76% SHORT",
+      "v1_pairs_forming": 15,
+      "v3_log_entries": 1260,
+      "ghost_position": "ETHEUR SHORT @ 1831.83 (18 mei)"
+    },
+    "beslissingen": [
+      "Ghost trade fixen — pullback_state.json clearen",
+      "Screens herstarten: cache → V1 → V2 → V3",
+      "Code fixes via Claude Code prompt in VS Code",
+      "entry_lateness harmoniseren V2 0.70 → 0.50",
+      "V1 SL/TP fix: swing_high direct + vaste RR"
+    ],
+    "correcties_na_review": {
+      "V2_entry_lateness_threshold": "70% te hoog, moet naar 50%",
+      "V1_SL_calculation": "swing_high * 1.003 overbodig",
+      "V1_TP_calculation": "support/resistance geeft klein TP, moet vaste RR",
+      "V3_isolation": "V3 data moet naar V1/V2 vloeien"
+    }
+  },
+  "next_steps": [
+    "Screens herstarten (in overleg met Lexi)",
+    "Ghost trade clearen uit pullback_state.json",
+    "Claude Code prompt in VS Code voor code fixes",
+    "Meeting sync naar 2nd brain"
+  ],
+  "cost_estimate": {
+    "model_used": "deepseek/deepseek-v4-flash",
+    "pro_model_requested": true,
+    "total_cost_risk": "laag (< $0.50 voor Flash, ~$1.00 extra voor Pro)"
+  }
+}

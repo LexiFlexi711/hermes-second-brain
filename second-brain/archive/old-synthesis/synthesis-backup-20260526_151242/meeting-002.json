@@ -1,0 +1,64 @@
+{
+  "meeting_id": "team_meeting_002",
+  "title": "Volledige Tradebot Audit — Wins, Losses, Cancels, Gemiste Kansen",
+  "purpose": "Volledige audit van de crypto tradebot met team (Scout, Critic, Claude Code, Controller, Secretary). Analyseer waarom winrate 25% is, waarom 74% early exits, en wat er anders moet.",
+  "agenda_items_covered": [
+    "Data verzamelen uit logs, cache, trades en scripts",
+    "Wins/losses/cancelled analyse per coin en per dag",
+    "ETHEUR diepte-analyse (14 trades, 2W/10L)",
+    "Gemiste kansen uit scan events (80% fib_forming, 5% rr_too_low)",
+    "Code-analyse trade_engine.py entry logica",
+    "Vergelijking V1 (pullback_trader.py), V2 (pull_backtrader_2.py), trade_engine.py",
+    "Probleemidentificatie: 6 diagnoses",
+    "Aanbevelingen voor fixes"
+  ],
+  "participants": [
+    "Lexi (Owner)",
+    "Controller (Noa/Hermes)",
+    "Scout (Noa/Hermes)",
+    "Critic (Noa/Hermes)",
+    "Claude Code CLI (live code-analyse)",
+    "Secretary (Noa/Hermes)"
+  ],
+  "iteration_summary": {
+    "iteratie_1_scout_data": {
+      "v2_trades": "60 totaal — 15W/34L/11C, 30.6% winrate",
+      "v1_pullback_trades": "19 totaal — 2W/3L/14 early exits (74%)",
+      "scan_events": "4.752 events, laatste 200: 80% fib_forming",
+      "regime_log": "708 entries, 45% range_rotation",
+      "charts": "234 PNGs, alleen ETHEUR"
+    },
+    "iteratie_2_critic_diagnose": {
+      "diagnose_1": "Drie systemen die niet samenwerken (V1, V2, trade_engine)",
+      "diagnose_2": "V2 opent met '4H trend entry' — verboden door pullback strategie",
+      "diagnose_3": "ETHEUR: 14 shorts in uptrend, SL krimpt naar 0.10%",
+      "diagnose_4": "Cancel na 2 adverse candles — te agressief",
+      "diagnose_5": "MIN_RR=4.0 blokkeert 80% scans",
+      "diagnose_6": "Range rotation (45%) + trend-following engine = mismatch"
+    },
+    "iteratie_3_claude_code_analyse": {
+      "entry_condities": "SHORT: 4H bearish + 1H niet bullish + 15M niet tegen. Geen pullback/fib check.",
+      "MIN_RR": "4.0 op lijn 47, toegepast op lijnen 276 en 314",
+      "learning_mode": "1.5 op lijn 48, nergens geactiveerd",
+      "pullback_detectie": "Afwezig in trade_engine.py"
+    },
+    "beslissingen": [
+      "Drie systemen, geen coördinatie — V1, V2 en trade_engine werken naast elkaar",
+      "V2 entry reden '4H trend entry' is fout — moet pullback_confirmed_15m_bearish zijn",
+      "SL minimum afwezig in V2 — krimpt naar 0.10%",
+      "Cancel drempel 2 adverse candles is te laag",
+      "MIN_RR=4.0 te hoog — 80% blocked, learning mode ongebruikt",
+      "Alleen ETHEUR charts — geen visuele verificatie voor andere coins"
+    ]
+  },
+  "next_steps": [
+    "Meeting verslag weggeschreven naar ~/Noa-Hermes/autonomous/meetings/meeting_002.md en .json",
+    "Kopiëren naar 2nd brain (wiki/synthesis/)",
+    "Wiki index + log updaten",
+    "Wiki lint runnen",
+    "Wachten op Lexi's goedkeuring voor code fixes"
+  ],
+  "model_used": "deepseek/deepseek-v4-flash (scout + critic data), Claude Code CLI (code-analyse)",
+  "expensive_model_used": false,
+  "cost_risk": "low — read-only audit, alle analyses lokaal"
+}

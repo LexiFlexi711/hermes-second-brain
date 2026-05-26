@@ -1,0 +1,92 @@
+{
+  "meeting_id": "team_meeting_005",
+  "title": "PULLBACK TRADER STRATEGIE — LIVE TEAM OVERLEG",
+  "reality_check": {
+    "type": "LIVE_TEAM_MEETING",
+    "live_agents": ["Scout (Hermes tools)", "Claude Code (CLI)", "Critic (Hermes)", "Secretary (Hermes)", "Lexi (owner)"],
+    "fantasy_dialogue": false,
+    "external_feedback_used": true,
+    "decisions_usable": true,
+    "evidence_per_agent": {
+      "scout": ["trade_engine.py:47 _MIN_RR=4.0", "noa_trader_run.log: 15/15 WAIT", "regime_log.csv: range_rotation"],
+      "claude_code": ["6 blokkades in evaluate()", "HL/LH flags ongebruikt in flags dict", "15M moet reversal i.p.v. blokkade", "MIN_RR_LEARNING=1.5 bestaat maar wordt niet gebruikt"],
+      "critic": ["Lijnnummers geverifieerd", "3 risicos geïdentificeerd", "Flags dict in _flags_str() bevestigd"],
+      "secretary": [".md + .json opgeslagen in meetings/ + 2nd brain"],
+      "lexi": ["6 correcties op plan", "Externe ChatGPT/Claude input aangeleverd"]
+    }
+  },
+  "purpose": "Strategie bepalen voor pullback-only trade bot op basis van echte logs/code + live Claude Code analyse + externe feedback",
+  "echte_deelnemers": [
+    "Lexi (Owner)",
+    "Scout (Hermes tools)",
+    "Claude Code (CLI - print mode)",
+    "Critic (Hermes)",
+    "Secretary (Hermes)"
+  ],
+  "iteraties": {
+    "iteratie_1_scout": {
+      "input": ["trade_engine.py lijn 47: _MIN_RR=4.0", "noa_trader_run.log: 15/15 WAIT", "regime_log.csv: range_rotation/compression"],
+      "conclusie": "Huidige bot kan geen trades openen. MIN_RR=4.0 grootste bottleneck."
+    },
+    "iteratie_2_claude_code": {
+      "input": "claude -p analyse van trade_engine.py",
+      "bevindingen": [
+        "6 blokkades in evaluate() voor SHORT",
+        "HL/LH flags bestaan maar worden niet gebruikt voor entry",
+        "MIN_RR_LEARNING=1.5 staat klaar maar wordt nooit aangeroepen",
+        "15M bullish blokkeert SHORT — moet omgedraaid naar reversal bevestiging"
+      ],
+      "conclusie": "Huidig script is trend-follower, geen pullback-trader. Pullback data (flags) bestaat al maar wordt niet gebruikt."
+    },
+    "iteratie_3_critic": {
+      "input": "Verificatie van Claude Code output tegen echte code",
+      "bevindingen": [
+        "Lijnnummers kloppen (47, 48, 265-279, 138-147)",
+        "Flags dict in _flags_str() lijn 538-544 bevestigd",
+        "3 risicos: post-crash tijdelijk, valse pullbacks, early exits"
+      ]
+    },
+    "iteratie_4_lexi_correcties": {
+      "input": "6 correcties uit conversatie",
+      "verwerkt": true
+    }
+  },
+  "beslissingen": [
+    {"id": 1, "beslissing": "Apart script pullback_trader.py", "bron": "trade_engine.py lijn 47 + Claude Code", "bewijs": "Huidige code trend-follower"},
+    {"id": 2, "beslissing": "fib_pct = (c - start_low) / (high - start_low) * 100", "bron": "Lexi correctie 1", "bewijs": "Was fout"},
+    {"id": 3, "beslissing": "Fib zones 30-70% met 5 labels", "bron": "Claude Code via Lexi + regime log", "bewijs": "range_rotation regime"},
+    {"id": 4, "beslissing": "RR minimum 2.0, learning 1.5", "bron": "trade_engine.py lijn 47-48", "bewijs": "MIN_RR=4.0 blokkeert, 1.5 bestaat"},
+    {"id": 5, "beslissing": "entry_lateness >50% = weak_entry", "bron": "Lexi correctie 5", "bewijs": ""},
+    {"id": 6, "beslissing": "rejection_wick = kwaliteitslabel", "bron": "Lexi correctie 4", "bewijs": "Anders 0 trades"},
+    {"id": 7, "beslissing": "'4H trend entry' VERBODEN", "bron": "ChatGPT audit via Lexi", "bewijs": ""},
+    {"id": 8, "beslissing": "HL/LH flags gebruiken voor pullback", "bron": "Claude Code analyse", "bewijs": "Bestaan in flags dict lijn 538-544"},
+    {"id": 9, "beslissing": "15M omdraaien: blokkade -> bevestiging", "bron": "Claude Code analyse", "bewijs": "Huidig: bullish candle blokkeert SHORT"},
+    {"id": 10, "beslissing": "Geen fees/slippage/indicators", "bron": "Lexi instructie", "bewijs": ""}
+  ],
+  "risicoanalyse": [
+    {"risico": "Post-crash markt tijdelijk", "ernst": "Medium", "mitigatie": "Fib zones parameterizeerbaar"},
+    {"risico": "Valse pullbacks in chop", "ernst": "Hoog", "mitigatie": "15M bevestiging + entry_lateness"},
+    {"risico": "Early exits door zwakke entries", "ernst": "Medium", "mitigatie": "entry_lateness >50% block + wick label"},
+    {"risico": "Claude Code analyse obsoleet", "ernst": "Laag", "mitigatie": "Herhaal bij marktverandering"}
+  ],
+  "open_vragen": [
+    "Wie schrijft pullback_trader.py?",
+    "Fib 30-70% akkoord als observe/learning zone?",
+    "RR 2.0 akkoord of eerst 1.5?"
+  ],
+  "next_steps": [
+    {"actie": "Bepaal wie script schrijft", "eigenaar": "Lexi", "status": "OPEN"},
+    {"actie": "Schrijf pullback_trader.py", "eigenaar": "NOG_TE_BEPALEN", "status": "OPEN"},
+    {"actie": "Gebruik HL/LH flags als entry-filter", "eigenaar": "NOG_TE_BEPALEN", "status": "OPEN"},
+    {"actie": "Draai 15M om: blokkade -> bevestiging", "eigenaar": "NOG_TE_BEPALEN", "status": "OPEN"},
+    {"actie": "Verlaag RR van 4.0 naar 2.0/1.5", "eigenaar": "NOG_TE_BEPALEN", "status": "OPEN"},
+    {"actie": "Test met ETH 18/19 mei cache", "eigenaar": "NOG_TE_BEPALEN", "status": "OPEN"}
+  ],
+  "tool_outputs_bewijs": {
+    "scout_grep_output": "trade_engine.py:47:_MIN_RR=4.0, 48:_MIN_RR_LEARNING=1.5, 49:_MAX_RR=15.0",
+    "scout_tail_output": "Samenvatting: SHORT 0 | LONG 0 | WAIT 15 (5 cycli)",
+    "scout_regime_output": "range_rotation, compression, trending_up conflict",
+    "claude_code_output": "6 blokkades, HL/LH flags ongebruikt, 15M moet reversal, MIN_RR_LEARNING ongebruikt",
+    "critic_verification": "Alle lijnnummers matchen met trade_engine.py"
+  }
+}

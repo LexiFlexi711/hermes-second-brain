@@ -1,0 +1,71 @@
+{
+  "meeting_id": "team_meeting_004",
+  "title": "VERBETERPUNTEN & SKILL-GOVERNANCE",
+  "purpose": "Analyseer verbeterpunten en formaliseer de rol van de Skills Agent.",
+  "agenda_items_covered": [
+    "Status na Team Meeting 003",
+    "Rol Skills Agent",
+    "Prioriteitenlijst verbeterpunten",
+    "Beslissen per verbeterpunt",
+    "Output van deze meeting",
+    "Bewijsregels"
+  ],
+  "participants": [
+    "Lexi (Owner)",
+    "Agent Controller (Noa)",
+    "Hermes Updater",
+    "Skills Agent",
+    "QA Agent",
+    "Secretary"
+  ],
+  "iteration_summary": {
+    "status_after_meeting_003": {
+      "incidents_resolved": [],
+      "incidents_open": [
+        "Lexi_fit criteria definition",
+        "Agent-to-Agent Communication Protocols",
+        "Market vs. Researcher Scope Clarification",
+        "Hermes Updater workflow triggers",
+        "Git Workflow Skill finalization (refinement needed)"
+      ],
+      "existing_protocols": [
+        "agent_communication.md",
+        "lexi_input_escalation.md",
+        "output_validation.md",
+        "path_management.md",
+        "source_verification.md",
+        "tool_usage_policy.md"
+      ],
+      "existing_skills": [
+        "git_workflow/SKILL.md",
+        "skills_agent.md"
+      ]
+    },
+    "skills_agent_role_analysis": {
+      "monitors": "Structural errors, recurring issues, vague roles, unreliable reporting.",
+      "trigger_points": "Repeated errors, Git/file/security/cost issues, lack of evidence, workflow flaws, explicit Lexi request.",
+      "wildgrowth_prevention": "Prioritize existing solutions, suggest skills/checklists/protocols for patterns.",
+      "lexi_reporting": "Formal proposals to Lexi after analysis, requiring approval for implementation."
+    },
+    "priority_improvement_list": [
+      {"item": "Finalize Git Workflow Skill", "priority": "High", "status": "needs refinement"},
+      {"item": "Define Lexi_fit Criteria", "priority": "High", "status": "needs definition"},
+      {"item": "Clarify Market vs Researcher Scope", "priority": "Medium", "status": "needs definition"},
+      {"item": "Formalize Agent-to-Agent Protocols", "priority": "High", "status": "needs creation"},
+      {"item": "Define Controller Decision Rules", "priority": "High", "status": "needs creation"}
+    ],
+    "decision_points_for_lexi": [
+      "Approval of Git Workflow Skill refinements.",
+      "Defining Lexi_fit criteria.",
+      "Clarifying Market/Researcher scopes.",
+      "Formalizing communication protocols.",
+      "Defining Controller's decision rules.",
+      "Prioritizing which improvements to implement first."
+    ]
+  },
+  "next_steps": [
+    "Agent Controller: process findings, propose specific changes to agent .md files and protocols.",
+    "Hermes Updater: research best practices for identified gaps (customer finder, ops manager, legal/ethics).",
+    "Agent Controller: coordinate with Lexi for approvals on critical changes."
+  ]
+}

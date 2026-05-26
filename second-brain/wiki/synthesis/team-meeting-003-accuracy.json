@@ -1,0 +1,173 @@
+{
+  "meeting_id": "team_meeting_003",
+  "status": "analysis_in_progress",
+  "incident_analysis": [
+    {
+      "incident_id": 1,
+      "description": "Meetingbestanden vals gerapporteerd",
+      "details": {
+        "report": "Hermes zei dat team_meeting_002.md, team_meeting_002.json, team_gap_analysis_002.md waren aangemaakt. Controle toonde: autonomous/meetings map bestond, maar was leeg; team_meeting_002.json bestond niet.",
+        "actual_state": {
+          "autonomous/meetings": "exists",
+          "autonomous/meetings/team_meeting_002.json": "missing"
+        }
+      },
+      "involved_agents": ["Agent Controller", "Secretary", "QA Agent"],
+      "root_cause": "Fout in sequence van bestandscreatie en Git-operaties. Prompts leken succesvol, maar bestanden werden niet correct geschreven vóór Git-executie, of feedback loop faalde.",
+      "preventive_action": "Altijd content schrijven vóór commit/push. QA moet outputbestanden controleren op bestaan en integriteit na elke file operation.",
+      "protocol_change_needed": "New protocol for 'Writing Confirmation' defining `ls` check post write.",
+      "file_change_needed": ["controller.md", "secretary.md"],
+      "qa_check": "Scenario's met file creation/reporting test, verify files exist and readable.",
+      "failure_rule": "Output bestanden niet op disk -> failed status, escalate to Lexi, log in memory."
+    },
+    {
+      "incident_id": 2,
+      "description": "Git-status verkeerd geïnterpreteerd",
+      "details": {
+        "report": "Hermes zei eerst dat /home/sjoe/Noa-Hermes geen Git repo was.",
+        "actual_state": {
+          "git_repo_exists": true,
+          "remote_exists": true,
+          "branch_clean": true,
+          "commits_exist": true
+        }
+      },
+      "involved_agents": ["Agent Controller", "Hermes"],
+      "root_cause": "Onjuiste interpretatie van git status output, mogelijk door verkeerd parsen of `cd` commando context.",
+      "preventive_action": "Altijd volledige output van Git commando's analyseren (`git status -sb 2>&1`). Gebruik `pwd` check en `git rev-parse --is-inside-work-tree` voor repo status.",
+      "protocol_change_needed": "New protocol for 'Git Operations' detailing execution, parsing, error handling.",
+      "file_change_needed": ["controller.md", "devops_guard.md"],
+      "qa_check": "Test Git commands in various states (init, clean, dirty, remote).",
+      "failure_rule": "Incorrect Git status interpretation -> failed, escalate."
+    },
+    {
+      "incident_id": 3,
+      "description": "Terminal-output niet correct getoond/gevraagd",
+      "details": {
+        "report": "Hermes vatte output samen, gaf niet echte terminal-output.",
+        "actual_state": "Output was verkort of incompleet."
+      },
+      "involved_agents": ["Agent Controller", "Secretary"],
+      "root_cause": "Verkeerde interpretatie van `terminal` tool output; niet volledige stdout gelezen.",
+      "preventive_action": "Altijd volledige output van `terminal` commando's loggen en tonen (tenzij Lexi anders specificeert). Controller en Secretary beheren dit actief.",
+      "protocol_change_needed": "'Terminal Output Protocol' defining full stdout logging.",
+      "file_change_needed": ["controller.md", "secretary.md"],
+      "qa_check": "Verify all `terminal` commands show and log full output.",
+      "failure_rule": "Incomplete stdout -> failed, QA escalation."
+    },
+    {
+      "incident_id": 4,
+      "description": "Verkeerde tool gebruikt (execute_code i.p.v. terminal)",
+      "details": {
+        "report": "Hermes gebruikte `execute_code` terwijl expliciet `terminal` gevraagd was."
+      },
+      "involved_agents": ["Agent Controller", "Hermes"],
+      "root_cause": "Verkeerde tool selectie door Controller door misinterpretatie of fout in tool routing.",
+      "preventive_action": "Controller MOET strikt toegestane tools per agent/taak volgen. QA controleert toolgebruik.",
+      "protocol_change_needed": "Controller protocol for tool selection validation; consult QA/Lexi on doubt.",
+      "file_change_needed": ["controller.md", "qa_agent.md"],
+      "qa_check": "Analyze every tool call for correct usage.",
+      "failure_rule": "Wrong tool selection -> runtime errors -> immediate failed."
+    },
+    {
+      "incident_id": 5,
+      "description": "Read/patch loop (File not found, geen fallback)",
+      "details": {
+        "report": "Agent probeerde herhaaldelijk bestand te lezen/patchen ondanks 'File not found'. Liet fallback opties ongebruikt."
+      },
+      "involved_agents": ["Agent Controller", "Tooling"],
+      "root_cause": "Foutieve foutafhandeling; geen robuuste fallback (bv. absolute paden, terminal check).",
+      "preventive_action": "Robuuste foutafhandeling in Controller met expliciete fallback opties (absolute paden, `terminal`). QA test dit.",
+      "protocol_change_needed": "'File Operation Error Handling Protocol' defining steps for 'File not found'.",
+      "file_change_needed": ["controller.md", "path_management.md"],
+      "qa_check": "Test non-existent files, wrong paths, permission issues.",
+      "failure_rule": "Failure in error handling -> failed, escalate."
+    },
+    {
+      "incident_id": 6,
+      "description": "Relatieve paden faalden (ondanks bestaan bestand)",
+      "details": {
+        "report": "Hermes kon bestanden niet lezen door verkeerde CWD/toolcontext."
+      },
+      "involved_agents": ["Agent Controller", "Tooling"],
+      "root_cause": "Gebruik relatieve paden zonder correcte CWD-management.",
+      "preventive_action": "Gebruik altijd absolute paden; relatieve alleen na `pwd` verificatie & Controller goedkeuring.",
+      "protocol_change_needed": "'Path Management Protocol' mandating absolute paths by default.",
+      "file_change_needed": ["controller.md", "qa_agent.md", "builder.md"],
+      "qa_check": "Test file ops with absolute paths & verified relative paths.",
+      "failure_rule": "Repeated path issues -> failed, escalate."
+    },
+    {
+      "incident_id": 7,
+      "description": "Websearch fout gediagnosticeerd (Firecrawl config/plugin issue)",
+      "details": {
+        "report": "Hermes zag web_search niet; bleek config/plugin issues."
+      },
+      "involved_agents": ["Agent Controller", "Hermes", "Web Researcher"],
+      "root_cause": "Onjuiste initialisatie web-tools, ontbrekende discover_plugins() of verkeerde provider/key config.",
+      "preventive_action": "Controller MOET alle tools/dependencies checker (plugin check) vóór gebruik.",
+      "protocol_change_needed": "'Tool Usage Policy' mandating plugin check for web tools.",
+      "file_change_needed": ["controller.md", "researcher.md", "qa_agent.md"],
+      "qa_check": "Verify web tools function correctly post-initialization.",
+      "failure_rule": "Web tool failure due to misconfig/init -> failed."
+    },
+    {
+      "incident_id": 8,
+      "description": "Agent rollen verkeerd afgebakend (Builder vs Strategist)",
+      "details": {
+        "report": "Builder kreeg experiment-definitie. Correct: Strategist definieert, Builder bouwt NÁ goedgekeurde opdracht."
+      },
+      "involved_agents": ["Agent Controller", "Builder", "Strategist"],
+      "root_cause": "Onjuiste taakdelegatie door Controller of onduidelijke output van Strategist.",
+      "preventive_action": "Duidelijke output-schema's & strikte taakdelegatie door Controller. QA controleert workflow-routering.",
+      "protocol_change_needed": "Controller protocol for validating Strategist output (approved status) before tasking Builder.",
+      "file_change_needed": ["strategist.md", "builder.md", "controller.md", "qa_agent.md"],
+      "qa_check": "Verify task delegation follows output of previous agent.",
+      "failure_rule": "Wrong task delegation -> failed, escalate."
+    },
+    {
+      "incident_id": 9,
+      "description": "Critic kreeg te veel beslisrecht",
+      "details": {
+        "report": "Critic mocht beslissen of kans doorgaat. Correct: Critic adviseert, Controller routeert, Lexi beslist."
+      },
+      "involved_agents": ["Agent Controller", "Critic"],
+      "root_cause": "Onjuiste interpretatie output `decision_advice` of onduidelijkheid rol Critic.",
+      "preventive_action": "Rolverdeling Critic (advies), Controller (routing, escalatie), Lexi (beslissing) MOET strikt worden afgedwongen.",
+      "protocol_change_needed": "Controller protocol for routing Critic output (decision_advice, needs_lexi_input) to Strategist or Lexi.",
+      "file_change_needed": ["controller.md", "critic.md"],
+      "qa_check": "Verify Controller routes decisions correctly, never decides autonomously.",
+      "failure_rule": "Critic/Controller acting outside authority -> auto escalate to Lexi."
+    },
+    {
+      "incident_id": 10,
+      "description": "Finance en Monetization werden vermengd",
+      "details": {
+        "report": "Finance (kosten) en Monetization (geldroutes) vermengd. Correct: Finance bewaakt kosten, Monetization onderzoekt inkomsten met bewijs."
+      },
+      "involved_agents": ["Agent Controller", "Finance Guard", "Monetization Validator"],
+      "root_cause": "Vaagheid in rollen, onduidelijke instructies, overlap.",
+      "preventive_action": "Strikte scheiding verantwoordelijkheden (kosten vs inkomsten). Beide opereren met bewijs.",
+      "protocol_change_needed": "Controller protocol for clear input/output specs for Finance & Monetization to avoid overlap.",
+      "file_change_needed": ["finance_guard.md", "monetization_validator.md"],
+      "qa_check": "Verify inputs/outputs go to correct agent.",
+      "failure_rule": "Role mixing -> consult Lexi, workflow correction."
+    }
+  ],
+  "proposed_solutions": {
+    "tool_routing": "Strict terminal vs execute_code. Tool selection validation by Controller/QA.",
+    "path_management": "Mandatory absolute paths. Robust error handling for file ops. No fallback to /tmp/ or root.",
+    "output_validation": "Hard checks for file existence, JSON validity, completeness, source links.",
+    "source_verification": "Mandatory URLs/paths for claims. Score 0 for missing evidence. Failed web search = failed task.",
+    "agent_contract_refinement": "Update controller, qa_agent, researcher, monetization, secretary, builder .md files.",
+    "protocol_creation": "New files for tool_usage_policy, path_management, source_verification, output_validation."
+  },
+  "next_steps": [
+    "Agent Controller implements suggested changes in agent .md files.",
+    "Agent Controller initiates creation of new protocol files.",
+    "QA Agent verifies all implemented rules in subsequent runs.",
+    "Secretary logs all changes and verification results."
+  ],
+  "lexi_update_needed": true,
+  "lexi_report": "Summary of incident analysis, root causes, proposed solutions, and required actions for Lexi's review and approval."
+}

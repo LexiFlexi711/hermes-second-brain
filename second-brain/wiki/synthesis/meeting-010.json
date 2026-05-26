@@ -1,0 +1,53 @@
+{
+  "meeting_id": "meeting_010",
+  "title": "Noa Super Bot: Skills, Patches & Upgrades",
+  "purpose": "Bepalen welke skills, patches, upgrades en tools Noa nodig heeft om van assistent naar super bot te gaan",
+  "agenda_items_covered": [
+    "Inventaris huidige staat (Scout)",
+    "Skill cluster analyse (Skills Agent)",
+    "Kwaliteitscontrole bestaande patches (QA Agent)",
+    "4-lagen verbeterplan (Controller)",
+    "Voorstel Fase 1 met 3 punten",
+    "Uitvoering punt 2 (agent-grounding patch)",
+    "Uitvoering punt 3 (controller.md patch)",
+    "Herziening punt 1 (noa-identity skill v2)"
+  ],
+  "participants": [
+    "Lexi (Owner)",
+    "Scout (Hermes)",
+    "Skills Agent (Hermes)",
+    "QA Agent (Hermes)",
+    "Controller (Hermes)",
+    "Strategist (Hermes)",
+    "Secretary (Hermes)"
+  ],
+  "iteration_summary": {
+    "iteratie_1_scout": {
+      "status": "voltooid",
+      "bevindingen": "98 skills, 4 lagen mapping, geen Noa-specifieke skill, agent-grounding conflict"
+    },
+    "iteratie_2_controller": {
+      "status": "voltooid",
+      "lagen": ["Core Identity", "Skills Uitbreiden", "Tools & Integraties", "Power User"]
+    },
+    "iteratie_3_uitvoering": {
+      "status": "deels uitgevoerd",
+      "punt_2": "uitgevoerd",
+      "punt_3": "uitgevoerd",
+      "punt_1": "voorstel herzien, wacht op uitvoering"
+    },
+    "beslissingen": [
+      "SOUL.md = primaire identiteit, skills = operationeel, geen duplicatie",
+      "noa-identity skill wordt operationele verwijzer naar SOUL.md/.hermes.md",
+      ".hermes.md = startup regels en boot checks"
+    ],
+    "correcties_na_review": [
+      "punt 1 herzien: van 'identiteit als skill' naar 'SOUL.md = identiteit, skill = operationeel'"
+    ]
+  },
+  "next_steps": [
+    "noa-identity skill aanmaken (operationele v2)",
+    "Meeting files syncen naar 2nd brain",
+    "Fase 2 voorbereiden"
+  ]
+}

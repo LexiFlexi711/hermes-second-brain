@@ -151,3 +151,15 @@ Nieuwe code (pull_backtrader_2.py vandaag 11:24 geüpdatet) heeft al:
 ---
 
 **Secretary notities:** Meeting werd live gevolgd door Lexi. Alle data uit live tool calls. Claude Code wordt via Lexi's VS Code aangeroepen.
+
+---
+
+## Zie ook
+- [[crypto-tradebot]]
+- [[pullback-trader-strategy]]
+- [[trade-specialist-agent]]
+- [[secretary-agent]]
+- [[meeting-002]]
+- [[meeting-008]]
+- [[team-meeting-005-pullback-strategy]]
+- [[2026-05-19-pullback-strategy-meeting]]
