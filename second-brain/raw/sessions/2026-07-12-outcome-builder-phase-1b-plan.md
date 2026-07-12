@@ -1,33 +1,36 @@
-# Outcome Builder Phase 1B Plan v2 — Outcome Store + Batch Contract
+# Outcome Builder Phase 1B Plan v6 — Outcome Store + Batch Contract
 
 **Datum:** 2026-07-12
-**Versie:** v2 — identity + record lifecycle hardening (patch 1-9)
+**Versie:** v6 — provenance-only record_id drift policy
 **Status:** PLAN ONLY — geen implementatie, geen code
 **Review:** Vereist Fable review vóór implementatie
-**Aanleiding:** Phase 1A frozen (901a68e1), Noa review op v1 plan
+**Aanleiding:** Fable ORANGE op v5:
+- same completeness + same windows_data + different record_id was ongedefinieerd
+- oorzaak: provenance/cache timing fields kunnen record_id wijzigen zonder dat outcome-data wijzigt
 
 ---
 
 ## 1. Wat is Phase 1B?
 
-Phase 1B bouwt verder op Phase 1A (read-only calculator) en voegt toe:
-
 | Wat | Hoe |
 |-----|-----|
-| Outcome Store | Bewaart outcomes persistent |
-| Batch processing | Draait outcomes over meerdere snapshots |
-| Idempotentie | Multi-field outcome identity, niet alleen snapshot_id |
-| Partial→complete lifecycle | Eerst partial, later compleet — append-only supersede |
-| Record revision tracking | record_revision, active flag, record_hash chain |
-| JSONL atomicity | Append-only, corruption detection |
-| Archive fallback requirement | Gedocumenteerd als harde vereiste, nog niet gebouwd |
+| Outcome Store | Bewaart outcomes persistent, JSONL per pair/maand |
+| Batch processing | dry-run verplicht, write-missing, update-partial |
+| Idempotentie | Multi-field outcome_id, record_id semantic dedup |
+| Partial→complete lifecycle | Append-only, completeness rank, resolver derived |
+| Record revision chain | record_revision + supersedes_record_id + previous_record_hash |
+| JSONL atomicity | True append-only, hard error op corruption |
+| Archive fallback requirement | Phase 1C, niet in Phase 1B |
+| No-backflow | outcome_store gitignored, path-isolated |
 
-**Phase 1B blijft:**
-- Descriptieve hindsight
-- Geen interpretatie
-- Geen strategie
-- Geen trade-advies
-- Geen scoring/labels
+**Phase 1B is NIET:**
+- Strategy Harness
+- A1
+- Testbot
+- Trader
+- signal generator
+- scoring engine
+- trade evaluator
 
 ---
 
@@ -40,71 +43,64 @@ L4 snapshot store (SQLite, mode=ro)
 Outcome Builder Phase 1A calculator (reused)
         │
         ▼
-  ┌─ OUTCOME STORE ─────────────────────┐
-  │  JSONL per pair/maand              │
-  │  Multi-field outcome identity      │
-  │  Append-only + supersede lifecycle │
-  │  record_hash chain voor audit      │
-  └────────────────────────────────────┘
+  ┌─ OUTCOME STORE ─────────────────────────┐
+  │  JSONL per pair/maand (asof_ts month)  │
+  │  True append-only — no record mutation │
+  │  Resolver derives current/superseded   │
+  │  record_id semantic, record_hash chain │
+  └────────────────────────────────────────┘
         │
         ▼ (later, NIET Phase 1B)
 Strategy Harness — leest Outcome Store
 ```
 
 **No-backflow (hard):**
-Outcome Store wordt nooit gelezen door:
-- Hermes-v03 chart reader
-- L4 snapshot builder
-- A0 readout
-- ASOF lagen
-
-Outcome Store wordt later WEL gelezen door:
-- Strategy Harness
-- A1+ (indien expliciet OUTCOME-mode)
-- Audits in OUTCOME-mode
+Outcome Store nooit gelezen door Hermes-v03, L4, A0, ASOF lagen.
+`.gitignore`: `outcome_store/` — generated data, niet in git.
 
 ---
 
-## 3. Outcome Store Format — JSONL (Besloten)
+## 3. Canonical JSON Contract
 
-**Beslissing:** JSONL per pair/maand. Geen open vraag meer.
+`canonical_json(obj)` wordt gebruikt voor: outcome_id, windows_hash, record_id, record_hash.
 
-**Motivatie:**
-- Append-only past bij audit trail + supersede lifecycle
-- Shell-inspectable (`cat`, `tail`, `grep`, `jq`)
-- Geen SQLite lock/WAL/SHM risico in eerste storefase
-- Eenvoudig te migreren naar SQLite/Parquet later als queryability nodig wordt
-- Diffbaar buiten git — handig voor handmatige audit
+**Definitie:**
 
-**Format:**
-```jsonl
-{"outcome_id":"abc123...","record_id":"def456...","active":true,"record_revision":1,...}
-{"outcome_id":"abc123...","record_id":"ghi789...","active":false,"superseded":true,...}
+1. Object keys alfabetisch gesorteerd.
+2. `separators=(",", ":")` — compact, geen whitespace.
+3. `ensure_ascii=False` — UTF-8 behouden.
+4. UTF-8 bytes vóór SHA-256 hashing.
+5. `allow_nan=False` — NaN/Infinity hard fail.
+6. Dict key order mag nooit betekenis hebben.
+7. List order blijft betekenisvol.
+8. Timestamps: epoch int of ISO string, niet gemengd in hetzelfde object.
+9. Identity fields mogen geen floats bevatten.
+10. Hashes: lowercase hex strings.
+
+**Python implementatie (later):**
+```python
+json.dumps(
+    normalized_obj,
+    sort_keys=True,
+    separators=(",", ":"),
+    ensure_ascii=False,
+    allow_nan=False
+).encode("utf-8")
 ```
 
-Eén JSON object per regel. Newline-terminated. Geen top-level array.
-
-**Pad (niet aanmaken — plan only):**
-```
-projects/hermes-v03-outcome/outcome_store/{PAIR}/{PAIR}_YYYY-MM_outcomes.jsonl
-```
-
-**Geen git tracking van outcome_store/** — gegenereerde data, `.gitignore` entry nodig.
+**Numeric normalization (voor record/content hashes):**
+- ints blijven ints
+- floats → canonical decimal string via `Decimal(str(value))`
+- geen exponentnotatie
+- trailing zeros verwijderen
+- "-0" → "0"
+- NaN/Infinity → hard fail
 
 ---
 
-## 4. Outcome Identity — Multi-Field (PATCH 1)
+## 4. Outcome Identity — Multi-Field
 
 **snapshot_id is lookup key, NIET de primary outcome identity.**
-
-Eén snapshot kan meerdere geldige outcome records hebben:
-- andere windows
-- andere contractversie
-- andere store schema version
-- andere source_policy (cache vs archive)
-- partial state versus later complete upgrade
-
-### Identity Fields
 
 ```
 outcome_identity_fields:
@@ -115,458 +111,438 @@ outcome_identity_fields:
   - store_schema_version
   - windows_hash
   - source_policy
-```
 
-### Outcome ID
-
-```
 outcome_id = SHA-256(canonical_json(outcome_identity_fields))
 ```
 
-Waarbij:
-- `pair` / `snapshot_id` / `asof_ts` = uit source_snapshot
-- `outcome_contract_version` = 1 (wijzigt bij contractbreuk)
-- `store_schema_version` = 1 (wijzigt bij schema upgrade)
-- `windows_hash` = SHA-256 van gesorteerde window namen (bijv. "5m,15m,60m,240m")
-- `source_policy` = "cache_for_recent_only" (of later "archive_fallback")
+**windows_hash:**
+```
+windows_hash = SHA-256(canonical_json({name: seconds, ...}))
+```
+Niet alleen gesorteerde namen — de seconds mapping zit erin.
 
-### Regels
-
-| Wijziging | Effect op outcome_id |
-|-----------|---------------------|
-| Andere windows | ✗ Nieuw outcome_id |
+| Wijziging | Effect |
+|-----------|--------|
+| Andere windows / seconds | ✗ Nieuw outcome_id |
 | Andere contract_version | ✗ Nieuw outcome_id |
 | Andere store_schema_version | ✗ Nieuw outcome_id |
 | Andere source_policy | ✗ Nieuw outcome_id |
-| Zelfde snapshot, partial→complete | = Zelfde outcome_id (record revision update) |
+| Zelfde snapshot, partial→complete | = Zelfde outcome_id |
 
 ---
 
-## 5. Record Revision / Active State (PATCH 2)
+## 5. Hash Definities — record_id vs record_hash
 
-Omdat JSONL append-only is, moet elk record zijn eigen plaats in de ketting kennen.
-
-### Record Fields
-
-| Veld | Type | Beschrijving |
-|------|------|-------------|
-| `outcome_id` | string | SHA-256 van identity fields |
-| `record_id` | string | SHA-256 van full record (minus record_hash) |
-| `record_revision` | int | Oplopend: 1, 2, 3... per outcome_id |
-| `active` | boolean | Exact één record per outcome_id is active=true |
-| `superseded` | boolean | Oude record na upgrade |
-| `supersedes_record_id` | string\|null | record_id van vorige actieve record |
-| `created_at` | string | ISO UTC timestamp |
-| `record_hash` | string | SHA-256 van full record (minus record_hash) |
-| `previous_record_hash` | string\|null | record_hash van vorige record in de ketting |
-
-### Active Resolver
-
-Voor één `outcome_id` is exact één record `active=true` geldig.
+### record_id — Semantic Deduplication Hash
 
 ```
-Scan alle records met zelfde outcome_id:
-  → Vind record met active=true en hoogste record_revision
-  → Dat is het geldige record
+content_fields = stored record MINUS exact record_id_excluded_fields
+
+record_id = SHA-256(canonical_json(content_fields))
 ```
 
-### Record ID vs Record Hash
+### record_id_excluded_fields — Gesloten Lijst (Closed List)
+
+**Top-level uitgesloten (nooit in record_id):**
+- `record_id`
+- `record_hash`
+- `created_at`
+- `generated_at`
+- `record_revision`
+- `supersedes_record_id`
+- `previous_record_hash`
+- `run_metadata`
+
+**Cache-status velden uitgesloten (nooit in record_id):**
+- `cache_status.cache_staleness_seconds`
+- `cache_status.staleness_seconds`
+- `cache_status.checked_at`
+- `cache_status.checked_at_ts`
+- `cache_status.fetched_at`
+- `cache_status.fetched_at_ts`
+- `cache_status.generated_at`
+- `cache_status.generated_at_ts`
+
+**Regel:** Alles wat NIET expliciet in deze lijst staat, telt mee voor record_id.
+
+**Deze cache_status velden tellen WEL mee:**
+- `cache_status.source`
+- `cache_status.semantic_check`
+- `cache_status.staleness_status`
+- `cache_status.has_gaps`
+- `cache_status.gap_count` (indien aanwezig)
+- `cache_status.source_policy` (indien aanwezig)
+
+**Beleid:**
+- created_at en runtime timing breken duplicate-detectie niet
+- echte source/status verschillen blijven semantisch zichtbaar
+- implementatie mag niet zelf kiezen wat volatile is
+- de excluded field list is closed — nieuwe excluded fields vereisen contractwijziging of store_schema_version bump
+
+**record_id is stabiel bij:** identieke rerun, andere created_at, andere revision, andere chain fields, andere cache_staleness_seconds (als outcome zelfde is).
+
+**record_id verandert bij:** andere windows_data, andere completeness, andere reference, andere source_snapshot, andere outcome_id, andere source_policy, andere contract/schema version.
+
+### record_hash — Integrity/Chain Hash
 
 ```
-record_id    = SHA-256(canonical_json(full_record - record_hash - record_id))
-record_hash  = SHA-256(canonical_json(full_record - record_hash))
-
-record_id    → identificeert de inhoud van dit record
-record_hash  → verifieert dat de inhoud niet corrupt is
+record_hash = SHA-256(canonical_json(full_stored_record MINUS record_hash))
 ```
 
-`record_id` is de echte inhoudelijke vingerafdruk. `record_hash` is alleen voor ketting-integriteit (want `record_hash` hangt af van `previous_record_hash`).
+Bevat: record_id, created_at, record_revision, supersedes_record_id, previous_record_hash — alle audit/provenance velden.
+
+### previous_record_hash
+
+`previous_record_hash` = record_hash van vorige current record in de chain.
+
+**Regels:**
+- record_hash mag nooit zichzelf bevatten
+- record_id mag nooit zichzelf bevatten
+- Geen circulaire hashdefinities
 
 ---
 
-## 6. Idempotency + Duplicate Prevention (PATCH 1+2)
+## 6. Record Revision Chain
 
-### Write Flow
-
-```
-1. Bouw outcome
-2. Bereken outcome_id uit identity fields
-3. Bereken record_id uit full content
-4. Check store voor bestaande records met dezelfde outcome_id
-5. Als geen bestaand record → WRITE als active=true, revision=1
-6. Als wel bestaand:
-   a. Vind huidige active record → vergelijk record_id
-   b. Als record_id matcht → SKIP (exact duplicate)
-   c. Als partial → meer complete state upgrade → WRITE met:
-      - active=true
-      - superseded=false
-      - supersedes_record_id = oude record_id
-      - previous_record_hash = oude record_hash
-      - record_revision = oud.revision + 1
-      - oud record updaten: active=false, superseded=true
-   d. Als complete EN record_id verschilt → CONFLICT → exit 3
-```
-
----
-
-## 7. Complete Immutability (PATCH 3)
-
-**Harde regel: complete outcome records zijn immutable.**
-
-Als een outcome eenmaal `complete` is voor alle vensters:
-- Rerun met zelfde identity fields moet exact dezelfde record_id opleveren
-- Als record_id matcht → SKIP (idempotent)
-- Als record_id verschilt → CONFLICT ERROR (exit 3)
-- **Nooit automatisch overschrijven**
-- Conflict wordt gerapporteerd in batch summary
-
-Partial records mogen evolueren naar completer via append-only supersede:
-- partial → meer compleet (meer candles, nog steeds partial voor sommige vensters)
-- partial → complete (alle vensters nu complete)
-
-Maar complete → complete met ander resultaat = CONFLICT.
-
----
-
-## 8. Partial → Complete Lifecycle (PATCH 2 refinement)
-
-### Scenario
-
-Voor een recente snapshot (asof = nu - 5 minuten):
-- 5m venster: complete
-- 15m venster: complete
-- 60m venster: partial (27/60)
-- 240m venster: partial (27/240)
-
-Later (60 minuten na asof): 60m nu complete, 240m nog partial.
-
-### Record Chain
-
-```
-Run 1: outcome_id="abc", record_id="r1", revision=1, active=true,  superseded=false
-  completeness: {5m:complete, 15m:complete, 60m:partial, 240m:partial}
-
-Run 2: zelfde outcome_id, meer candles beschikbaar
-  → Oud record (r1): active=false, superseded=true
-  → Nieuw record (r2): revision=2, active=true, superseded=false,
-    supersedes_record_id="r1", previous_record_hash="hash_r1"
-  completeness: {5m:complete, 15m:complete, 60m:complete, 240m:partial}
-
-Run 3: nu 240m ook complete
-  → r2: active=false, superseded=true
-  → r3: revision=3, active=true, supersedes_record_id="r2"
-  completeness: {5m:complete, 15m:complete, 60m:complete, 240m:complete}
-
-Run 4: complete rerun — zelfde record_id als r3 → SKIP
-```
-
----
-
-## 9. JSONL Atomicity / Corruption (PATCH 4)
-
-### Schrijfregels (later implementeren)
-
-- Append-only — nooit regels overschrijven of middenin schrijven
-- Eén JSON object per regel, newline-terminated
-- Schrijf via temp/staging: schrijf nieuwe regel naar `.tmp`, rename naar `.jsonl`, of gebruik file-lock
-- `flush`/`fsync` na append voor crash safety
-- Detecteer malformed JSONL lines bij lezen
-- Malformed line = store corruption error — niet stil negeren
-- `record_hash` verplicht — verifieert content integriteit
-- Active resolver moet corruption/conflict detecteren
-
-### Crash Scenario's
-
-| Scenario | Gevolg | Herstel |
-|----------|--------|---------|
-| Crash tijdens append | Half-geschreven laatste regel | Laatste regel negeren (malformed) |
-| Crash na append, vóór supersede mark | Nieuwe regel actief, oude nog active=true | Active resolver: hoogste revision wint |
-| Crash vóór append | Geen wijziging | Geen herstel nodig |
-| Disk full tijdens write | Partial write | Laatste regel malformed → negeren |
-
----
-
-## 10. Source Policy (PATCH 6 — phasing verduidelijkt)
-
-### Phase 1B Source Regels
-
-| Bron | Gebruik | Status |
-|------|---------|--------|
-| live_cache 1m candles | Primaire bron | ✅ Phase 1A bewezen |
-| archive (historischedata/) | Fallback voor historisch | ⬜ Vereist, nog niet gebouwd |
-
-### Phase 1B Mag (zonder archive)
-
-- Latest snapshot outcomes (zolang live_cache diep genoeg is)
-- Complete windows tot ~15m (live_cache dekt dit)
-- Partial outcomes voor grotere vensters (eerlijk gelabeld)
-- `source_policy = "cache_for_recent_only"` in outcome_id
-
-### Phase 1B Mag NIET (zonder archive)
-
-- Claimen dat historische 60m/240m outcomes "complete" zijn
-- `source_policy = "archive_fallback"` gebruiken zonder archive implementatie
-- Nep-complete resultaten door reconstructie of extrapolatie
-
-### Archive Fallback — Vereiste voor Later
-
-Archive fallback is verplicht vóór:
-- Bulk historical outcomes
-- Outcomes met source_policy="archive_fallback"
-- Strategy Harness die historische outcomes nodig heeft
-
-Archive source requirements:
-- 1m candles met candle_open semantics (bewezen)
-- Gap detection
-- Dezelfde inclusion rule: timestamp >= asof_ts, timestamp < window_end_ts
-- `source_policy` opgenomen in outcome_id
-
----
-
-## 11. Batch Contract (PATCH 7 — expanded)
-
-### Input (toekomstige CLI)
-
-| Parameter | Beschrijving |
-|-----------|-------------|
-| --pair | Pair (ETHEUR, BTCEUR) |
-| --since | Start asof_ts of ISO datetime |
-| --until | Eind asof_ts of ISO datetime |
-| --count | Max aantal snapshots |
-| --mode | write-missing, update-partial, dry-run |
-| --windows | 5m,15m,60m,240m |
-| --include-partial | Ook partial windows schrijven |
-
-### Output Statistieken (uitgebreid)
+### Stored Record Fields (Immutable)
 
 | Veld | Beschrijving |
 |------|-------------|
-| `processed` | Totaal bekeken snapshots |
-| `skipped_existing` | Bestaand, overgeslagen (exact duplicate) |
-| `written` | Nieuw geschreven |
-| `updated_partial_to_complete` | Partial → complete upgrades |
-| `updated_partial_to_more_complete` | Partial → meer compleet (nog niet volledig) |
-| `failed` | Errors (missing snapshot, corrupt data) |
-| `conflicts` | Complete met afwijkend resultaat (exit 3 per stuk) |
-| `guardrail_failed` | Guardrail violations (exit 5, niet geschreven) |
-| `read_errors` | Snapshot of cache niet leesbaar |
-| `schema_errors` | Onbekende schema/contract versie |
-| `store_corruption_errors` | Malformed JSONL in store |
-| `partial` | Aantal outcomes met minstens één partial venster |
-| `complete` | Aantal outcomes met alle vensters complete |
-| `missing` | Aantal outcomes met minstens één missing venster |
-| `window_stats` | Per venster: complete/partial/missing counts |
+| `outcome_id` | SHA-256 van 7 identity fields |
+| `record_id` | SHA-256 van content_fields (semantic dedup) |
+| `record_revision` | 1, 2, 3... per outcome_id |
+| `supersedes_record_id` | record_id van vorige record |
+| `created_at` | ISO UTC timestamp |
+| `record_hash` | SHA-256 van full record (chain integrity) |
+| `previous_record_hash` | record_hash van vorige record |
+| `outcome_contract_version` | 1 |
+| `store_schema_version` | 1 |
+| `source_policy` | "cache_for_recent_only" |
+| `source_snapshot` | snapshot_id, pair, asof_ts |
+| `windows_hash` | SHA-256 van windows + seconds |
+| `completeness` | Per venster: missing/partial/complete |
+| `windows_data` | Per venster metrics |
+| `cache_status` | Source + staleness |
+| `field_limitations` | Template zinnen |
+| `scope_notes` | Template zinnen |
+
+**Niet stored — derived door resolver:** current/superseded status.
 
 ---
 
-## 12. No-Backflow Enforcement
+## 7. Completeness Rank
 
-### Technische Bescherming
+| Status | Rank |
+|--------|------|
+| missing | 0 |
+| partial | 1 |
+| complete | 2 |
 
-| Regel | Hoe afdwingen |
-|-------|---------------|
-| Outcome Store apart pad | `projects/hermes-v03-outcome/outcome_store/` — gescheiden van L4/A0/Hermes |
-| A0 importeert nooit outcome | Test: `grep -r "outcome_store" projects/hermes-v03-analyst/` moet leeg zijn |
-| L4 importeert nooit outcome | Test: `grep -r "outcome_store" projects/hermes-v03-interpreter/` moet leeg zijn |
-| Hermes-v03 importeert nooit outcome | Test: `grep -r "outcome_store" projects/hermes-v03/` moet leeg zijn |
-| ASOF lagen lezen geen outcome | Test in CI/review gate |
-| Outcome Builder schrijft alleen naar eigen store | Geen writes naar L4 of A0 paden |
+**Candidate is "more complete" dan current als:**
+1. Voor elk window: candidate_rank >= current_rank
+2. Voor minstens één window: candidate_rank > current_rank
 
----
-
-## 13. Guardrails Blijven Gelden
-
-Opgeslagen outcome records moeten voldoen aan dezelfde guardrails als Phase 1A stdout:
-
-- JSON keys en values gescand op verboden termen
-- Scope notes en field_limitations alleen via exacte whitelist
-- Guardrail failure = exit 5 — outcome wordt NIET opgeslagen
-- Scan gebeurt vóór write, niet erna
+**Write-regels:**
+- candidate more complete → APPEND new revision
+- candidate exact same record_id → SKIP
+- candidate minder compleet → SKIP (skipped_less_complete)
+- candidate zelfde completeness_vector, andere windows_data → CONFLICT exit 3
+- candidate hogere rank maar gelijke-rank windows andere values → CONFLICT exit 3
+- complete (alle windows rank 2) + zelfde record_id → SKIP
+- complete + ander record_id → CONFLICT exit 3
 
 ---
 
-## 14. Schema / Versioning (PATCH 1 updated)
+## 8. Incomparable Completeness
 
-### Outcome Store Schema
+**Definitie:** candidate is incomparable met current als:
+- minstens één window candidate_rank > current_rank
+EN
+- minstens één window candidate_rank < current_rank
+
+**Voorbeeld:**
+```
+current:   {5m:2, 15m:2, 60m:1, 240m:1}
+candidate: {5m:2, 15m:2, 60m:2, 240m:0}
+```
+→ 60m beter, 240m slechter → incomparable
+
+**Regel:**
+- incomparable candidate = SKIP
+- geen write
+- geen revision
+- batch counter: `skipped_incomparable += 1`
+
+**Extra conflictregel (equal-rank value drift):**
+Als candidate en current voor een gelijke-rank window verschillende windows_data hebben:
+- CONFLICT exit 3
+- geen write
+
+**Dus:**
+- incomparable zonder equal-rank value drift → skip_incomparable
+- incomparable met equal-rank value drift → conflict exit 3
+
+---
+
+## 9. Write Flow
+
+```
+1. Als chain corrupt:
+   store corruption error exit 2, geen write
+
+2. Als candidate record_id == current record_id:
+   skip duplicate
+
+3. Als current complete:
+   - candidate same record_id: skip
+   - candidate different record_id: conflict exit 3
+
+4. Vergelijk completeness_vector:
+   - more complete: append new revision
+   - less complete: skip_less_complete
+   - same completeness:
+       * same record_id: skip duplicate
+       * different record_id, same windows_data: provenance-only drift → skip (skipped_provenance_only += 1)
+       * different windows_data: conflict exit 3
+   - incomparable:
+       * if equal-rank windows_data differs: conflict exit 3
+       * else skip_incomparable
+
+5. Geen enkele stap herschrijft oude JSONL regels.
+```
+
+---
+
+## 10. Partial → Complete Lifecycle
+
+```
+JSONL (alleen appends):
+
+{"outcome_id":"abc","record_id":"r1","record_revision":1,"supersedes_record_id":null,...}
+// completeness: {5m:2, 15m:2, 60m:1, 240m:1}
+
+{"outcome_id":"abc","record_id":"r2","record_revision":2,"supersedes_record_id":"r1","previous_record_hash":"h1",...}
+// completeness: {5m:2, 15m:2, 60m:2, 240m:1}
+
+{"outcome_id":"abc","record_id":"r3","record_revision":3,"supersedes_record_id":"r2","previous_record_hash":"h2",...}
+// completeness: {5m:2, 15m:2, 60m:2, 240m:2}
+```
+
+Resolver: current=r3, revision=3, superseded=[r1,r2].
+
+---
+
+## 11. JSONL Atomicity / File Rotation
+
+**True append-only** — bestaande regels nooit herschreven.
+File lock (flock), flush/fsync, malformed = hard error.
+
+**Phase 1B:** fsync is altijd aan na append — niet configureerbaar in Phase 1B. Configureerbaarheid is een latere optimalisatie (niet Phase 1B).
+
+**File month = asof_ts month (UTC):**
+```
+outcome_store/{PAIR}/{PAIR}_YYYY-MM_outcomes.jsonl
+```
+Alle revisions van hetzelfde outcome_id blijven in het asof_ts month file — ook als revision later in een andere maand geschreven wordt.
+
+---
+
+## 12. Source Policy / Archive Fallback
+
+**Phase 1B:** `source_policy = "cache_for_recent_only"`
+
+- Recente outcomes uit live_cache toegestaan
+- Partial/missing eerlijk opslaan
+- Zonder archive: NOOIT historische complete outcomes claimen
+- Historical bulk complete → Phase 1C
+
+**Archive fallback requirements (Phase 1C):**
+- 1m candles, candle_open semantics, gap detection
+- Zelfde inclusion rule: timestamp >= asof, timestamp < window_end
+- Eigen source_status/cache_status equivalent
+- source_policy opgenomen in outcome_id
+
+**Historical complete block — emergent, niet separaat:** Het blokkeren van historical complete outcomes is emergent:
+- completeness wordt uitsluitend afgeleid uit werkelijk beschikbare 1m candles
+- completeness wordt nooit aangenomen op basis van datum, verwachting of windowlengte
+- zonder archive source kan een historical complete claim alleen ontstaan als alle vereiste 1m candles werkelijk beschikbaar zijn
+- er is geen aparte datumdrempel
+- geen fake completeness
+
+---
+
+## 13. Version Policy
+
+| Constant | Value |
+|----------|-------|
+| STORE_SCHEMA_VERSION | 1 |
+| ALLOWED_STORE_SCHEMA_VERSIONS | {1} |
+| ALLOWED_OUTCOME_CONTRACT_VERSIONS | {1} |
+
+- Unknown version → hard fail exit 3
+- Missing version field → hard fail exit 3
+- Writer schrijft alleen current version
+- Geen stille migratie, geen best-effort parse
+
+**Exit codes:**
+- 0 = success
+- 2 = read/store corruption error
+- 3 = schema/contract/conflict error
+- 5 = guardrail error
+
+---
+
+## 14. Batch Contract
+
+**Modes:** dry-run (verplicht vóór write), write-missing, update-partial.
+
+**Input:** pair, since, until, count, windows, include_partial.
+
+**Summary velden:**
+processed, skipped_existing, skipped_less_complete, skipped_incomparable, skipped_provenance_only, written, updated_partial_to_complete, updated_partial_to_more_complete, failed, conflicts, guardrail_failed, read_errors, schema_errors, store_corruption_errors, partial, complete, missing, window_stats (per window: complete/partial/missing).
+
+**write-missing:**
+- schrijft uitsluitend nieuwe outcome_ids
+- schrijft nooit nieuwe revisions voor bestaande outcome_ids
+- partial upgrades worden overgeslagen
+
+**update-partial:**
+- mag bestaande partial outcome_ids upgraden naar more-complete revisions
+- mag geen complete conflicts overschrijven
+- mag geen less-complete of incomparable candidates schrijven
+
+**dry-run:**
+- schrijft nooit bytes
+- moet dezelfde summary produceren alsof write zou gebeuren
+
+---
+
+## 15. Guardrails — Vóór Append
+
+Voor elke JSONL append: full candidate stored record gescand met Phase 1A guardrail. JSON keys/values gescand; exact scope_notes/field_limitations whitelists toegestaan. Guardrail failure → exit 5, geen bytes geschreven.
+
+Verboden: buy, sell, long, short, entry, exit, TP, SL, take profit, stop loss, win, loss, profit, PnL, trade_confidence, setup, signal, target, stop, koop, verkoop.
+
+---
+
+## 16. No-Backflow + .gitignore
+
+`.gitignore`: `outcome_store/` — generated data.
+
+A0, L4, Hermes-v03 lezen/schrijven nooit outcome_store. Alleen Outcome Builder store code schrijft ernaar.
+
+---
+
+## 17. Schema
 
 ```json
 {
   "outcome_id": "sha256...",
   "record_id": "sha256...",
   "record_revision": 1,
-  "active": true,
-  "superseded": false,
   "supersedes_record_id": null,
-  "created_at": "2026-07-12T10:00:00+00:00",
+  "created_at": "...",
   "record_hash": "sha256...",
   "previous_record_hash": null,
   "outcome_contract_version": 1,
   "store_schema_version": 1,
   "source_policy": "cache_for_recent_only",
   "pair": "ETHEUR",
-  "snapshot_id": "ETHEUR-1783790700-...",
+  "snapshot_id": "...",
   "asof_ts": 1783790700,
-  "generated_at": "2026-07-12T10:00:00+00:00",
   "windows_hash": "sha256...",
-  "windows": ["5m", "15m", "60m", "240m"],
-  "reference": {"price": 1595.13, "source": "snapshot.price.current.close", "timeframe": "1m"},
-  "boundary_status": {"asof_on_1m_boundary": true, "asof_mod_60": 0, "timestamp_semantics": "candle_open"},
-  "completeness": {"5m": "complete", "15m": "complete", "60m": "partial", "240m": "missing"},
+  "windows": {"5m":300,"15m":900,"60m":3600,"240m":14400},
+  "reference": {"price":1595.13,"source":"snapshot.price.current.close","timeframe":"1m"},
+  "completeness": {"5m":"complete","15m":"complete","60m":"partial","240m":"missing"},
   "windows_data": {...},
-  "cache_status": {"source": "live_cache", "fetched_at_ts": 1783791000, "staleness_seconds": 300, "has_gaps": false},
+  "cache_status": {...},
   "field_limitations": [...],
   "scope_notes": [...]
 }
 ```
 
-### Version Policy
+---
 
-| Versie | Betekenis |
-|--------|-----------|
-| outcome_contract_version 1 | Huidige contract — Phase 1A metrics |
-| store_schema_version 1 | Huidig JSONL schema met record revision chain |
+## 18. Tests — 48
+
+| # | Test |
+|---|------|
+| 1 | test_canonical_json_sorts_keys |
+| 2 | test_canonical_json_uses_compact_separators |
+| 3 | test_canonical_json_rejects_nan_inf |
+| 4 | test_canonical_json_normalizes_float_for_hashing |
+| 5 | test_windows_hash_includes_window_seconds |
+| 6 | test_outcome_id_stable_same_identity |
+| 7 | test_outcome_id_changes_when_windows_hash_changes |
+| 8 | test_outcome_id_changes_when_outcome_contract_version_changes |
+| 9 | test_outcome_id_changes_when_store_schema_version_changes |
+| 10 | test_outcome_id_changes_when_source_policy_changes |
+| 11 | test_snapshot_id_is_lookup_not_primary_identity |
+| 12 | test_record_id_excludes_created_at |
+| 13 | test_record_id_excludes_revision_and_chain_fields |
+| 14 | test_duplicate_rerun_same_content_different_created_at_skips |
+| 15 | test_record_hash_includes_chain_fields |
+| 16 | test_record_hash_mismatch_is_corruption |
+| 17 | test_first_partial_write_revision_1 |
+| 18 | test_partial_more_complete_appends_revision |
+| 19 | test_partial_to_complete_appends_revision |
+| 20 | test_less_complete_rerun_skips |
+| 21 | test_same_completeness_different_values_conflict |
+| 22 | test_complete_unchanged_rerun_skips |
+| 23 | test_complete_changed_rerun_conflict |
+| 24 | test_current_status_derived_by_resolver |
+| 25 | test_superseded_status_derived_by_chain |
+| 26 | test_old_record_not_mutated_on_upgrade |
+| 27 | test_append_only_never_rewrites_old_record |
+| 28 | test_previous_record_hash_linked |
+| 29 | test_duplicate_revision_conflict |
+| 30 | test_chain_break_detected |
+| 31 | test_malformed_jsonl_line_hard_error |
+| 32 | test_malformed_last_line_hard_error |
+| 33 | test_cross_month_revision_uses_asof_month_file |
+| 34 | test_batch_summary_counts_all_categories |
+| 35 | test_dry_run_writes_nothing |
+| 36 | test_guardrail_before_storage |
+| 37 | test_guardrail_failure_not_written |
+| 38 | test_no_a0_import |
+| 39 | test_no_l4_write |
+| 40 | test_no_backflow_path |
+| 41 | test_outcome_store_gitignored |
+| 42 | test_invalid_store_schema_version_fails |
+| 43 | test_invalid_outcome_contract_version_fails |
+| 44 | test_live_cache_insufficient_marks_partial |
+| 45 | test_historical_complete_blocked_without_archive |
+| 46 | test_incomparable_completeness_skips |
+| 47 | test_corrupt_chain_blocks_new_write_exit_2 |
+| 48 | test_provenance_only_difference_skips_not_conflicts |
 
 ---
 
-## 15. Data Integrity Checks
+## 19. Open Questions
 
-| Check | Type | Actie bij falen |
-|-------|------|-----------------|
-| snapshot_id match | Pre-write | Exit 2 |
-| pair match | Pre-write | Exit 2 |
-| asof_ts consistent | Pre-write | Exit 2 |
-| reference price aanwezig | Pre-write | Exit 2 |
-| outcome_id duplicate — same record_id | Pre-write | Skip (idempotent) |
-| partial → upgrade (record_id verschilt) | Pre-write | Write + supersede oud |
-| complete — same record_id | Pre-write | Skip |
-| complete — andere record_id | Pre-write | Exit 3 (conflict) |
-| guardrail scan | Pre-write | Exit 5 |
-| windows_hash mismatch | Pre-write | Exit 3 |
-| cache staleness > drempel | Warning | Status warning, geen failure |
-| negative staleness (clock skew) | Pre-write | Exit 3 |
-| JSON parse error in store file | Bij read | Exit 2 |
-| malformed JSONL line | Bij read | Exit 2 (corruption) |
-| record_hash mismatch | Bij read | Exit 2 (corruption) |
+**Beslissingen dicht:**
+- JSONL per pair/maand, file month = asof_ts month ✅
+- Multi-field outcome_id ✅
+- canonical_json contract vast ✅
+- record_id/record_hash split ✅
+- record_id excluded fields closed list ✅
+- Completeness rank defined ✅
+- Incomparable completeness policy ✅
+- Provenance-only record_id drift policy ✅
+- Complete immutable ✅
+- No historical complete zonder archive ✅
+- Dry-run verplicht vóór batch write ✅
+- Guardrail vóór append ✅
+- outcome_store gitignored ✅
+- fsync altijd aan na append in Phase 1B ✅
+- write-missing/update-partial semantics gescheiden ✅
 
----
-
-## 16. Tests voor Phase 1B Implementatie (PATCH 8 — 28 tests)
-
-| # | Test | Beschrijving |
-|---|------|-------------|
-| 1 | test_outcome_id_stable | Zelfde identity fields → zelfde outcome_id |
-| 2 | test_outcome_id_changes_windows_hash | Andere windows → ander outcome_id |
-| 3 | test_outcome_id_changes_contract_version | Andere contract_version → ander outcome_id |
-| 4 | test_outcome_id_changes_store_schema | Andere store_schema_version → ander outcome_id |
-| 5 | test_outcome_id_changes_source_policy | Andere source_policy → ander outcome_id |
-| 6 | test_snapshot_id_not_primary_identity | snapshot_id-only is geen primary key |
-| 7 | test_first_partial_write_active_revision_1 | Eerste write: active=true, revision=1 |
-| 8 | test_duplicate_partial_skip | Zelfde record_id → skip |
-| 9 | test_partial_with_more_candles_appends_revision | Meer candles → nieuwe revision |
-| 10 | test_partial_to_complete_supersedes | Complete upgrade → oud partial superseded |
-| 11 | test_complete_unchanged_rerun_skip | Complete + zelfde record_id → skip |
-| 12 | test_complete_changed_rerun_conflict | Complete + ander record_id → exit 3 |
-| 13 | test_exactly_one_active_per_outcome_id | Active resolver: 1 active per outcome_id |
-| 14 | test_previous_record_hash_linked | Supersede koppelt record_hash chain |
-| 15 | test_record_hash_validates_content | Corrupt record → record_hash mismatch |
-| 16 | test_malformed_jsonl_line_detected | Geen geldige JSON → exit 2 |
-| 17 | test_atomic_append_no_partial_corruption | Crash → geen corrupt record |
-| 18 | test_batch_summary_written_skipped_updated_conflicts | Counts kloppen |
-| 19 | test_guardrail_before_storage | Verboden termen → exit 5, geen write |
-| 20 | test_guardrail_failure_not_written | Exit 5 schrijft niets |
-| 21 | test_no_a0_import | Outcome Builder importeert nooit A0 |
-| 22 | test_no_l4_write | Outcome Builder schrijft nooit L4 |
-| 23 | test_no_backflow_path | Geen outcome_store imports in ASOF lagen |
-| 24 | test_invalid_store_schema_fails | Onbekende versie → exit 3 |
-| 25 | test_live_cache_insufficient_marks_partial | Te weinig candles → partial |
-| 26 | test_historical_complete_blocked_without_archive | Geen archive → geen historisch complete |
-| 27 | test_active_latest_resolver_works | Hoogste revision + active=true wint |
-| 28 | test_store_corruption_blocks_or_errors | Corrupt bestand → harde error |
-
----
-
-## 17. CLI Ontwerp (Later, Niet Nu Bouwen)
-
-```bash
-# Store write — enkele snapshot
-python3 outcome_builder/store_cli.py \
-  --pair ETHEUR --latest \
-  --store-dir outcome_store \
-  --mode write
-
-# Batch — alle missing outcomes sinds datum
-python3 outcome_builder/store_cli.py \
-  --pair ETHEUR \
-  --since 2026-07-12T00:00:00+00:00 \
-  --mode write-missing \
-  --store-dir outcome_store
-
-# Batch — update partials
-python3 outcome_builder/store_cli.py \
-  --pair ETHEUR \
-  --mode update-partial \
-  --store-dir outcome_store
-
-# Dry-run
-python3 outcome_builder/store_cli.py \
-  --pair ETHEUR --since 2026-07-12T00:00:00+00:00 \
-  --mode dry-run --format json
-```
-
----
-
-## 18. Open Questions (PATCH 9 — gereduceerd van 8 naar 6)
-
-| # | Vraag | Status |
-|---|-------|--------|
-| 1 | Exacte file lock techniek (flock, temp+rename, .lock file)? | ⬜ Beslissen tijdens implementatie |
-| 2 | fsync verplicht of configurable? | ⬜ Aanbevolen: verplicht voor crash safety |
-| 3 | Wanneer archive fallback bouwen? | ⬜ Phase 1C — vereist vóór historische outcomes |
-| 4 | Max bestandsgrootte per JSONL? | ✅ Maandrotatie voldoende (~86MB/maand/pair) |
-| 5 | Automatische batch of handmatig? | ✅ Handmatig voor Phase 1B |
-| 6 | Retention/archive policy voor outcome_store? | ⬜ Later bepalen — voor nu oneindig bewaren |
-
-**Beslissingen die dicht zijn (geen open vragen meer):**
-- Storage format = JSONL per pair/maand ✅
-- snapshot_id = lookup only, niet primary ✅
-- outcome_id = SHA-256 van alle identity fields ✅
-- partial→complete via append-only supersede ✅
-- complete immutable ✅
-- historical complete blocked zonder archive fallback ✅
-- JSONL atomic/corruption regels ✅
-- Testplan op 28 tests ✅
-
----
-
-## 19. Aanbeveling
-
-### Veiligste Minimale Phase 1B
-
-1. **JSONL store** — `outcome_store/{PAIR}/{PAIR}_YYYY-MM_outcomes.jsonl`
-2. **Multi-field outcome_id** — SHA-256 van pair+snapshot_id+asof_ts+contract+schema+windows+source_policy
-3. **Record revision chain** — record_id, record_revision, active flag, record_hash, previous_record_hash
-4. **Append-only supersede** — partial→complete via nieuwe regel, oude superseded
-5. **Complete immutability** — complete rerun met afwijkend resultaat = conflict
-6. **Guardrail scan vóór write** — exit 5 zonder bestandswijziging
-7. **28 tests** — identity, revision, lifecycle, corruption, backflow, guardrails
-8. **Geen archive fallback nog** — partial/missing zijn eerlijk, source_policy = cache_for_recent_only
-
-### Wat Fable Moet Reviewen (Vóór Code)
-
-- Multi-field outcome_id contract
-- Record revision chain (active, superseded, record_hash)
-- Complete immutability regel
-- JSONL atomicity/corruption regels
-- No-backflow tests (path-isolatie)
-- 28-test plan
-
-### Wat Pas Phase 1C Mag Zijn
-
-- Archive fallback implementatie
-- Bulk historische outcomes
-- Automatische batch scheduling
-- SQLite/Parquet migratie
-- Strategy Harness integratie
+**Open (implementatiedetails):**
+- Exacte Python file-lock implementatie (flock, .lock file)
+- Wanneer archive fallback Phase 1C
+- Later recovery/repair tool voor corrupte JSONL
+- Later SQLite/Parquet migratie
+- Batch default count/size
 
 ---
 
@@ -574,28 +550,23 @@ python3 outcome_builder/store_cli.py \
 
 | # | Check | Status |
 |---|-------|--------|
-| 1 | Document patched | ✅ Ja — v1 → v2 |
+| 1 | Document patched | ✅ v5 → v6 |
 | 2 | Path | `raw/sessions/2026-07-12-outcome-builder-phase-1b-plan.md` |
-| 3 | Old line count | 532 |
-| 4 | New line count | ~500 |
-| 5 | snapshot_id-only primary removed | ✅ Ja — vervangen door multi-field outcome_id |
-| 6 | outcome_id identity fields defined | ✅ Ja — 7 velden |
-| 7 | windows_hash included | ✅ Ja |
-| 8 | source_policy included | ✅ Ja |
-| 9 | store_schema_version included | ✅ Ja |
-| 10 | record_revision/supersede policy defined | ✅ Ja — record_id, revision, active, superseded, hash chain |
-| 11 | complete immutability defined | ✅ Ja — harde regel, conflict bij afwijkend resultaat |
-| 12 | JSONL atomic/corruption rules added | ✅ Ja — temp+rename, flush, malformed detectie |
-| 13 | storage format decision closed | ✅ Ja — JSONL per pair/maand, geen open vraag |
-| 14 | archive fallback phasing clarified | ✅ Ja — Phase 1C, verplicht vóór historical |
-| 15 | batch summary contract expanded | ✅ Ja — 15 velden |
-| 16 | testplan old count | 20 |
-| 17 | testplan new count | 28 |
-| 18 | open questions old count | 8 |
-| 19 | open questions new count | 6 |
-| 20 | no code changes | ✅ Ja |
-| 21 | no tests changed | ✅ Ja |
-| 22 | no DB/store files created | ✅ Ja |
-| 23 | no service/timer changes | ✅ Ja |
-| 24 | no commit | ✅ Ja |
-| 25 | git status --short | ✅ Geen tracked diffs |
+| 3 | Old version | v5 |
+| 4 | New version | v6 |
+| 5 | Old line count | 575 |
+| 6 | New line count | 572 |
+| 7 | fetched_at moved to record_id excluded list | ✅ |
+| 8 | fetched_at_ts moved to record_id excluded list | ✅ |
+| 9 | provenance-only branch added | ✅ |
+| 10 | same completeness + same windows_data + different record_id policy = skip | ✅ |
+| 11 | skipped_provenance_only counter added | ✅ |
+| 12 | test 48 added | ✅ |
+| 13 | testplan old count | 47 |
+| 14 | testplan new count | 48 |
+| 15 | no code changes | ✅ |
+| 16 | no tests changed | ✅ |
+| 17 | no DB/store files created | ✅ |
+| 18 | no service/timer changes | ✅ |
+| 19 | no commit | ✅ |
+| 20 | git status --short | M second-brain/raw/sessions/2026-07-12-outcome-builder-phase-1b-plan.md |
