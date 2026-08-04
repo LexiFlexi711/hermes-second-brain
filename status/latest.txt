@@ -1,0 +1,26 @@
+┌─────────────────────────────────────────────┐
+│       NOA STATUS RAPPORT                     │
+│       2026-08-04 11:00 UTC            │
+└─────────────────────────────────────────────┘
+
+  ✅ 🖥️  Server
+     hostname: lexi-server | uptime: up 7 weeks, 4 days, 23 hours, 52 minutes | load: 1.11 1.28 1.23 | cpu: 17.2% | ram: 5.7Gi/15Gi (vrij: 9.8Gi) | disk /: 112G/105G (52%)
+
+  ✅ 🐳 Docker
+     21/21 running
+
+  ✅ 🔌 MCP Servers
+     3/3 alive
+
+  ⚠️  🔄 Updates
+     20 pending
+
+  ✅ 📦 Backups
+     script OK | laatste: 2026-08-04 03:30:07 | leeftijd: 9.5h
+
+  ✅ 💰 Dagbudget
+     geen data — hermes insights niet beschikbaar
+
+  ℹ️  OPTIONAL / LEGACY — crypto-infra: detected, detailed check skipped
+
+  ⚠️  Er zijn aandachtspunten — check de details hierboven.

@@ -1,0 +1,41 @@
+# Interpreter Index Audit — pair vs pair_id mismatch
+
+**Bestand:** `projects/hermes-v03-interpreter/L4_snapshot_store/__init__.py`
+
+**Tabel `snapshots` (regels 112-131):**
+```sql
+CREATE TABLE IF NOT EXISTS snapshots (
+    snapshot_id TEXT PRIMARY KEY,
+    snapshot_version INTEGER NOT NULL,
+    pair TEXT NOT NULL,           -- regel 115
+    pair_id TEXT NOT NULL,        -- regel 116
+    ...
+)
+CREATE INDEX IF NOT EXISTS idx_snapshots_pair_asof
+ON snapshots(pair, asof_ts)      -- regel 130-131: index op `pair`
+```
+
+**Query `query_snapshots` (regels 1282-1288):**
+```sql
+SELECT snapshot_id, pair, asof_ts, generated_at, content_hash
+FROM snapshots
+WHERE pair_id = ? AND asof_ts >= ? AND asof_ts <= ?   -- regel 1285: filter op `pair_id`
+ORDER BY asof_ts ASC
+LIMIT ?
+```
+
+**Mismatch bevestigd: YES**
+
+- Index `idx_snapshots_pair_asof` staat op kolom `(pair, asof_ts)`
+- Query `query_snapshots` filtert op `WHERE pair_id = ?`
+- De index op `pair` kan NIET gebruikt worden voor een query op `pair_id`
+- Voor canonical pairs (ETHEUR → ETHEUR) zijn `pair` en `pair_id` identiek, dus het werkt correct maar suboptimaal
+
+**Praktisch risico:**
+- Geen data-corruptie — de query geeft correcte resultaten omdat pair == pair_id voor canonical pairs
+- Wel performance-impact: full table scan per maand-database in plaats van index lookup
+- Bij non-canonical pairs (ETH/EUR) zou de query structureel verkeerde resultaten geven, maar die worden door de store geweigerd
+
+**Aanbevolen fix:** Wijzig de index naar `(pair_id, asof_ts)` OF wijzig de query naar `WHERE pair = ?`.
+
+**Niet gerepareerd in deze opdracht.** Gerapporteerd als afzonderlijke Interpreter-bevinding.

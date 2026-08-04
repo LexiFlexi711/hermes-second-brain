@@ -1,0 +1,43 @@
+=== DATE ===
+2026-07-25T12:53:27+02:00
+=== TOPLEVEL ===
+/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign
+EXIT=0
+=== REMOTES ===
+origin	https://github.com/LexiFlexi711/NOA-reign.git (fetch)
+origin	https://github.com/LexiFlexi711/NOA-reign.git (push)
+EXIT=0
+=== BRANCH ===
+candidate/phase1b-rc2-20260723
+EXIT=0
+=== HEAD ===
+b5f5b9a64a3b0c12907d1ccf306bfbd23fe501ae
+EXIT=0
+=== STATUS ===
+?? projects/hermes-v03-interpreter/l4_store/
+?? projects/hermes-v03-interpreter/l4_store_clean_proof/
+?? projects/hermes-v03-interpreter/l4_store_live_test/
+?? projects/hermes-v03-interpreter/l4_store_runner_cleanproof/
+?? projects/hermes-v03-interpreter/l4_store_runner_test/
+?? projects/hermes-v03-interpreter/l4_store_v2_test/
+?? projects/hermes-v03-interpreter/logs/
+?? projects/hermes-v03-interpreter/run/
+?? projects/hermes-v03-interpreter/tmp_fill_diagnose/
+?? projects/hermes-v03-interpreter/tmp_real_audit/
+?? projects/hermes-v03/L0_data/__init__.py.fix01
+?? projects/hermes-v03/L5_chart/__init__.py.fix02
+?? projects/hermes-v03/charts/prominence_fixed/
+?? projects/hermes-v03/server.py.fix01
+?? review/
+?? scripts/render_l88_test.py
+EXIT=0
+=== STAGED ===
+EXIT=0
+=== DIFF CHECK ===
+EXIT=0
+=== DIFF STAT ===
+EXIT=0
+=== DIFF NUMSTAT ===
+EXIT=0
+=== DIFF NAME STATUS ===
+EXIT=0

@@ -1,0 +1,17 @@
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_cli_accepts_args
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_latest_snapshot_found
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_exact_snapshot_id
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_missing_pair
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_missing_snapshot_id
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_no_trading_language
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_candle_count_from_meta
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_price_current_dict_not_array
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_source_age_from_meta
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_source_generated_at_fallback
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_utc_timestamps
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_json_valid
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_full_json_works
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_missing_candles_no_crash
+projects/hermes-v03-interpreter/tools/test_inspect_l4_snapshot.py::test_db_readonly_temp
+
+15 tests collected in 0.04s

@@ -1,0 +1,298 @@
+{
+  "timestamp": "2026-08-04T11:00:01.881139+00:00",
+  "timestamp_readable": "2026-08-04 11:00 UTC",
+  "all_ok": false,
+  "sections": {
+    "\ud83d\udda5\ufe0f  Server": {
+      "label": "\ud83d\udda5\ufe0f  Server",
+      "status": "OK",
+      "details": "hostname: lexi-server | uptime: up 7 weeks, 4 days, 23 hours, 52 minutes | load: 1.11 1.28 1.23 | cpu: 17.2% | ram: 5.7Gi/15Gi (vrij: 9.8Gi) | disk /: 112G/105G (52%)",
+      "raw": {
+        "hostname": "lexi-server",
+        "uptime": "up 7 weeks, 4 days, 23 hours, 52 minutes",
+        "load": "1.11 1.28 1.23",
+        "cpu_pct": "17.2",
+        "ram_used": "5.7Gi",
+        "ram_total": "15Gi",
+        "ram_avail": "9.8Gi",
+        "disk_used": "112G",
+        "disk_avail": "105G",
+        "disk_pct": "52%"
+      }
+    },
+    "\ud83d\udc33 Docker": {
+      "label": "\ud83d\udc33 Docker",
+      "status": "OK",
+      "details": "21/21 running",
+      "raw": {
+        "total": 21,
+        "running": 21,
+        "stopped": 0,
+        "containers": [
+          {
+            "name": "nextcloud-db",
+            "status": "Up 5 hours",
+            "image": "mariadb:latest",
+            "ports": "3306/tcp"
+          },
+          {
+            "name": "plex",
+            "status": "Up 5 hours",
+            "image": "linuxserver/plex:latest",
+            "ports": ""
+          },
+          {
+            "name": "netdata",
+            "status": "Up 5 hours (healthy)",
+            "image": "netdata/netdata:latest",
+            "ports": "0.0.0.0:19999->19999/tcp, [::]:19999->19999/tcp"
+          },
+          {
+            "name": "radarr",
+            "status": "Up 29 hours",
+            "image": "lscr.io/linuxserver/radarr:latest",
+            "ports": "0.0.0.0:7878->7878/tcp, [::]:7878->7878/tcp"
+          },
+          {
+            "name": "n8n",
+            "status": "Up 3 days",
+            "image": "n8nio/n8n:next",
+            "ports": "127.0.0.1:5678->5678/tcp"
+          },
+          {
+            "name": "nextcloud",
+            "status": "Up 4 days",
+            "image": "nextcloud:latest",
+            "ports": "0.0.0.0:8888->80/tcp, [::]:8888->80/tcp"
+          },
+          {
+            "name": "sabnzbd",
+            "status": "Up 5 days",
+            "image": "lscr.io/linuxserver/sabnzbd:latest",
+            "ports": "0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp"
+          },
+          {
+            "name": "chromium",
+            "status": "Up 6 days",
+            "image": "lscr.io/linuxserver/chromium:latest",
+            "ports": "127.0.0.1:3000->3000/tcp, 3001/tcp"
+          },
+          {
+            "name": "redis",
+            "status": "Up 8 days",
+            "image": "redis:7-alpine",
+            "ports": "6379/tcp"
+          },
+          {
+            "name": "prowlarr",
+            "status": "Up 8 days",
+            "image": "lscr.io/linuxserver/prowlarr:latest",
+            "ports": "0.0.0.0:9696->9696/tcp, [::]:9696->9696/tcp"
+          },
+          {
+            "name": "webdav",
+            "status": "Up 10 days",
+            "image": "hacdias/webdav:latest",
+            "ports": "0.0.0.0:3457->6065/tcp, [::]:3457->6065/tcp"
+          },
+          {
+            "name": "qbittorrent",
+            "status": "Up 2 weeks",
+            "image": "lscr.io/linuxserver/qbittorrent:latest",
+            "ports": "0.0.0.0:6881->6881/tcp, [::]:6881->6881/tcp, 0.0.0.0:8080->8080/tcp, 0.0.0.0:6881->6881/udp, [::]:8080->8080/tcp, [::]:6881->6881/udp"
+          },
+          {
+            "name": "sonarr",
+            "status": "Up 2 weeks",
+            "image": "lscr.io/linuxserver/sonarr:latest",
+            "ports": "0.0.0.0:8989->8989/tcp, [::]:8989->8989/tcp"
+          },
+          {
+            "name": "webssh",
+            "status": "Up 2 weeks",
+            "image": "wettyoss/wetty:latest",
+            "ports": "3000/tcp, 127.0.0.1:7681->7681/tcp"
+          },
+          {
+            "name": "navidrome",
+            "status": "Up 3 weeks",
+            "image": "deluan/navidrome:latest",
+            "ports": "0.0.0.0:4533->4533/tcp, [::]:4533->4533/tcp"
+          },
+          {
+            "name": "flaresolverr",
+            "status": "Up 3 weeks",
+            "image": "ghcr.io/flaresolverr/flaresolverr:latest",
+            "ports": "0.0.0.0:8191->8191/tcp, [::]:8191->8191/tcp, 8192/tcp"
+          },
+          {
+            "name": "caddy",
+            "status": "Up 6 weeks",
+            "image": "caddy:latest",
+            "ports": "0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp, 443/udp, 2019/tcp"
+          },
+          {
+            "name": "watchtower",
+            "status": "Up 7 weeks (healthy)",
+            "image": "containrrr/watchtower:latest",
+            "ports": "8080/tcp"
+          },
+          {
+            "name": "talk-hpb",
+            "status": "Up 7 weeks (healthy)",
+            "image": "ghcr.io/nextcloud-releases/aio-talk:latest",
+            "ports": "0.0.0.0:3478->3478/tcp, 0.0.0.0:3478->3478/udp, [::]:3478->3478/tcp, [::]:3478->3478/udp, 0.0.0.0:8181->8082/tcp, [::]:8181->8082/tcp"
+          },
+          {
+            "name": "youtube-api",
+            "status": "Up 7 weeks",
+            "image": "compose-media-youtube-api",
+            "ports": ""
+          },
+          {
+            "name": "mail",
+            "status": "Up 7 weeks (healthy)",
+            "image": "boky/postfix",
+            "ports": "587/tcp, 0.0.0.0:2525->25/tcp, [::]:2525->25/tcp"
+          }
+        ]
+      }
+    },
+    "\ud83d\udd0c MCP": {
+      "label": "\ud83d\udd0c MCP Servers",
+      "status": "OK",
+      "details": "3/3 alive",
+      "raw": {
+        "servers": {
+          "plex-mcp-server": "running",
+          "mcp-health-monitor": "running",
+          "filesystem (npx)": "running"
+        },
+        "running": 3,
+        "total": 3
+      }
+    },
+    "\ud83d\udd04 Updates": {
+      "label": "\ud83d\udd04 Updates",
+      "status": "WARN",
+      "details": "20 pending",
+      "raw": {
+        "pending": [
+          {
+            "package": "alsa-ucm-conf/noble-updates",
+            "version": "1.2.10-1ubuntu5.13"
+          },
+          {
+            "package": "apport-core-dump-handler/noble-updates",
+            "version": "2.28.2-0ubuntu0.1"
+          },
+          {
+            "package": "apport-gtk/noble-updates",
+            "version": "2.28.2-0ubuntu0.1"
+          },
+          {
+            "package": "apport/noble-updates",
+            "version": "2.28.2-0ubuntu0.1"
+          },
+          {
+            "package": "brave-browser/stable",
+            "version": "1.93.129"
+          },
+          {
+            "package": "containerd.io/noble",
+            "version": "2.2.6-1~ubuntu.24.04~noble"
+          },
+          {
+            "package": "docker-buildx-plugin/noble",
+            "version": "0.36.0-1~ubuntu.24.04~noble"
+          },
+          {
+            "package": "docker-ce-cli/noble",
+            "version": "5:29.7.1-1~ubuntu.24.04~noble"
+          },
+          {
+            "package": "docker-ce-rootless-extras/noble",
+            "version": "5:29.7.1-1~ubuntu.24.04~noble"
+          },
+          {
+            "package": "docker-ce/noble",
+            "version": "5:29.7.1-1~ubuntu.24.04~noble"
+          },
+          {
+            "package": "docker-compose-plugin/noble",
+            "version": "5.3.1-1~ubuntu.24.04~noble"
+          },
+          {
+            "package": "fwupd/noble-updates",
+            "version": "2.0.20-1ubuntu2~24.04.2"
+          },
+          {
+            "package": "gir1.2-mutter-14/noble-updates",
+            "version": "46.2-1ubuntu0.24.04.16"
+          },
+          {
+            "package": "iproute2/noble-updates",
+            "version": "6.1.0-1ubuntu6.4"
+          },
+          {
+            "package": "kpartx/noble-updates",
+            "version": "0.9.4-5ubuntu8.2"
+          },
+          {
+            "package": "libfprint-2-2/noble-updates",
+            "version": "1:1.94.7+tod1-0ubuntu5~24.04.8"
+          },
+          {
+            "package": "libfprint-2-tod1/noble-updates",
+            "version": "1:1.94.7+tod1-0ubuntu5~24.04.8"
+          },
+          {
+            "package": "libfwupd3/noble-updates",
+            "version": "2.0.20-1ubuntu2~24.04.2"
+          },
+          {
+            "package": "libinput-bin/noble-updates",
+            "version": "1.25.0-1ubuntu3.5"
+          },
+          {
+            "package": "libinput10/noble-updates",
+            "version": "1.25.0-1ubuntu3.5"
+          }
+        ],
+        "count": 20
+      }
+    },
+    "\ud83d\udce6 Backups": {
+      "label": "\ud83d\udce6 Backups",
+      "status": "OK",
+      "details": "script OK | laatste: 2026-08-04 03:30:07 | leeftijd: 9.5h",
+      "raw": {
+        "script_exists": true,
+        "log_exists": true,
+        "last_run": "2026-08-04 03:30:07",
+        "log_done": true,
+        "latest_backup": "config_20260804_0330",
+        "backup_age_hours": 9.5,
+        "backup_count": 40,
+        "backup_dir": "/mnt/otherdrive1/backups"
+      }
+    },
+    "\ud83d\udcb0 Dagbudget": {
+      "label": "\ud83d\udcb0 Dagbudget",
+      "status": "OK",
+      "details": "geen data \u2014 hermes insights niet beschikbaar",
+      "raw": {
+        "sessions": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "estimated_cost": 0.0,
+        "daily_budget": 6.0,
+        "percent_used": 0.0,
+        "remaining": 6.0
+      }
+    }
+  },
+  "legacy_sections": {},
+  "crypto_enabled": false
+}

@@ -1,0 +1,1 @@
+  - [ ] ATR in apart chart paneel (separate window/panel) ipv op candle-schaal — v03 L5_chart

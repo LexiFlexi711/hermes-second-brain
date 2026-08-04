@@ -1,32 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LLM Wiki Knowledge Graph</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noa Second Brain — Knowledge Graph</title>
     <script src="https://cdn.jsdelivr.net/npm/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
-        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; overflow: hidden; }
         #graph { width: 100vw; height: 100vh; }
-        .info { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .info { position: absolute; top: 20px; left: 20px; background: rgba(13,17,23,0.9); padding: 16px 20px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 10; }
+        .info h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #58a6ff; }
+        .info p { font-size: 12px; color: #8b949e; margin: 2px 0; }
+        .info .stats { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+        .info .stat { background: #161b22; padding: 4px 10px; border-radius: 6px; font-size: 11px; border: 1px solid #21262d; }
+        .info .stat span { color: #58a6ff; font-weight: 600; }
+        .legend { position: absolute; bottom: 20px; left: 20px; background: rgba(13,17,23,0.9); padding: 12px 16px; border-radius: 12px; border: 1px solid #30363d; backdrop-filter: blur(8px); z-index: 10; display: flex; gap: 12px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8b949e; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
     </style>
 </head>
 <body>
     <div class="info">
-        <h2>LLM Wiki Knowledge Graph</h2>
-        <p>Nodes: 5 | Edges: 6</p>
-        <p><small>Generated: 2026-05-18T04:00:01.242854</small></p>
+        <h2>🧠 Noa Second Brain</h2>
+        <p>46 nodes · 51 edges · 2026-06-06T09:09:26.036012</p>
+        <div class="stats">
+            <div class="stat">concept: <span>1</span></div><div class="stat">decision: <span>4</span></div><div class="stat">entity: <span>4</span></div><div class="stat">fix: <span>7</span></div><div class="stat">project: <span>12</span></div><div class="stat">source_summary: <span>1</span></div><div class="stat">synthesis: <span>3</span></div><div class="stat">unknown: <span>14</span></div>
+        </div>
+    </div>
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#58a6ff"></div> project</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div> concept</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d29922"></div> decision</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f85149"></div> fix</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#bc8cff"></div> entity</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#79c0ff"></div> synthesis</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff7b72"></div> source_summary</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7ee787"></div> skills</div>
     </div>
     <div id="graph"></div>
     <script>
-        const data = {
-            nodes: new vis.DataSet([{"id": "log", "label": "Wiki Change Log", "type": "log", "path": "log.md"}, {"id": "composio-top-hermes-skills", "label": "Top Hermes Skills from Composio", "type": "source_summary", "path": "skills/composio-top-hermes-skills.md"}, {"id": "2026-05-17-hermes-yaml-prefix-fix", "label": "Hermes YAML prefix fix", "type": "fix", "path": "fixes/2026-05-17-hermes-yaml-prefix-fix.md"}, {"id": "2026-05-17-hermes-brain-read-test", "label": "Hermes Brain Read Test", "type": "fix", "path": "fixes/2026-05-17-hermes-brain-read-test.md"}, {"id": "hermes-openclaw-noa-agent", "label": "Hermes OpenClaw Noa Agent", "type": "project", "path": "projects/hermes-openclaw-noa-agent.md"}]),
-            edges: new vis.DataSet([{"source": "composio-top-hermes-skills", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-yaml-prefix-fix", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-brain-read-test", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-brain-read-test", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}, {"source": "hermes-openclaw-noa-agent", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}, {"source": "hermes-openclaw-noa-agent", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}])
+        const typeColors = {
+            'project': '#58a6ff', 'concept': '#3fb950', 'decision': '#d29922',
+            'fix': '#f85149', 'entity': '#bc8cff', 'synthesis': '#79c0ff',
+            'source_summary': '#ff7b72', 'skills': '#7ee787', 'log': '#8b949e'
         };
+        const nodes = new vis.DataSet([{"id": "log", "label": "log", "type": "unknown", "path": "log.md"}, {"id": "lennox", "label": "\"Lennox\"", "type": "entity", "path": "entities/lennox.md"}, {"id": "trade-specialist-agent", "label": "Trade Specialist Agent", "type": "entity", "path": "entities/trade-specialist-agent.md"}, {"id": "claude-code-role", "label": "Claude Code Role Test \u2014 Director/Executor/Owner", "type": "entity", "path": "entities/claude-code-role.md"}, {"id": "secretary-agent", "label": "Secretary Agent", "type": "entity", "path": "entities/secretary-agent.md"}, {"id": "composio-top-hermes-skills", "label": "Top Hermes Skills from Composio", "type": "source_summary", "path": "skills/composio-top-hermes-skills.md"}, {"id": "2026-05-17-hermes-yaml-prefix-fix", "label": "Hermes YAML prefix fix", "type": "fix", "path": "fixes/2026-05-17-hermes-yaml-prefix-fix.md"}, {"id": "2026-05-28-data-bridge-migratie-git-cleanup", "label": "Data bridge migratie + git cleanup", "type": "fix", "path": "fixes/2026-05-28-data-bridge-migratie-git-cleanup.md"}, {"id": "v1-backtest-fee-analyse", "label": "V1 Backtest \u2014 Fee Analyse", "type": "fix", "path": "fixes/v1-backtest-fee-analyse.md"}, {"id": "pullback-bounce-v0-backtest", "label": "pullback-bounce-v0-backtest", "type": "unknown", "path": "fixes/pullback-bounce-v0-backtest.md"}, {"id": "2026-06-02-v3a-backtest-divergentie", "label": "2026-06-02-v3a-backtest-divergentie", "type": "unknown", "path": "fixes/2026-06-02-v3a-backtest-divergentie.md"}, {"id": "watchdog-reboot-2026-05-31", "label": "Watchdog reboot om 16:14 (hoge load)", "type": "fix", "path": "fixes/watchdog-reboot-2026-05-31.md"}, {"id": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug", "label": "Stuck trades door stale cache_freshness in-memory bug", "type": "fix", "path": "fixes/2026-05-29-stuck-trades-cache-freshness-in-memory-bug.md"}, {"id": "2026-05-17-hermes-brain-read-test", "label": "Hermes Brain Read Test", "type": "fix", "path": "fixes/2026-05-17-hermes-brain-read-test.md"}, {"id": "status-overview-ram-fix", "label": "status_overview.py \u2014 RAM-column fix", "type": "fix", "path": "fixes/status-overview-ram-fix.md"}, {"id": "skill-creation-policy", "label": "Skill Creation Policy", "type": "concept", "path": "concepts/skill-creation-policy.md"}, {"id": "crypto-data-pipeline", "label": "Crypto Data Pipeline", "type": "project", "path": "projects/crypto-data-pipeline.md"}, {"id": "webdesign-mini-agency", "label": "Webdesign Mini-Agency", "type": "project", "path": "projects/webdesign-mini-agency.md"}, {"id": "crypto-test-botv3-pipeline", "label": "Crypto Test Bot V3 \u2014 Scripts en Pipeline", "type": "project", "path": "projects/crypto-test-botv3-pipeline.md"}, {"id": "2026-05-26-sessie-model-routing-langfuse", "label": "\"Sessie 26 Mei \u2014 Model routing optimalisatie + Governance + Langfuse setup\"", "type": "synthesis", "path": "projects/2026-05-26-sessie-model-routing-langfuse.md"}, {"id": "crypto-tradebot", "label": "Crypto Tradebot", "type": "project", "path": "projects/crypto-tradebot.md"}, {"id": "topic-intelligence-scanner", "label": "topic-intelligence-scanner", "type": "project", "path": "projects/topic-intelligence-scanner.md"}, {"id": "crypto-test-bot-architectuur", "label": "crypto-test-bot-architectuur", "type": "project", "path": "projects/crypto-test-bot-architectuur.md"}, {"id": "crypto-test-botv3", "label": "Crypto Test Bot V3", "type": "project", "path": "projects/crypto-test-botv3.md"}, {"id": "hermes-openclaw-noa-agent", "label": "Hermes OpenClaw Noa Agent", "type": "project", "path": "projects/hermes-openclaw-noa-agent.md"}, {"id": "e10k-per-maand-bijverdienste", "label": "\u20ac10k/maand Bijverdienste \u2014 Missie", "type": "project", "path": "projects/e10k-per-maand-bijverdienste.md"}, {"id": "weekly-scout", "label": "Weekly Scout \u2014 R&D Department", "type": "project", "path": "projects/weekly-scout.md"}, {"id": "pullback-trader-strategy", "label": "Pullback Trader Strategy", "type": "project", "path": "projects/pullback-trader-strategy.md"}, {"id": "crypto-tradebot-research-overview", "label": "Crypto Tradebot \u2014 Volledig Onderzoeksoverzicht", "type": "project", "path": "projects/crypto-tradebot-research-overview.md"}, {"id": "team-meeting-009", "label": "team-meeting-009", "type": "unknown", "path": "synthesis/team-meeting-009.md"}, {"id": "meeting-010", "label": "meeting-010", "type": "unknown", "path": "synthesis/meeting-010.md"}, {"id": "team-meeting-003-accuracy", "label": "team-meeting-003-accuracy", "type": "unknown", "path": "synthesis/team-meeting-003-accuracy.md"}, {"id": "meeting-008b-pullback-v1-v2-v3-full-audit", "label": "meeting-008b-pullback-v1-v2-v3-full-audit", "type": "unknown", "path": "synthesis/meeting-008b-pullback-v1-v2-v3-full-audit.md"}, {"id": "meeting-002", "label": "meeting-002", "type": "unknown", "path": "synthesis/meeting-002.md"}, {"id": "2026-06-04-hermes-status", "label": "2026-06-04-hermes-status", "type": "synthesis", "path": "synthesis/2026-06-04-hermes-status.md"}, {"id": "meeting-009-pullback-audit", "label": "meeting-009-pullback-audit", "type": "unknown", "path": "synthesis/meeting-009-pullback-audit.md"}, {"id": "2026-06-02-fundament-analyse", "label": "2026-06-02-fundament-analyse", "type": "synthesis", "path": "synthesis/2026-06-02-fundament-analyse.md"}, {"id": "team-gap-analysis-002", "label": "team-gap-analysis-002", "type": "unknown", "path": "synthesis/team-gap-analysis-002.md"}, {"id": "team-meeting-006", "label": "team-meeting-006", "type": "unknown", "path": "synthesis/team-meeting-006.md"}, {"id": "team-meeting-005-pullback-strategy", "label": "team-meeting-005-pullback-strategy", "type": "unknown", "path": "synthesis/team-meeting-005-pullback-strategy.md"}, {"id": "team-meeting-004-improvements", "label": "team-meeting-004-improvements", "type": "unknown", "path": "synthesis/team-meeting-004-improvements.md"}, {"id": "meeting-008", "label": "meeting-008", "type": "unknown", "path": "synthesis/meeting-008.md"}, {"id": "2026-05-20-noa-identity-skill-verworpen", "label": "noa-identity skill voorstel \u2014 verworpen", "type": "decision", "path": "decisions/2026-05-20-noa-identity-skill-verworpen.md"}, {"id": "2026-05-20-hermes-md-startup-owner", "label": ".hermes.md = eigenaar van startup regels", "type": "decision", "path": "decisions/2026-05-20-hermes-md-startup-owner.md"}, {"id": "2026-05-20-identity-architecture", "label": "Identity Architecture \u2014 SOUL.md = primaire identiteit", "type": "decision", "path": "decisions/2026-05-20-identity-architecture.md"}, {"id": "2026-05-20-skill-creation-policy-optie-b", "label": "Skill Creation Policy \u2014 apart protocol (Optie B)", "type": "decision", "path": "decisions/2026-05-20-skill-creation-policy-optie-b.md"}]);
+        const edges = new vis.DataSet([{"source": "trade-specialist-agent", "target": "pullback-trader-strategy", "type": "wiki-link"}, {"source": "trade-specialist-agent", "target": "pullback-trader-strategy", "type": "wiki-link"}, {"source": "trade-specialist-agent", "target": "crypto-tradebot", "type": "wiki-link"}, {"source": "claude-code-role", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "claude-code-role", "target": "secretary-agent", "type": "wiki-link"}, {"source": "secretary-agent", "target": "meeting-002", "type": "wiki-link"}, {"source": "secretary-agent", "target": "meeting-008", "type": "wiki-link"}, {"source": "secretary-agent", "target": "team-meeting-005-pullback-strategy", "type": "wiki-link"}, {"source": "secretary-agent", "target": "team-meeting-006", "type": "wiki-link"}, {"source": "secretary-agent", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "composio-top-hermes-skills", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-yaml-prefix-fix", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug", "target": "2026-05-28-data-bridge-migratie-git-cleanup", "type": "wiki-link"}, {"source": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug", "target": "crypto-tradebot", "type": "wiki-link"}, {"source": "2026-05-17-hermes-brain-read-test", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-17-hermes-brain-read-test", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}, {"source": "skill-creation-policy", "target": "2026-05-20-skill-creation-policy-optie-b", "type": "wiki-link"}, {"source": "skill-creation-policy", "target": "2026-05-20-identity-architecture", "type": "wiki-link"}, {"source": "skill-creation-policy", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "skill-creation-policy", "target": "meeting-010", "type": "wiki-link"}, {"source": "crypto-data-pipeline", "target": "crypto-tradebot", "type": "wiki-link"}, {"source": "crypto-data-pipeline", "target": "crypto-test-botv3", "type": "wiki-link"}, {"source": "webdesign-mini-agency", "target": "crypto-tradebot", "type": "wiki-link"}, {"source": "crypto-test-botv3-pipeline", "target": "crypto-data-pipeline", "type": "wiki-link"}, {"source": "crypto-test-botv3-pipeline", "target": "crypto-tradebot", "type": "wiki-link"}, {"source": "crypto-test-botv3-pipeline", "target": "pullback-trader-strategy", "type": "wiki-link"}, {"source": "crypto-tradebot", "target": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug", "type": "wiki-link"}, {"source": "crypto-tradebot", "target": "pullback-trader-strategy", "type": "wiki-link"}, {"source": "crypto-tradebot", "target": "2026-05-28-data-bridge-migratie-git-cleanup", "type": "wiki-link"}, {"source": "crypto-tradebot", "target": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug", "type": "wiki-link"}, {"source": "crypto-tradebot", "target": "crypto-test-bot-architectuur", "type": "wiki-link"}, {"source": "crypto-test-botv3", "target": "crypto-tradebot", "type": "wiki-link"}, {"source": "crypto-test-botv3", "target": "pullback-trader-strategy", "type": "wiki-link"}, {"source": "hermes-openclaw-noa-agent", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}, {"source": "hermes-openclaw-noa-agent", "target": "2026-05-17-hermes-yaml-prefix-fix", "type": "wiki-link"}, {"source": "pullback-trader-strategy", "target": "trade-specialist-agent", "type": "wiki-link"}, {"source": "pullback-trader-strategy", "target": "crypto-tradebot", "type": "wiki-link"}, {"source": "2026-05-20-noa-identity-skill-verworpen", "target": "2026-05-20-identity-architecture", "type": "wiki-link"}, {"source": "2026-05-20-noa-identity-skill-verworpen", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-20-noa-identity-skill-verworpen", "target": "meeting-010", "type": "wiki-link"}, {"source": "2026-05-20-hermes-md-startup-owner", "target": "2026-05-20-identity-architecture", "type": "wiki-link"}, {"source": "2026-05-20-hermes-md-startup-owner", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-20-hermes-md-startup-owner", "target": "meeting-010", "type": "wiki-link"}, {"source": "2026-05-20-identity-architecture", "target": "2026-05-20-noa-identity-skill-verworpen", "type": "wiki-link"}, {"source": "2026-05-20-identity-architecture", "target": "2026-05-20-hermes-md-startup-owner", "type": "wiki-link"}, {"source": "2026-05-20-identity-architecture", "target": "skill-creation-policy", "type": "wiki-link"}, {"source": "2026-05-20-identity-architecture", "target": "hermes-openclaw-noa-agent", "type": "wiki-link"}, {"source": "2026-05-20-identity-architecture", "target": "meeting-010", "type": "wiki-link"}, {"source": "2026-05-20-skill-creation-policy-optie-b", "target": "skill-creation-policy", "type": "wiki-link"}, {"source": "2026-05-20-skill-creation-policy-optie-b", "target": "2026-05-20-identity-architecture", "type": "wiki-link"}, {"source": "2026-05-20-skill-creation-policy-optie-b", "target": "meeting-010", "type": "wiki-link"}]);
         const options = {
-            nodes: { shape: 'dot', size: 20, font: { size: 14 }, borderWidth: 2 },
-            edges: { width: 2, smooth: { type: 'continuous' }, arrows: { to: true } },
-            physics: { stabilization: true, barnesHut: { gravitationalConstant: -2000, springConstant: 0.04, springLength: 95 } }
+            nodes: {
+                shape: 'dot',
+                size: 20,
+                font: { size: 13, color: '#c9d1d9', face: 'Segoe UI' },
+                borderWidth: 2,
+                borderWidthSelected: 3,
+                color: {
+                    border: '#30363d',
+                    background: '#161b22',
+                    highlight: { border: '#58a6ff', background: '#1c2128' },
+                    hover: { border: '#58a6ff', background: '#1c2128' }
+                }
+            },
+            edges: {
+                width: 1.5,
+                color: { color: '#30363d', highlight: '#58a6ff', hover: '#58a6ff', opacity: 0.6 },
+                smooth: { type: 'curvedCW', roundness: 0.15 },
+                arrows: { to: { enabled: true, scaleFactor: 0.8 } }
+            },
+            physics: {
+                solver: 'forceAtlas2Based',
+                forceAtlas2Based: { gravitationalConstant: -40, centralGravity: 0.005, springLength: 120, springConstant: 0.08, damping: 0.4 },
+                stabilization: { iterations: 200, updateInterval: 25, onlyDynamicEdges: false }
+            },
+            interaction: {
+                hover: true,
+                tooltipDelay: 200,
+                zoomView: true,
+                dragView: true,
+                dragNodes: true
+            }
         };
-        new vis.Network(document.getElementById('graph'), data, options);
+        nodes.forEach(n => {
+            n.color = { background: typeColors[n.type] || '#8b949e', border: '#30363d' };
+            n.title = `<b>${n.label}</b><br><small>${n.type} · ${n.group}</small>`;
+        });
+        const network = new vis.Network(document.getElementById('graph'), { nodes, edges }, options);
+        network.on('click', function(params) {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                network.focus(nodeId, { scale: 1.5, animation: true });
+            }
+        });
     </script>
 </body>
 </html>

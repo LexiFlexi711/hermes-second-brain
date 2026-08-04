@@ -9,6 +9,7 @@ Usage: python3 wiki-lint.py
 import re
 from pathlib import Path
 from datetime import datetime, timedelta
+from collections import defaultdict
 
 
 def extract_frontmatter(content):
@@ -65,7 +66,31 @@ def lint_wiki(base_path):
         links = extract_wiki_links(content)
         broken = links - all_ids
         for link in broken:
-            issues['info'].append(f"{rel_path}: broken link [[{link}]]")
+            issues['warning'].append(f"{rel_path}: broken link [[{link}]]")
+
+    # Orphan page detection: pages that exist but are linked by NO other page
+    link_sources = defaultdict(set)  # target -> set of source files
+    for md_file in wiki_path.rglob('*.md'):
+        if md_file.name == 'index.md':
+            continue
+        content = md_file.read_text(encoding='utf-8')
+        found_links = extract_wiki_links(content)
+        for link in found_links:
+            if link in all_ids:
+                link_sources[link].add(md_file.stem)
+    
+    orphan_pages = []
+    for page_id in sorted(all_ids):
+        if page_id not in link_sources:
+            # Find which file has this page_id
+            for md_file in wiki_path.rglob('*.md'):
+                if md_file.stem == page_id and md_file.name not in ('index.md', 'log.md'):
+                    orphan_pages.append(md_file)
+                    break
+    
+    for page in orphan_pages:
+        rel_path = str(page.relative_to(wiki_path))
+        issues['info'].append(f"{rel_path}: orphan page (nergens gelinkt)")
 
     if inbox_path.exists():
         threshold = datetime.now() - timedelta(days=7)

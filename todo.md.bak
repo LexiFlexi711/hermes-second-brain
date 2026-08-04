@@ -1,0 +1,53 @@
+# TODO — Noa & Lexi
+
+> Automatisch beheerd via Hermes startup-check.
+> Bron: `~/system/hermes-second-brain/todo.md`
+> Laatste update: 2026-05-31 (watchdog fix, traders herstart, R&D department opzet)
+
+---
+
+## 🔄 Bezig
+
+- [ ] **Opportunity Scout bouwen** — derde profiel toevoegen aan bestaande weekly scout. Zoektermen: freelance inkomsten, AI consulting, webdesign, n8n automation. Bronnen: Google News RSS, Reddit (r/freelance, r/Entrepreneur), HN
+- [ ] **News Scraper maken** — forums en TradingView checken voor scripts en tips (crypto edge)
+
+## ⏳ Open
+
+- [ ] **Second Brain optimalisatie** — gebruik, opslaan en bijhouden verbeteren
+- [ ] **MCP servers 0/3 alive** — uitzoeken waarom
+- [ ] **20 pending updates** — nakijken op server
+- [ ] **Radarr + Sonarr configureren** — in compose-media
+- [ ] **Projectidee: "Achter De Muur"** — faceless gevangenis-satire kanaal
+- [ ] **Auto-recovery voor traders** — systemd service of cron die screens monitort en herstart
+- [ ] **Cycling Vlaanderen bellen** — ivm Lennox (inschrijving/licentie/vragen)
+- [ ] **V2 grid search** — ETHEUR/XRPEUR optimaliseren (verliesgevende pairs in V2)
+
+## ✅ Vandaag afgerond (2026-05-31)
+
+- [x] **Watchdog reboot opgelost** — oorzaak gevonden (loadspike 18-21, drempel 12 te laag). Claude Code heeft thresholds aangepast (32/24/16)
+- [x] **Traders herstart na reboot** — 12 screens: universe, bridge, v1sel/v2sel/v3sel/rangesel, v1/v2/v3, momentum, range, webapp
+- [x] **Missie vastgelegd** — €10.000/maand bijverdienste is prioriteit #1. R&D department opgericht.
+- [x] **Langfuse wordt uitgeschakeld** — Claude Code gaat containers stoppen
+
+## ✅ Afgerond (2026-05-30)
+
+- [x] Startup-check en bridge path gefixt (crypto-data i.p.v. crypto-tradebot)
+- [x] **STAP-O: Multi-pair backtest** — 7 pairs × 3 varianten, enkel XRPEUR haalt 50% WR
+- [x] **STAP-P: Paper vs backtest** — vergelijking niet mogelijk (live_cache te kort)
+- [x] **STAP-Q: V3A Kandidaatbeoordeling** — NIET KLAAR (2/4 criteria)
+- [x] 60/60 tests — 19 nieuwe testen toegevoegd
+
+## ✅ Afgerond (2026-05-29)
+
+- [x] Startup-check uitgebreid met crypto-data pipeline audit
+- [x] Volledige crypto-data pipeline audit (9 taken)
+- [x] Trade lifecycle + dashboard parser audit
+- [x] V1 ghost trade cleanup (BCHEUR, ETHEUR, ICPEUR, INJEUR)
+- [x] Post-cleanup verificatie
+- [x] Architectuur crypto-test-bot gereviewd + opgeslagen in second brain
+- [x] **STAP-I: V3A parameter varianten**
+- [x] **STAP-J: HOLD logging** — per-candle MFE/MAE in runner + journal
+- [x] **STAP-K: Weekly AI Scout** — 60 items (HN + GitHub)
+- [x] **STAP-L: MFE/MAE analyse** — 89 trades over 5 strategieën
+- [x] **STAP-M: Exit simulatie** — V1 van -18% naar +36.88%
+- [x] **STAP-N: Trailing stop V1+V2** — floating PnL trail

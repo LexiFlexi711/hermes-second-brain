@@ -1,0 +1,1 @@
+BTCEUR dry-run: processed=1, written=1 (dry-run mode), no files created, no side effects.

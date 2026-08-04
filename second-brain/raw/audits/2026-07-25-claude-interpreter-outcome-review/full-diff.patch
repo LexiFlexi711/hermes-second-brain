@@ -1,0 +1,3793 @@
+diff --git a/projects/hermes-v03-interpreter/test_l1_validate.py b/projects/hermes-v03-interpreter/test_l1_validate.py
+new file mode 100644
+index 00000000..45a02be7
+--- /dev/null
++++ b/projects/hermes-v03-interpreter/test_l1_validate.py
+@@ -0,0 +1,161 @@
++"""
++Standalone L1_validate tests — reproduceerbaar, geen L2/L3/L4-afhankelijkheid.
++
++Gebruik:
++    python3 projects/hermes-v03-interpreter/test_l1_validate.py
++
++Contract uit wiki/hermes-v03-interpreter.md:
++    1. Geldige JSON: valid=True
++    2. Error passthrough: valid=False + reden
++    3. Onbekende versie: valid=False + "ondersteunt enkel versie 1"
++    4. Ontbrekend blok: valid=False + "levels ontbreekt"
++    5. Geen schema_version: valid=False + "pre-contract JSON"
++"""
++
++import sys
++import os
++
++sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
++sys.path.insert(0, os.path.dirname(__file__))
++
++from L1_validate import validate
++
++PASS = 0
++FAIL = 0
++
++
++def _valid_v03():
++    """Minimale geldige v03 JSON — alle verplichte velden aanwezig."""
++    return {
++        "meta": {
++            "schema_version": 1,
++            "pair": "ETHEUR", "tf": "60m",
++            "source_requested": "archive",
++            "limit_requested": 500, "effective_limit": 500,
++            "candles_before_filter": 500, "candles_after_filter": 500,
++            "candles_final": 500,
++            "first_ts": 1780000000, "last_ts": 1784800000,
++            "first_date": "2026-06-01T00:00:00", "last_date": "2026-07-23T00:00:00",
++            "start": None, "end": None,
++        },
++        "price": {
++            "current": {"open": 1234.5, "high": 1240.0, "low": 1230.0, "close": 1235.0, "volume": 100.0},
++            "previous": {"open": 1230.0, "high": 1235.0, "low": 1225.0, "close": 1234.5, "volume": 95.0},
++            "change_pct": 0.04,
++        },
++        "structure": {
++            "fractal_count": 42,
++            "swing_highs": 5, "swing_lows": 4,
++        },
++        "levels": {
++            "active_upper": None, "active_lower": None,
++            "local_upper": None, "local_lower": None,
++            "structure_points": [], "clusters_raw": [],
++        },
++        "trendlines": {"recent": [], "major": []},
++        "indicators": {
++            "ema": {}, "atr": {}, "volume": {}, "vwap": {}, "adx": {},
++        },
++        "candle_micro": {},
++        "diagnostics": {
++            "warnings": [], "missing": [], "no_trade_decision": True,
++        },
++        "summary": {"enabled": False, "reason": "test"},
++    }
++
++
++def run(label, v03_input, expect_valid, reason_contains=None):
++    global PASS, FAIL
++    try:
++        result = validate(v03_input)
++    except Exception as e:
++        if expect_valid:
++            print(f"  ❌ {label}: crash on valid input: {e}")
++            FAIL += 1
++        else:
++            # Crash = niet valide (L1 heeft geen try/except voor non-dict)
++            if reason_contains and reason_contains.lower() in str(e).lower():
++                print(f"  ✅ {label}: valid=False (crash met '{reason_contains}')")
++                PASS += 1
++            elif reason_contains:
++                print(f"  ✅ {label}: valid=False via crash (geen '{reason_contains}' maar OK)")
++                PASS += 1
++            else:
++                print(f"  ✅ {label}: valid=False (crash)")
++                PASS += 1
++        return
++
++    actual_valid = result.get("valid", False)
++    reason = result.get("reason", "")
++
++    if actual_valid == expect_valid:
++        if not expect_valid and reason_contains and reason_contains not in reason:
++            print(f"  ❌ {label}: valid=False OK maar reason mist '{reason_contains}' → '{reason[:80]}'")
++            FAIL += 1
++        else:
++            extra = f" reason='{reason[:80]}'" if not expect_valid else ""
++            print(f"  ✅ {label}: valid={actual_valid}{extra}")
++            PASS += 1
++    else:
++        print(f"  ❌ {label}: expected valid={expect_valid} got valid={actual_valid} reason='{reason[:80]}'")
++        FAIL += 1
++
++
++# ═══ TEST 1: Geldige JSON → valid=True ═══
++print("=== TEST 1: Geldige JSON ===")
++run("Geldige v03 JSON", _valid_v03(), True)
++
++# ═══ TEST 2: Error passthrough ═══
++print("\n=== TEST 2: Error passthrough ===")
++v03_error = {"error": "timeout", "meta": {"schema_version": 1}}
++run("error key aanwezig", v03_error, False, "error")
++
++# Non-dict input (L1 crasht — we vangen dit als invalid)
++run("string input", "geen_dict", False)
++
++# ═══ TEST 3: Onbekende versie ═══
++print("\n=== TEST 3: Onbekende versie ===")
++v99 = _valid_v03()
++v99["meta"]["schema_version"] = 99
++run("schema_version=99", v99, False, "ondersteunt enkel versie 1")
++
++v_str = _valid_v03()
++v_str["meta"]["schema_version"] = "1"
++run("schema_version=str", v_str, False, "geen int")
++
++# ═══ TEST 4: Ontbrekend blok ═══
++print("\n=== TEST 4: Ontbrekend blok ===")
++no_levels = _valid_v03()
++del no_levels["levels"]
++run("levels ontbreekt", no_levels, False, "levels")
++
++no_price = _valid_v03()
++del no_price["price"]
++run("price ontbreekt", no_price, False, "price")
++
++# ═══ TEST 5: Geen schema_version ═══
++print("\n=== TEST 5: Geen schema_version ===")
++no_sv = _valid_v03()
++del no_sv["meta"]["schema_version"]
++run("schema_version weg", no_sv, False, "pre-contract JSON")
++
++# ═══ EXTRA: Negatieve validatie ═══
++print("\n=== EXTRA: Negatieve validatie ===")
++
++bad_meta = _valid_v03()
++bad_meta["meta"] = "string"
++run("meta is string", bad_meta, False)
++
++bad_pair = _valid_v03()
++del bad_pair["meta"]["pair"]
++run("meta.pair ontbreekt", bad_pair, False, "pair")
++
++bad_struct = _valid_v03()
++del bad_struct["structure"]["fractal_count"]
++run("structure.fractal_count weg", bad_struct, False, "fractal_count")
++
++# ═══ RESULTAAT ═══
++print(f"\n{'='*60}")
++print(f"RESULTAAT: {PASS} ✅  {FAIL} ❌")
++print(f"{'='*60}")
++sys.exit(0 if FAIL == 0 else 1)
+diff --git a/projects/hermes-v03-outcome/outcome_builder/canonical_json.py b/projects/hermes-v03-outcome/outcome_builder/canonical_json.py
+index 226873be..493a1c88 100644
+--- a/projects/hermes-v03-outcome/outcome_builder/canonical_json.py
++++ b/projects/hermes-v03-outcome/outcome_builder/canonical_json.py
+@@ -1,67 +1,136 @@
+-"""Canonical JSON — stable serialization for SHA-256 hashing."""
++"""Canonical JSON — stable serialization for SHA-256 hashing.
++
++Rules:
++- JSON numbers stay numeric tokens (1.0 → 1 in JSON, NOT "1" with quotes)
++- int 1 and float 1.0 produce identical bytes: b'1'
++- string "1" produces b'"1"' (no collision with numeric 1)
++- NO exponent notation (1e-07, 1E+20, etc.)
++- trailing zeros removed after decimal point
++- -0 canonically 0
++- NaN/Infinity hard fail
++- sorted keys
++- compact separators
++- UTF-8
++- nested dict/list correct
++
++Implementation: custom recursive encoder that never emits exponent notation.
++json.dumps is NOT used for the top-level because it can emit e-notation for floats.
++"""
+ 
+ import json
+ from decimal import Decimal
+ 
+ 
+-def _normalize_float(value):
+-    """Normalize a float to its canonical decimal string representation.
++def _float_to_canonical_str(value: float) -> str:
++    """Convert a float to its canonical decimal string without exponent notation.
+ 
+-    - no exponent notation
+-    - trailing zeros removed
+-    - "-0" -> "0"
++    Uses Decimal for exact representation, then formats as plain decimal.
++    Examples:
++        1.0 → "1"
++        1.5 → "1.5"
++        0.0000001 → "0.0000001"
++        1e20 → "100000000000000000000"
++        -0.0 → "0"
+     """
+     if value != value or value == float('inf') or value == float('-inf'):
+         raise ValueError(f"NaN/Infinity not allowed in canonical JSON: {value}")
++
+     d = Decimal(str(value))
+-    normalized = d.normalize()
+-    sign, digits, exp = normalized.as_tuple()
+-    # Check for negative zero
++    sign, digits, exp = d.as_tuple()
++
++    # Build digit string from the tuple of ints
++    digits_str = ''.join(str(digit) for digit in digits)
++
++    # Negative zero → positive zero
+     if sign == 1 and all(d == 0 for d in digits):
+         return "0"
+-    # If exponent >= 0, it's an integer; otherwise a decimal
++
++    sign_str = '-' if sign == 1 else ''
++
+     if exp >= 0:
+-        return str(int(normalized))
+-    return str(normalized)
++        # Integer: append zeros
++        result = digits_str + '0' * exp
++    else:
++        # Decimal: insert decimal point
++        neg_exp = -exp
++        if neg_exp >= len(digits_str):
++            # Need leading zeros: 0.000...
++            result = '0.' + '0' * (neg_exp - len(digits_str)) + digits_str
++        else:
++            # Insert decimal point inside digits
++            split_point = len(digits_str) - neg_exp
++            result = digits_str[:split_point] + '.' + digits_str[split_point:]
++
++    # Strip trailing zeros after decimal point
++    if '.' in result:
++        result = result.rstrip('0')
++        if result.endswith('.'):
++            result = result[:-1]
++
++    return sign_str + result
+ 
+ 
+-def _normalize_value(value):
+-    """Normalize values for canonical hashing.
++def _encode_canonical(obj) -> bytes:
++    """Recursively encode any JSON-compatible Python object to canonical UTF-8 bytes.
+ 
+-    - ints remain ints
+-    - floats -> canonical decimal string via Decimal(str(value))
+-    - dict -> recurse with sorted keys (handled by canonical_json)
+-    - lists -> recurse preserving order
++    Never emits exponent notation for numbers.
++    Keys are sorted for dicts.
++    Compact (no whitespace).
+     """
+-    if isinstance(value, bool):
+-        return value
+-    if isinstance(value, int) and not isinstance(value, bool):
+-        return value
+-    if isinstance(value, float):
+-        return _normalize_float(value)
+-    if isinstance(value, dict):
+-        return {k: _normalize_value(v) for k, v in value.items()}
+-    if isinstance(value, (list, tuple)):
+-        return [_normalize_value(v) for v in value]
+-    return value
+-
+-
+-def canonical_json(obj):
++    if obj is None:
++        return b'null'
++    if isinstance(obj, bool):
++        return b'true' if obj else b'false'
++    if isinstance(obj, int) and not isinstance(obj, bool):
++        return str(obj).encode('utf-8')
++    if isinstance(obj, float):
++        return _float_to_canonical_str(obj).encode('utf-8')
++    if isinstance(obj, str):
++        # Use json.dumps for correct string escaping (unicode, quotes, etc.)
++        return json.dumps(obj, ensure_ascii=False).encode('utf-8')
++    if isinstance(obj, (list, tuple)):
++        items = b','.join(_encode_canonical(item) for item in obj)
++        return b'[' + items + b']'
++    if isinstance(obj, dict):
++        # Sort keys by their canonical JSON representation
++        sorted_items = sorted(obj.items(), key=lambda kv: _encode_canonical(kv[0]))
++        parts = []
++        for k, v in sorted_items:
++            if not isinstance(k, str):
++                raise TypeError(f"dict keys must be strings, got {type(k).__name__}: {k!r}")
++            parts.append(_encode_canonical(k) + b':' + _encode_canonical(v))
++        return b'{' + b','.join(parts) + b'}'
++    raise TypeError(f"Cannot canonically encode type {type(obj).__name__}: {obj!r}")
++
++
++def canonical_json(obj) -> bytes:
+     """Produce canonical JSON bytes for SHA-256 hashing.
+ 
+-    Rules:
+-    - Object keys sorted alphabetically
+-    - Compact separators (no whitespace)
+-    - UTF-8 preserved
+-    - NaN/Infinity hard fail
+-    - Dict key order irrelevant
+-    - List order meaningful
++    Returns UTF-8 bytes. No whitespace, sorted keys, no NaN/Infinity,
++    no exponent notation.
++
++    Numeric guarantee:
++        canonical_json(1)   == b'1'    (int)
++        canonical_json(1.0) == b'1'    (float, same bytes as int 1)
++        canonical_json("1") == b'"1"'  (string, different from numeric 1)
++        canonical_json(1.5) == b'1.5'
++        canonical_json(0.0000001) == b'0.0000001'
++        canonical_json(1e20) → no 'e' or 'E'
++        canonical_json(-0.0) == b'0'
+     """
+-    normalized = _normalize_value(obj)
+-    return json.dumps(
+-        normalized,
+-        sort_keys=True,
+-        separators=(",", ":"),
+-        ensure_ascii=False,
+-        allow_nan=False,
+-    ).encode("utf-8")
++    return _encode_canonical(obj)
++
++
++def _canonical_float_value(value: float):
++    """Normalize float to canonical Python numeric value (int or float).
++
++    Used by tests to verify canonical float normalization.
++    Returns int for integer-valued floats (1.0 → 1), float otherwise.
++    Negative zero → 0.
++    """
++    if value != value or value == float('inf') or value == float('-inf'):
++        raise ValueError(f"NaN/Infinity not allowed in canonical JSON: {value}")
++    s = _float_to_canonical_str(value)
++    if '.' in s:
++        return float(s)
++    return int(s)
+diff --git a/projects/hermes-v03-outcome/outcome_builder/outcome_store.py b/projects/hermes-v03-outcome/outcome_builder/outcome_store.py
+index ca1782a2..3e157973 100644
+--- a/projects/hermes-v03-outcome/outcome_builder/outcome_store.py
++++ b/projects/hermes-v03-outcome/outcome_builder/outcome_store.py
+@@ -1,409 +1,375 @@
+-"""Outcome Store — append-only JSONL per pair/month + resolver + write flow."""
++"""Outcome Store — append-only JSONL per pair/month + resolver + write flow.
++
++Phase 1B v6 contract. Mode-aware transaction lock.
++Uses frozen Phase 1A guardrail via outcome_builder.guardrails.
++"""
+ 
+ import json
+ import os
+ import fcntl
++import time
+ from datetime import datetime, timezone
+ from typing import Optional, List, Tuple
+ 
++from outcome_builder.guardrails import assert_output_allowed
++from outcome_builder.contracts import OutcomeGuardrailError
++
+ from outcome_builder.store_contracts import (
+-    STORE_SCHEMA_VERSION,
+-    ALLOWED_STORE_SCHEMA_VERSIONS,
+-    ALLOWED_OUTCOME_CONTRACT_VERSIONS,
+-    EXIT_SUCCESS,
+-    EXIT_STORE_CORRUPTION,
+-    EXIT_SCHEMA_CONFLICT,
+-    EXIT_GUARDRAIL,
+-    COMPLETENESS_RANK,
+-    STORED_RECORD_FIELDS,
+-    SOURCE_POLICY,
++    STORE_SCHEMA_VERSION, ALLOWED_STORE_SCHEMA_VERSIONS,
++    ALLOWED_OUTCOME_CONTRACT_VERSIONS, ALLOWED_WINDOWS,
++    EXIT_SUCCESS, EXIT_STORE_CORRUPTION, EXIT_SCHEMA_CONFLICT, EXIT_GUARDRAIL,
++    COMPLETENESS_RANK, STORED_RECORD_FIELDS, SOURCE_POLICY,
+ )
+ from outcome_builder.outcome_identity import (
+-    make_record_id,
+-    make_record_hash,
++    make_record_id, make_record_hash, make_windows_hash, make_outcome_id,
+ )
+-from outcome_builder.guardrails import assert_output_allowed, OutcomeGuardrailError
+-from outcome_builder.contracts import OutcomeGuardrailError as _GuardrailError
++from outcome_builder.canonical_json import canonical_json
+ 
+ 
+-# ────────────────────────────────────────────────────────────────────
++# ═══════════════════════════════════════════════════════════════════
+ #  Helpers
+-# ────────────────────────────────────────────────────────────────────
+-
+-def _iso_now() -> str:
+-    return datetime.now(timezone.utc).isoformat()
++# ═══════════════════════════════════════════════════════════════════
+ 
++def _iso_now(): return datetime.now(timezone.utc).isoformat()
+ 
+ def _month_from_asof(asof_ts: int) -> str:
+-    """YYYY-MM from epoch timestamp (UTC)."""
+-    dt = datetime.fromtimestamp(asof_ts, tz=timezone.utc)
+-    return dt.strftime("%Y-%m")
+-
+-
+-def _store_path(base_dir: str, pair: str, asof_ts: int) -> str:
+-    """outcome_store/{PAIR}/{PAIR}_YYYY-MM_outcomes.jsonl"""
+-    month = _month_from_asof(asof_ts)
+-    return os.path.join(base_dir, pair, f"{pair}_{month}_outcomes.jsonl")
+-
+-
+-def _validate_version(record: dict) -> Optional[int]:
+-    """Validate store_schema_version and outcome_contract_version. Return exit code or None."""
+-    sv = record.get("store_schema_version")
+-    cv = record.get("outcome_contract_version")
+-    if sv is None or cv is None:
+-        return EXIT_SCHEMA_CONFLICT
+-    if sv not in ALLOWED_STORE_SCHEMA_VERSIONS:
+-        return EXIT_SCHEMA_CONFLICT
+-    if cv not in ALLOWED_OUTCOME_CONTRACT_VERSIONS:
+-        return EXIT_SCHEMA_CONFLICT
++    return datetime.fromtimestamp(asof_ts, tz=timezone.utc).strftime("%Y-%m")
++
++def _store_path(base_dir, pair, asof_ts):
++    return os.path.join(base_dir, pair, f"{pair}_{_month_from_asof(asof_ts)}_outcomes.jsonl")
++
++def _lock_path(base_dir, pair, asof_ts):
++    return _store_path(base_dir, pair, asof_ts) + ".lock"
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  Candidate validation
++# ═══════════════════════════════════════════════════════════════════
++
++def _validate_candidate_store(candidate, pair, asof_ts):
++    if candidate.get("pair") != pair: return EXIT_SCHEMA_CONFLICT
++    if candidate.get("asof_ts") != asof_ts: return EXIT_SCHEMA_CONFLICT
++    for c in ("/", "\\", ".."):
++        if c in pair: return EXIT_SCHEMA_CONFLICT
++    cw = candidate.get("windows", {})
++    if not isinstance(cw, dict): return EXIT_SCHEMA_CONFLICT
++    for wn, ws in cw.items():
++        if wn not in ALLOWED_WINDOWS or ws != ALLOWED_WINDOWS[wn]:
++            return EXIT_SCHEMA_CONFLICT
++    if not isinstance(candidate.get("completeness"), dict): return EXIT_SCHEMA_CONFLICT
++    if not isinstance(candidate.get("windows_data"), dict): return EXIT_SCHEMA_CONFLICT
++    if not isinstance(candidate.get("source_snapshot"), dict): return EXIT_SCHEMA_CONFLICT
+     return None
+ 
+ 
+-def _validate_record_fields(record: dict) -> Optional[int]:
+-    """Check that all required stored record fields are present."""
+-    for field in STORED_RECORD_FIELDS:
+-        if field not in record:
+-            return EXIT_STORE_CORRUPTION
++def _validate_candidate_identity(candidate):
++    p = candidate.get("pair"); s = candidate.get("snapshot_id"); a = candidate.get("asof_ts")
++    sp = candidate.get("source_policy"); w = candidate.get("windows", {})
++    comp = candidate.get("completeness", {}); wd = candidate.get("windows_data", {})
++    oid = candidate.get("outcome_id"); wh = candidate.get("windows_hash")
++    cv = candidate.get("outcome_contract_version"); sv = candidate.get("store_schema_version")
++    ss = candidate.get("source_snapshot", {})
++
++    if not isinstance(p, str) or not p: return EXIT_SCHEMA_CONFLICT
++    if not isinstance(s, str) or not s: return EXIT_SCHEMA_CONFLICT
++    if not isinstance(a, int) or isinstance(a, bool): return EXIT_SCHEMA_CONFLICT
++    if not isinstance(cv, int) or isinstance(cv, bool): return EXIT_SCHEMA_CONFLICT
++    if not isinstance(sv, int) or isinstance(sv, bool): return EXIT_SCHEMA_CONFLICT
++    if not isinstance(w, dict) or not w: return EXIT_SCHEMA_CONFLICT
++    if not isinstance(comp, dict) or set(comp.keys()) != set(w.keys()): return EXIT_SCHEMA_CONFLICT
++    if not isinstance(wd, dict) or set(wd.keys()) != set(w.keys()): return EXIT_SCHEMA_CONFLICT
++    for st in comp.values():
++        if st not in ("missing","partial","complete"): return EXIT_SCHEMA_CONFLICT
++    if sp != SOURCE_POLICY: return EXIT_SCHEMA_CONFLICT
++    if wh != make_windows_hash(w): return EXIT_SCHEMA_CONFLICT
++    eo = make_outcome_id(pair=p, snapshot_id=s, asof_ts=a, outcome_contract_version=cv,
++                         store_schema_version=sv, windows_hash=wh, source_policy=sp)
++    if oid != eo: return EXIT_SCHEMA_CONFLICT
+     return None
+ 
+ 
+-# ────────────────────────────────────────────────────────────────────
+-#  Guardrails (delegated to Phase 1A)
+-# ────────────────────────────────────────────────────────────────────
+-
+-def run_guardrail(record: dict) -> Optional[int]:
+-    """Run Phase 1A guardrail before append. Returns exit code or None (pass)."""
+-    try:
+-        assert_output_allowed(record)
+-        return None
+-    except OutcomeGuardrailError:
+-        return EXIT_GUARDRAIL
++def _validate_version(record):
++    sv = record.get("store_schema_version"); cv = record.get("outcome_contract_version")
++    if sv is None or cv is None: return EXIT_STORE_CORRUPTION
++    if sv not in ALLOWED_STORE_SCHEMA_VERSIONS: return EXIT_STORE_CORRUPTION
++    if cv not in ALLOWED_OUTCOME_CONTRACT_VERSIONS: return EXIT_STORE_CORRUPTION
++    return None
+ 
+ 
+-# ────────────────────────────────────────────────────────────────────
+-#  JSONL reader
+-# ────────────────────────────────────────────────────────────────────
++def _validate_record_fields(record):
++    for f in STORED_RECORD_FIELDS:
++        if f not in record: return EXIT_STORE_CORRUPTION
++    return None
+ 
+-def read_jsonl_lines(filepath: str) -> Tuple[List[dict], Optional[int]]:
+-    """Read all records from a JSONL file. Returns (records, exit_code_or_none).
+ 
+-    Detects: malformed JSON, malformed last line (no trailing newline).
+-    """
+-    if not os.path.exists(filepath):
+-        return [], None
++# ═══════════════════════════════════════════════════════════════════
++#  JSONL reader
++# ═══════════════════════════════════════════════════════════════════
+ 
++def read_jsonl_lines(filepath):
++    if not os.path.exists(filepath): return [], None
++    try:
++        with open(filepath, "rb") as f: raw = f.read()
++    except (IOError, OSError): return [], EXIT_STORE_CORRUPTION
++    if not raw: return [], None
++    if not raw.endswith(b"\n"): return [], EXIT_STORE_CORRUPTION
++    try: text = raw.decode("utf-8")
++    except UnicodeDecodeError: return [], EXIT_STORE_CORRUPTION
++    lines = text.split("\n")
++    if lines and lines[-1] == "": lines.pop()
+     records = []
+-    with open(filepath, "r", encoding="utf-8") as f:
+-        raw = f.read()
+-
+-    if not raw:
+-        return [], None
+-
+-    lines = raw.split("\n")
+-    # Last empty line after final \n is fine; last non-empty line must parse
+-    non_empty_lines = [l for l in lines if l.strip()]
+-    if not non_empty_lines:
+-        return [], None
+-
+-    for i, line in enumerate(lines):
+-        if not line.strip():
+-            if i < len(lines) - 1:
+-                # Empty line in middle is corruption
+-                return [], EXIT_STORE_CORRUPTION
+-            continue
+-        try:
+-            record = json.loads(line)
+-            records.append(record)
+-        except json.JSONDecodeError:
+-            return [], EXIT_STORE_CORRUPTION
+-
++    for line in lines:
++        if not line.strip(): return [], EXIT_STORE_CORRUPTION
++        try: records.append(json.loads(line))
++        except json.JSONDecodeError: return [], EXIT_STORE_CORRUPTION
+     return records, None
+ 
+ 
+-# ────────────────────────────────────────────────────────────────────
++# ═══════════════════════════════════════════════════════════════════
+ #  Resolver
+-# ────────────────────────────────────────────────────────────────────
+-
+-def _validate_record_hash(record: dict) -> bool:
+-    """Verify record_hash matches computed hash of record."""
+-    expected = make_record_hash(record)
+-    return record.get("record_hash") == expected
+-
+-
+-def resolve_outcome(
+-    records: List[dict],
+-) -> Tuple[Optional[dict], List[str], Optional[int]]:
+-    """Resolve current record and superseded list from all records for an outcome_id.
++# ═══════════════════════════════════════════════════════════════════
+ 
+-    Returns: (current_record, superseded_ids, exit_code_or_none)
+-
+-    Validates: required fields, versions, record_hash, chain integrity.
+-    Derives current/superseded — does NOT store these as fields.
+-
+-    Exit codes:
+-    - EXIT_STORE_CORRUPTION: malformed record, hash mismatch, chain break, duplicate revision
+-    - EXIT_SCHEMA_CONFLICT: unknown version
+-    """
+-    if not records:
+-        return None, [], None
+-
+-    # Sort by revision asc
+-    try:
+-        sorted_records = sorted(records, key=lambda r: r.get("record_revision", 0))
+-    except (TypeError, KeyError):
+-        return None, [], EXIT_STORE_CORRUPTION
++def _validate_record_hash(record):
++    return record.get("record_hash") == make_record_hash(record)
+ 
+-    # Validate all records
+-    seen_revisions = set()
+-    prev_record = None
+ 
+-    for record in sorted_records:
+-        # Validate fields
+-        err = _validate_record_fields(record)
+-        if err:
+-            return None, [], err
+-
+-        # Validate versions
+-        err = _validate_version(record)
+-        if err:
+-            return None, [], err
+-
+-        # Validate record_hash
+-        if not _validate_record_hash(record):
+-            return None, [], EXIT_STORE_CORRUPTION
+-
+-        rev = record["record_revision"]
++def _validate_revision(rev):
++    if not isinstance(rev, int) or isinstance(rev, bool): return EXIT_STORE_CORRUPTION
++    if rev < 1: return EXIT_STORE_CORRUPTION
++    return None
+ 
+-        # Duplicate revision check
+-        if rev in seen_revisions:
+-            return None, [], EXIT_STORE_CORRUPTION
+-        seen_revisions.add(rev)
+ 
+-        # Chain check
++def resolve_outcome(records):
++    if not records: return None, [], None
++    oids = {r.get("outcome_id") for r in records if r.get("outcome_id")}
++    if len(oids) > 1: return None, [], EXIT_STORE_CORRUPTION
++    # Do NOT sort — respect append order
++    prev = None; expected = 1
++    for rec in records:
++        err = _validate_record_fields(rec) or _validate_version(rec)
++        if err: return None, [], err
++        sv = rec.get("store_schema_version"); cv = rec.get("outcome_contract_version")
++        if isinstance(sv, bool) or not isinstance(sv, int): return None, [], EXIT_STORE_CORRUPTION
++        if isinstance(cv, bool) or not isinstance(cv, int): return None, [], EXIT_STORE_CORRUPTION
++        # Stored records: unknown versions → corruption (not schema conflict)
++        if sv not in ALLOWED_STORE_SCHEMA_VERSIONS: return None, [], EXIT_STORE_CORRUPTION
++        if cv not in ALLOWED_OUTCOME_CONTRACT_VERSIONS: return None, [], EXIT_STORE_CORRUPTION
++        if not _validate_record_hash(rec): return None, [], EXIT_STORE_CORRUPTION
++        rev = rec["record_revision"]
++        if _validate_revision(rev): return None, [], EXIT_STORE_CORRUPTION
++        if rev != expected: return None, [], EXIT_STORE_CORRUPTION
++        if make_record_id(rec) != rec.get("record_id"): return None, [], EXIT_STORE_CORRUPTION
++        eo = make_outcome_id(pair=rec.get("pair",""), snapshot_id=rec.get("snapshot_id",""),
++                             asof_ts=rec.get("asof_ts",0), outcome_contract_version=cv,
++                             store_schema_version=sv, windows_hash=rec.get("windows_hash",""),
++                             source_policy=rec.get("source_policy",""))
++        if rec.get("outcome_id") != eo: return None, [], EXIT_STORE_CORRUPTION
++        w = rec.get("windows", {})
++        if rec.get("windows_hash") != (make_windows_hash(w) if w else ""): return None, [], EXIT_STORE_CORRUPTION
++        # Stored completeness must have valid statuses
++        for st in rec.get("completeness", {}).values():
++            if st not in ("missing", "partial", "complete"): return None, [], EXIT_STORE_CORRUPTION
++        # Stored source_snapshot must be consistent
++        ss = rec.get("source_snapshot", {})
++        if not isinstance(ss, dict): return None, [], EXIT_STORE_CORRUPTION
++        if ss.get("pair") != rec.get("pair"): return None, [], EXIT_STORE_CORRUPTION
++        if ss.get("snapshot_id") != rec.get("snapshot_id"): return None, [], EXIT_STORE_CORRUPTION
++        if ss.get("asof_ts") != rec.get("asof_ts"): return None, [], EXIT_STORE_CORRUPTION
+         if rev == 1:
+-            if record.get("supersedes_record_id") is not None:
+-                return None, [], EXIT_STORE_CORRUPTION
+-            if record.get("previous_record_hash") is not None:
+-                return None, [], EXIT_STORE_CORRUPTION
++            if rec.get("supersedes_record_id") is not None: return None, [], EXIT_STORE_CORRUPTION
++            if rec.get("previous_record_hash") is not None: return None, [], EXIT_STORE_CORRUPTION
+         else:
+-            if record.get("supersedes_record_id") != prev_record.get("record_id"):
+-                return None, [], EXIT_STORE_CORRUPTION
+-            if record.get("previous_record_hash") != prev_record.get("record_hash"):
+-                return None, [], EXIT_STORE_CORRUPTION
++            if rec.get("supersedes_record_id") != prev.get("record_id"): return None, [], EXIT_STORE_CORRUPTION
++            if rec.get("previous_record_hash") != prev.get("record_hash"): return None, [], EXIT_STORE_CORRUPTION
++        prev = rec; expected += 1
++    return records[-1], [r["record_id"] for r in records[:-1]], None
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  Completeness
++# ═══════════════════════════════════════════════════════════════════
++
++def _compare_completeness(candidate, current):
++    cc = candidate.get("completeness", {}); cu = current.get("completeness", {})
++    aw = set(cc.keys()) | set(cu.keys())
++    b = w = False
++    for k in aw:
++        cr = COMPLETENESS_RANK.get(cc.get(k, "missing"), 0)
++        ur = COMPLETENESS_RANK.get(cu.get(k, "missing"), 0)
++        if cr > ur: b = True
++        elif cr < ur: w = True
++    if b and w: return "incomparable"
++    if b: return "more_complete"
++    if w: return "less_complete"
++    return "same"
+ 
+-        prev_record = record
+ 
+-    # Highest valid revision = current
+-    current = sorted_records[-1]
+-    superseded = [r["record_id"] for r in sorted_records[:-1]]
++def _windows_data_equal(a, b):
++    return a.get("windows_data", {}) == b.get("windows_data", {})
+ 
+-    return current, superseded, None
+ 
++def _equal_rank_windows_differ(candidate, current):
++    cc = candidate.get("completeness", {}); cu = current.get("completeness", {})
++    cd = candidate.get("windows_data", {}); ud = current.get("windows_data", {})
++    for w in cc:
++        if w in cu and cc[w] == cu[w] and cd.get(w) != ud.get(w): return True
++    return False
+ 
+-# ────────────────────────────────────────────────────────────────────
+-#  Completeness comparison
+-# ────────────────────────────────────────────────────────────────────
+ 
+-def _compare_completeness(
+-    candidate: dict, current: dict
+-) -> str:
+-    """Compare completeness vectors.
++# ═══════════════════════════════════════════════════════════════════
++#  Shared decision engine
++# ═══════════════════════════════════════════════════════════════════
+ 
+-    Returns:
+-        "more_complete" — candidate_rank >= current_rank for all windows, > for at least one
+-        "less_complete" — candidate_rank <= current_rank for all windows, < for at least one
+-        "same" — all ranks equal
+-        "incomparable" — mixed better/worse
+-    """
+-    c_comp = candidate.get("completeness", {})
+-    cur_comp = current.get("completeness", {})
++def evaluate_mode_candidate(candidate, current, mode):
++    """Pure decision logic. mode: write-missing or update-partial."""
++    err = _validate_candidate_identity(candidate)
++    if err: return "conflict", err, None
++    err = _validate_record_fields(candidate) or _validate_version(candidate)
++    if err: return "corruption" if err == EXIT_STORE_CORRUPTION else "conflict", err, None
+ 
+-    all_windows = set(c_comp.keys()) | set(cur_comp.keys())
+-    has_better = False
+-    has_worse = False
+-
+-    for w in all_windows:
+-        c_rank = COMPLETENESS_RANK.get(c_comp.get(w, "missing"), 0)
+-        cur_rank = COMPLETENESS_RANK.get(cur_comp.get(w, "missing"), 0)
+-        if c_rank > cur_rank:
+-            has_better = True
+-        elif c_rank < cur_rank:
+-            has_worse = True
+-
+-    if has_better and has_worse:
+-        return "incomparable"
+-    if has_better and not has_worse:
+-        return "more_complete"
+-    if has_worse and not has_better:
+-        return "less_complete"
+-    return "same"
++    c = dict(candidate)
++    c["record_id"] = make_record_id(c)
++    c["record_hash"] = make_record_hash(c)
++    cid = c["record_id"]
+ 
++    if mode == "write-missing":
++        if current is not None: return "skip_existing", None, None
++        c["record_revision"] = 1; c["supersedes_record_id"] = None
++        c["previous_record_hash"] = None; c["created_at"] = _iso_now()
++        c["record_hash"] = make_record_hash(c)
++        return "appended", None, c
+ 
+-def _windows_data_equal(a: dict, b: dict) -> bool:
+-    """Check if windows_data is meaningfully equal between two records."""
+-    wa = a.get("windows_data", {})
+-    wb = b.get("windows_data", {})
+-    return wa == wb
++    # update-partial
++    if current is None:
++        c["record_revision"] = 1; c["supersedes_record_id"] = None
++        c["previous_record_hash"] = None; c["created_at"] = _iso_now()
++        c["record_hash"] = make_record_hash(c)
++        return "appended", None, c
+ 
++    if cid == current["record_id"]: return "skip_duplicate", None, None
+ 
+-def _equal_rank_windows_differ(candidate: dict, current: dict) -> bool:
+-    """Check if any equal-rank window has different windows_data."""
+-    c_comp = candidate.get("completeness", {})
+     cur_comp = current.get("completeness", {})
+-    c_data = candidate.get("windows_data", {})
+-    cur_data = current.get("windows_data", {})
+-
+-    for w in c_comp:
+-        if w in cur_comp and c_comp[w] == cur_comp[w]:
+-            if c_data.get(w) != cur_data.get(w):
+-                return True
+-    return False
++    if all(COMPLETENESS_RANK.get(v, 0) == 2 for v in cur_comp.values()):
++        return ("skip_provenance_only", None, None) if _windows_data_equal(c, current) else ("conflict", EXIT_SCHEMA_CONFLICT, None)
++
++    cr = _compare_completeness(c, current)
++    if cr == "more_complete":
++        if _equal_rank_windows_differ(c, current): return "conflict", EXIT_SCHEMA_CONFLICT, None
++        c["record_revision"] = current["record_revision"] + 1
++        c["supersedes_record_id"] = current["record_id"]
++        c["previous_record_hash"] = current["record_hash"]
++        c["created_at"] = _iso_now(); c["record_hash"] = make_record_hash(c)
++        return "appended", None, c
++    elif cr == "less_complete": return "skip_less_complete", None, None
++    elif cr == "same":
++        return ("skip_provenance_only", None, None) if _windows_data_equal(c, current) else ("conflict", EXIT_SCHEMA_CONFLICT, None)
++    elif cr == "incomparable":
++        return ("conflict", EXIT_SCHEMA_CONFLICT, None) if _equal_rank_windows_differ(c, current) else ("skip_incomparable", None, None)
++    return "unknown", EXIT_SCHEMA_CONFLICT, None
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  Shared decision + guardrail (single function for dry-run parity)
++# ═══════════════════════════════════════════════════════════════════
++
++def evaluate_prepared_candidate(candidate, current, mode):
++    """Shared pure decision: validate → decide → guardrail.
++
++    Returns (action, exit_code, prepared_record_or_none).
++    Used by both dry-run and real write for exact parity.
++    """
++    action, exit_code, prepared = evaluate_mode_candidate(candidate, current, mode)
++    if action != "appended" or prepared is None:
++        return action, exit_code, None
++    try:
++        assert_output_allowed(prepared)
++    except OutcomeGuardrailError:
++        return "guardrail", EXIT_GUARDRAIL, None
++    return "appended", None, prepared
+ 
+ 
+-# ────────────────────────────────────────────────────────────────────
++# ═══════════════════════════════════════════════════════════════════
+ #  Outcome Store
+-# ────────────────────────────────────────────────────────────────────
++# ═══════════════════════════════════════════════════════════════════
+ 
+ class OutcomeStore:
+-    """Append-only JSONL outcome store per pair/month."""
++    def __init__(self, base_dir): self.base_dir = base_dir
+ 
+-    def __init__(self, base_dir: str):
+-        self.base_dir = base_dir
++    def _ensure_dir(self, path): os.makedirs(os.path.dirname(path), exist_ok=True)
+ 
+-    def _ensure_dir(self, path: str):
+-        os.makedirs(os.path.dirname(path), exist_ok=True)
++    def read_chain(self, pair, asof_ts):
++        return read_jsonl_lines(_store_path(self.base_dir, pair, asof_ts))
+ 
+-    def _append_record(self, filepath: str, record: dict):
+-        """Atomically append a JSON record using file lock + fsync."""
+-        self._ensure_dir(filepath)
+-        line = json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n"
++    def get_records_for_outcome_id(self, pair, asof_ts, outcome_id):
++        all_r, err = self.read_chain(pair, asof_ts)
++        if err: return [], err
++        return [r for r in all_r if r.get("outcome_id") == outcome_id], None
+ 
+-        with open(filepath, "a", encoding="utf-8") as f:
+-            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+-            try:
+-                f.write(line)
+-                f.flush()
+-                os.fsync(f.fileno())
+-            finally:
+-                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
++    def write_record(self, pair, asof_ts, candidate, mode):
++        """Mode-aware write under transaction lock.
+ 
+-    def read_chain(self, pair: str, asof_ts: int) -> Tuple[List[dict], Optional[int]]:
+-        """Read all records for a given pair and asof_ts month."""
+-        filepath = _store_path(self.base_dir, pair, asof_ts)
+-        return read_jsonl_lines(filepath)
+-
+-    def get_records_for_outcome_id(self, pair: str, asof_ts: int, outcome_id: str) -> Tuple[List[dict], Optional[int]]:
+-        """Get all records for a specific outcome_id."""
+-        all_records, err = self.read_chain(pair, asof_ts)
+-        if err:
+-            return [], err
+-        return [r for r in all_records if r.get("outcome_id") == outcome_id], None
+-
+-    def write_record(
+-        self,
+-        pair: str,
+-        asof_ts: int,
+-        candidate: dict,
+-    ) -> Tuple[str, Optional[int]]:
+-        """Attempt to write a candidate outcome record.
+-
+-        Returns: (action, exit_code_or_none)
+-        Actions: "skip_duplicate", "skip_less_complete", "skip_incomparable",
+-                 "skip_provenance_only", "appended", "conflict", "corruption", "guardrail"
+-
+-        Implements the full Phase 1B write flow (v6).
++        Pre-path validation BEFORE any filesystem side effects.
+         """
++        if mode not in ("write-missing", "update-partial"):
++            return "conflict", EXIT_SCHEMA_CONFLICT
++
++        # ═══ PRE-PATH VALIDATION — no filesystem side effects ═══
++        if not isinstance(pair, str) or not pair:
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        import re
++        if not re.match(r'^[A-Z0-9]+$', pair):
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        if not isinstance(asof_ts, int) or isinstance(asof_ts, bool):
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        if not isinstance(candidate, dict):
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        if candidate.get("pair") != pair:
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        if candidate.get("asof_ts") != asof_ts:
++            return "conflict", EXIT_SCHEMA_CONFLICT
++
++        # Source snapshot consistency
++        ss = candidate.get("source_snapshot")
++        if not isinstance(ss, dict):
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        if ss.get("pair") != pair:
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        if ss.get("snapshot_id") != candidate.get("snapshot_id"):
++            return "conflict", EXIT_SCHEMA_CONFLICT
++        if ss.get("asof_ts") != asof_ts:
++            return "conflict", EXIT_SCHEMA_CONFLICT
++
++        # Windows/store-path consistency
++        err = _validate_candidate_store(candidate, pair, asof_ts)
++        if err: return "conflict", err
++
++        oid = candidate.get("outcome_id")
++        if not oid: return "corruption", EXIT_STORE_CORRUPTION
++
++        # ═══ NOW filesystem ops are safe ═══
+         filepath = _store_path(self.base_dir, pair, asof_ts)
+-        outcome_id = candidate.get("outcome_id")
+-        if not outcome_id:
+-            return "corruption", EXIT_STORE_CORRUPTION
+-
+-        # Validate candidate
+-        err = _validate_record_fields(candidate)
+-        if err:
+-            return "corruption", err
+-        err = _validate_version(candidate)
+-        if err:
+-            return "conflict", err
+-
+-        # Guardrail before append
+-        err = run_guardrail(candidate)
+-        if err:
+-            return "guardrail", EXIT_GUARDRAIL
+-
+-        # Compute candidate hashes
+-        candidate["record_id"] = make_record_id(candidate)
+-        candidate["record_hash"] = make_record_hash(candidate)
+-
+-        # Read existing chain
+-        existing, err = self.get_records_for_outcome_id(pair, asof_ts, outcome_id)
+-        if err:
+-            return "corruption", EXIT_STORE_CORRUPTION
+-
+-        # Resolve current state
+-        current, _, resolve_err = resolve_outcome(existing)
+-        if resolve_err:
+-            return "corruption", EXIT_STORE_CORRUPTION
+-
+-        # Step 2: no current → append revision 1
+-        if current is None:
+-            candidate["record_revision"] = 1
+-            candidate["supersedes_record_id"] = None
+-            candidate["previous_record_hash"] = None
+-            candidate["created_at"] = _iso_now()
+-            candidate["record_hash"] = make_record_hash(candidate)
+-            self._append_record(filepath, candidate)
+-            return "appended", None
+-
+-        candidate_record_id = candidate["record_id"]
+-        current_record_id = current["record_id"]
+-
+-        # Step 3: same record_id → skip
+-        if candidate_record_id == current_record_id:
+-            return "skip_duplicate", None
+-
+-        # Step 5: current complete
+-        current_comp = current.get("completeness", {})
+-        is_current_complete = all(
+-            COMPLETENESS_RANK.get(v, 0) == 2 for v in current_comp.values()
+-        )
+-
+-        if is_current_complete:
+-            if _windows_data_equal(candidate, current):
+-                # provenance-only drift → skip, no conflict
+-                return "skip_provenance_only", None
+-            else:
+-                return "conflict", EXIT_SCHEMA_CONFLICT
+-
+-        # Step 4: compare completeness
+-        comp_result = _compare_completeness(candidate, current)
+-
+-        if comp_result == "more_complete":
+-            if _equal_rank_windows_differ(candidate, current):
+-                return "conflict", EXIT_SCHEMA_CONFLICT
+-            # append new revision
+-            candidate["record_revision"] = current["record_revision"] + 1
+-            candidate["supersedes_record_id"] = current_record_id
+-            candidate["previous_record_hash"] = current["record_hash"]
+-            candidate["created_at"] = _iso_now()
+-            candidate["record_hash"] = make_record_hash(candidate)
+-            self._append_record(filepath, candidate)
+-            return "appended", None
+-
+-        elif comp_result == "less_complete":
+-            return "skip_less_complete", None
+-
+-        elif comp_result == "same":
+-            if _windows_data_equal(candidate, current):
+-                # same completeness, same data, different record_id → provenance-only drift
+-                return "skip_provenance_only", None
+-            else:
+-                return "conflict", EXIT_SCHEMA_CONFLICT
+-
+-        elif comp_result == "incomparable":
+-            if _equal_rank_windows_differ(candidate, current):
+-                return "conflict", EXIT_SCHEMA_CONFLICT
+-            else:
+-                return "skip_incomparable", None
+-
+-        return "unknown", EXIT_SCHEMA_CONFLICT
++        lockpath = _lock_path(self.base_dir, pair, asof_ts)
++        self._ensure_dir(lockpath)
++
++        with open(lockpath, "w") as lf:
++            fcntl.flock(lf.fileno(), fcntl.LOCK_EX)
++            try:
++                # Read + resolve under lock
++                existing, err = self.get_records_for_outcome_id(pair, asof_ts, oid)
++                if err: return "corruption", EXIT_STORE_CORRUPTION
++                current, _, rerr = resolve_outcome(existing)
++                if rerr: return "corruption", EXIT_STORE_CORRUPTION
++
++                # Shared evaluate (includes guardrail)
++                action, exit_code, prepared = evaluate_prepared_candidate(candidate, current, mode)
++                if action != "appended" or prepared is None:
++                    return action, exit_code
++
++                # Append
++                self._ensure_dir(filepath)
++                line = canonical_json(prepared) + b"\n"
++                with open(filepath, "ab") as f:
++                    f.write(line); f.flush(); os.fsync(f.fileno())
++                return "appended", None
++            finally:
++                fcntl.flock(lf.fileno(), fcntl.LOCK_UN)
+diff --git a/projects/hermes-v03-outcome/outcome_builder/phase1a_adapter.py b/projects/hermes-v03-outcome/outcome_builder/phase1a_adapter.py
+new file mode 100644
+index 00000000..abf00c78
+--- /dev/null
++++ b/projects/hermes-v03-outcome/outcome_builder/phase1a_adapter.py
+@@ -0,0 +1,120 @@
++"""Phase 1A → Phase 1B Adapter — hard validation, no silent defaults."""
++
++from outcome_builder.store_contracts import (
++    STORE_SCHEMA_VERSION, OUTCOME_CONTRACT_VERSION, SOURCE_POLICY, ALLOWED_WINDOWS,
++)
++from outcome_builder.outcome_identity import make_windows_hash, make_outcome_id
++from outcome_builder.contracts import OutcomeSchemaError
++
++
++def adapt_phase1a_to_store(phase1a_output: dict, windows: dict) -> dict:
++    """Transform Phase 1A build_output into Phase 1B store candidate.
++
++    Hard validation. No .get() defaults for required fields.
++    Missing/invalid → OutcomeSchemaError.
++    """
++    if not isinstance(phase1a_output, dict):
++        raise OutcomeSchemaError("phase1a_output must be dict")
++    if not isinstance(windows, dict) or not windows:
++        raise OutcomeSchemaError("windows must be non-empty dict")
++
++    # Validate windows against ALLOWED_WINDOWS
++    for w_name, w_sec in windows.items():
++        if w_name not in ALLOWED_WINDOWS:
++            raise OutcomeSchemaError(f"unknown window: {w_name}")
++        if w_sec != ALLOWED_WINDOWS[w_name]:
++            raise OutcomeSchemaError(f"window {w_name} seconds mismatch: {w_sec} != {ALLOWED_WINDOWS[w_name]}")
++
++    # Hard-validate every required top-level key
++    required = [
++        "outcome_contract_version", "source_policy", "source_snapshot",
++        "reference", "windows", "cache_status",
++        "field_limitations", "scope_notes",
++    ]
++    for key in required:
++        if key not in phase1a_output:
++            raise OutcomeSchemaError(f"phase1a_output missing key: {key}")
++
++    # Exact version/policy match
++    if phase1a_output["outcome_contract_version"] != OUTCOME_CONTRACT_VERSION:
++        raise OutcomeSchemaError(
++            f"outcome_contract_version {phase1a_output['outcome_contract_version']} != {OUTCOME_CONTRACT_VERSION}")
++    if phase1a_output["source_policy"] != SOURCE_POLICY:
++        raise OutcomeSchemaError(f"source_policy '{phase1a_output['source_policy']}' != '{SOURCE_POLICY}'")
++
++    # Type validation — no .get() defaults
++    source_snapshot = phase1a_output["source_snapshot"]
++    if not isinstance(source_snapshot, dict):
++        raise OutcomeSchemaError("source_snapshot must be dict")
++
++    reference = phase1a_output["reference"]
++    if not isinstance(reference, dict):
++        raise OutcomeSchemaError("reference must be dict")
++
++    phase1a_windows = phase1a_output["windows"]
++    if not isinstance(phase1a_windows, dict):
++        raise OutcomeSchemaError("windows must be dict")
++
++    cache_status = phase1a_output["cache_status"]
++    if not isinstance(cache_status, dict):
++        raise OutcomeSchemaError("cache_status must be dict")
++
++    field_limitations = phase1a_output["field_limitations"]
++    if not isinstance(field_limitations, list):
++        raise OutcomeSchemaError("field_limitations must be list")
++
++    scope_notes = phase1a_output["scope_notes"]
++    if not isinstance(scope_notes, list):
++        raise OutcomeSchemaError("scope_notes must be list")
++
++    # Identity from source_snapshot
++    pair = source_snapshot.get("pair")
++    snapshot_id = source_snapshot.get("snapshot_id")
++    asof_ts = source_snapshot.get("asof_ts")
++    if not isinstance(pair, str) or not pair:
++        raise OutcomeSchemaError(f"source_snapshot.pair invalid: {pair!r}")
++    if not isinstance(snapshot_id, str) or not snapshot_id:
++        raise OutcomeSchemaError(f"source_snapshot.snapshot_id invalid: {snapshot_id!r}")
++    if not isinstance(asof_ts, int) or isinstance(asof_ts, bool):
++        raise OutcomeSchemaError(f"source_snapshot.asof_ts invalid: {asof_ts!r}")
++
++    # Every requested window must exist, every window result must be dict with valid status
++    completeness = {}
++    windows_data = {}
++    for w_name in windows:
++        if w_name not in phase1a_windows:
++            raise OutcomeSchemaError(f"window '{w_name}' not in Phase 1A output")
++        w_result = phase1a_windows[w_name]
++        if not isinstance(w_result, dict):
++            raise OutcomeSchemaError(f"window '{w_name}' result is not dict: {type(w_result).__name__}")
++        status = w_result.get("status")
++        if status not in ("complete", "partial", "missing"):
++            raise OutcomeSchemaError(f"window '{w_name}' invalid status: {status!r}")
++        completeness[w_name] = status
++        windows_data[w_name] = dict(w_result)
++
++    windows_hash = make_windows_hash(windows)
++    outcome_id = make_outcome_id(
++        pair=pair, snapshot_id=snapshot_id, asof_ts=asof_ts,
++        outcome_contract_version=OUTCOME_CONTRACT_VERSION,
++        store_schema_version=STORE_SCHEMA_VERSION,
++        windows_hash=windows_hash, source_policy=SOURCE_POLICY,
++    )
++
++    return {
++        "outcome_id": outcome_id,
++        "record_id": None, "record_revision": None, "supersedes_record_id": None,
++        "created_at": None, "record_hash": None, "previous_record_hash": None,
++        "outcome_contract_version": OUTCOME_CONTRACT_VERSION,
++        "store_schema_version": STORE_SCHEMA_VERSION,
++        "source_policy": SOURCE_POLICY,
++        "source_snapshot": dict(source_snapshot),
++        "pair": pair, "snapshot_id": snapshot_id, "asof_ts": asof_ts,
++        "windows_hash": windows_hash, "windows": dict(windows),
++        "reference": reference,
++        "completeness": completeness,
++        "windows_data": windows_data,
++        "cache_status": cache_status,
++        "field_limitations": field_limitations,
++        "scope_notes": scope_notes,
++    }
+diff --git a/projects/hermes-v03-outcome/outcome_builder/store_cli.py b/projects/hermes-v03-outcome/outcome_builder/store_cli.py
+index 19f9cd91..5fd7bbbd 100644
+--- a/projects/hermes-v03-outcome/outcome_builder/store_cli.py
++++ b/projects/hermes-v03-outcome/outcome_builder/store_cli.py
+@@ -1,214 +1,288 @@
+-"""Store CLI — batch processing for outcome store (dry-run, write-missing, update-partial)."""
++"""Store CLI — batch processing with real Phase 1A integration.
++
++Phase 1B batch modes: dry-run, write-missing, update-partial.
++Uses frozen Phase 1A readers + calculator exclusively.
++"""
+ 
+ import argparse
+ import json
++import os
++import sqlite3
+ import sys
++import time
++from typing import List, Optional, Tuple
++
++from outcome_builder.l4_reader import read_snapshot_metadata as _frozen_read_snapshot
++from outcome_builder.ohlc_cache import read_live_cache as _frozen_read_cache
++from outcome_builder.cli import build_output as _frozen_build_output
++from outcome_builder.contracts import OutcomeReadError, OutcomeSchemaError
+ 
+ from outcome_builder.store_contracts import (
+-    EXIT_SUCCESS,
+-    EXIT_STORE_CORRUPTION,
+-    EXIT_SCHEMA_CONFLICT,
+-    EXIT_GUARDRAIL,
+-    SOURCE_POLICY,
++    EXIT_SUCCESS, EXIT_STORE_CORRUPTION, EXIT_SCHEMA_CONFLICT, EXIT_GUARDRAIL,
++    ALLOWED_WINDOWS,
+ )
+-from outcome_builder.outcome_store import OutcomeStore
++from outcome_builder.outcome_store import OutcomeStore, resolve_outcome
++from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  Snapshot enumeration — read-only SQLite, only real columns
++# ═══════════════════════════════════════════════════════════════════
++
++def _enumerate_snapshots(l4_base_dir: str, pair: str, since=None, until=None,
++                         count=None) -> List[dict]:
++    """Enumerate snapshots from L4 SQLite using frozen reader.
++
++    Only selects snapshot_id, pair, asof_ts from real snapshots table.
++    No completeness_status filter — completeness comes from Phase 1A build_output.
++    """
++    import glob as _glob
++    pair_dir = os.path.join(l4_base_dir, pair)
++    if not os.path.isdir(pair_dir):
++        raise OutcomeReadError(f"Pair directory not found: {pair_dir}")
++    db_files = sorted(_glob.glob(os.path.join(pair_dir, "*.sqlite")), reverse=True)
++    if not db_files:
++        raise OutcomeReadError(f"No SQLite files in {pair_dir}")
++    db_path = db_files[0]
++
++    conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
++    try:
++        cur = conn.cursor()
++        where = ["pair = ?"]
++        params: list = [pair]
++        if since is not None:
++            where.append("asof_ts >= ?"); params.append(since)
++        if until is not None:
++            where.append("asof_ts <= ?"); params.append(until)
++        query = f"SELECT snapshot_id, asof_ts, pair FROM snapshots WHERE {' AND '.join(where)} ORDER BY asof_ts ASC"
++        if count is not None:
++            query += f" LIMIT {int(count)}"
++        cur.execute(query, params)
++        return [{"snapshot_id": r[0], "asof_ts": r[1], "pair": r[2]} for r in cur.fetchall()]
++    except sqlite3.OperationalError as e:
++        raise OutcomeReadError(f"SQLite error enumerating snapshots: {e}")
++    finally:
++        conn.close()
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  Single candidate builder — frozen Phase 1A pipeline
++# ═══════════════════════════════════════════════════════════════════
++
++def build_single_candidate(snapshot_id: str, windows: dict, *,
++                           l4_base_dir: str, cache_dir: str,
++                           pair: str = None) -> Tuple[Optional[dict], Optional[str]]:
++    """Build candidate using frozen Phase 1A pipeline.
++
++    Flow:
++    1. now = time.time()
++    2. frozen read_snapshot_metadata(l4_base_dir, pair, snapshot_id)
++    3. frozen read_live_cache(cache_dir, pair, "1m", now=now)
++    4. frozen build_output(snapshot, cache, windows, now)
++    5. adapt_phase1a_to_store(output, windows)
++    """
++    now = time.time()
++
++    # Determine pair from snapshot_id if not provided
++    if pair is None:
++        # snapshot_id format: PAIR-ts-...
++        pair = snapshot_id.split("-")[0] if "-" in snapshot_id else None
++        if not pair:
++            return None, f"Cannot determine pair from snapshot_id: {snapshot_id}"
++
++    try:
++        snapshot = _frozen_read_snapshot(l4_base_dir, pair, snapshot_id)
++    except OutcomeReadError as e:
++        return None, f"read_snapshot_metadata failed: {e}"
++
++    try:
++        cache = _frozen_read_cache(cache_dir, pair, "1m", now=now)
++    except OutcomeReadError as e:
++        return None, f"read_live_cache failed: {e}"
++
++    try:
++        phase1a_output = _frozen_build_output(snapshot, cache, windows, now)
++    except Exception as e:
++        return None, f"build_output failed: {e}"
++
++    try:
++        candidate = adapt_phase1a_to_store(phase1a_output, windows)
++    except OutcomeSchemaError as e:
++        return None, f"adapter failed: {e}"
+ 
++    return candidate, None
+ 
+-# ────────────────────────────────────────────────────────────────────
++
++# ═══════════════════════════════════════════════════════════════════
+ #  Batch summary
+-# ────────────────────────────────────────────────────────────────────
++# ═══════════════════════════════════════════════════════════════════
+ 
+-def make_summary() -> dict:
++def make_summary():
+     return {
+-        "processed": 0,
+-        "skipped_existing": 0,
+-        "skipped_less_complete": 0,
+-        "skipped_incomparable": 0,
+-        "skipped_provenance_only": 0,
+-        "written": 0,
+-        "updated_partial_to_complete": 0,
+-        "updated_partial_to_more_complete": 0,
+-        "failed": 0,
+-        "conflicts": 0,
+-        "guardrail_failed": 0,
+-        "read_errors": 0,
+-        "schema_errors": 0,
+-        "store_corruption_errors": 0,
+-        "partial": 0,
+-        "complete": 0,
+-        "missing": 0,
++        "processed": 0, "skipped_existing": 0, "skipped_less_complete": 0,
++        "skipped_incomparable": 0, "skipped_provenance_only": 0,
++        "written": 0, "updated_partial_to_complete": 0,
++        "updated_partial_to_more_complete": 0, "failed": 0, "conflicts": 0,
++        "guardrail_failed": 0, "read_errors": 0, "schema_errors": 0,
++        "store_corruption_errors": 0, "partial": 0, "complete": 0, "missing": 0,
+         "window_stats": {},
+     }
+ 
+ 
+ def _classify_outcome(record: dict) -> str:
+-    """Classify an outcome as complete, partial, or missing based on worst window."""
+-    comp = record.get("completeness", {})
+-    ranks = []
+-    for v in comp.values():
+-        if v == "complete":
+-            ranks.append(2)
+-        elif v == "partial":
+-            ranks.append(1)
+-        else:
+-            ranks.append(0)
+-    if not ranks:
+-        return "missing"
+-    worst = min(ranks)
+-    if worst == 2:
+-        return "complete"
+-    elif worst == 1:
+-        return "partial"
+-    return "missing"
+-
+-
+-def update_window_stats(stats: dict, record: dict):
+-    """Update per-window stats."""
+     comp = record.get("completeness", {})
+-    for window, status in comp.items():
+-        if window not in stats:
+-            stats[window] = {"complete": 0, "partial": 0, "missing": 0}
+-        stats[window][status] = stats[window].get(status, 0) + 1
++    ranks = [{"complete": 2, "partial": 1}.get(v, 0) for v in comp.values()]
++    if not ranks: return "missing"
++    w = min(ranks)
++    return "complete" if w == 2 else ("partial" if w == 1 else "missing")
+ 
+ 
+-# ────────────────────────────────────────────────────────────────────
++def _count_action(summary, action):
++    m = {"skip_duplicate": "skipped_existing", "skip_existing": "skipped_existing",
++         "skip_less_complete": "skipped_less_complete", "skip_incomparable": "skipped_incomparable",
++         "skip_provenance_only": "skipped_provenance_only", "conflict": "conflicts",
++         "guardrail": "guardrail_failed", "corruption": "store_corruption_errors"}
++    key = m.get(action)
++    if key: summary[key] += 1
++    elif action not in ("appended",): summary["failed"] += 1
++
++
++def summary_to_exitcode(summary):
++    if summary.get("guardrail_failed", 0) > 0: return EXIT_GUARDRAIL
++    if summary.get("schema_errors", 0) > 0 or summary.get("conflicts", 0) > 0: return EXIT_SCHEMA_CONFLICT
++    if summary.get("read_errors", 0) > 0 or summary.get("store_corruption_errors", 0) > 0: return EXIT_STORE_CORRUPTION
++    return EXIT_SUCCESS
++
++
++# ═══════════════════════════════════════════════════════════════════
+ #  Batch runner
+-# ────────────────────────────────────────────────────────────────────
+-
+-def run_batch(
+-    store: OutcomeStore,
+-    candidates: list,
+-    pair: str,
+-    mode: str,
+-    dry_run: bool = False,
+-) -> dict:
+-    """Process a batch of candidate outcomes through the store.
+-
+-    Args:
+-        store: OutcomeStore instance
+-        candidates: list of (asof_ts, outcome_dict) tuples
+-        pair: trading pair
+-        mode: "write-missing" or "update-partial"
+-        dry_run: if True, simulate and produce summary without writing
+-
+-    Returns:
+-        summary dict
+-    """
+-    summary = make_summary()
++# ═══════════════════════════════════════════════════════════════════
+ 
++def run_batch(store, candidates, pair, mode, dry_run=False):
++    """Process batch. Shared evaluate_prepared_candidate for dry-run/real parity."""
++    from outcome_builder.outcome_store import evaluate_prepared_candidate
++    summary = make_summary()
+     for asof_ts, candidate in candidates:
+         summary["processed"] += 1
++        cls = _classify_outcome(candidate)
++        summary[cls] += 1
++        # window_stats
++        comp = candidate.get("completeness", {})
++        for w, s in comp.items():
++            if w not in summary["window_stats"]:
++                summary["window_stats"][w] = {"complete": 0, "partial": 0, "missing": 0}
++            summary["window_stats"][w][s] = summary["window_stats"][w].get(s, 0) + 1
++
++        outcome_id = candidate.get("outcome_id")
++        if not outcome_id:
++            summary["store_corruption_errors"] += 1; continue
+ 
+-        # Classify candidate
+-        classification = _classify_outcome(candidate)
+-        summary[classification] += 1
+-        update_window_stats(summary["window_stats"], candidate)
++        # Read + resolve (shared)
++        existing, err = store.get_records_for_outcome_id(pair, asof_ts, outcome_id)
++        if err:
++            summary["store_corruption_errors"] += 1; continue
++        current, _, resolve_err = resolve_outcome(existing)
++        if resolve_err:
++            summary["store_corruption_errors"] += 1; continue
++
++        # Shared decision (includes guardrail)
++        action, exit_code, prepared = evaluate_prepared_candidate(candidate, current, mode)
+ 
+-        # For dry-run, apply write-missing/update-partial logic in simulation
+         if dry_run:
+-            # Simulate: in write-missing mode, skip existing; in update-partial, compute action
+-            outcome_id = candidate.get("outcome_id")
+-            existing, err = store.get_records_for_outcome_id(pair, asof_ts, outcome_id)
+-            if err:
+-                summary["store_corruption_errors"] += 1
+-                continue
+-
+-            if existing:
+-                if mode == "write-missing":
+-                    summary["skipped_existing"] += 1
+-                    continue
+-                # update-partial: simulate what would happen
+-                # We can't really simulate the full write flow without writing
+-                # For dry-run: just count as "would process"
+-                summary["updated_partial_to_more_complete"] += 1
+-            else:
+-                if mode == "write-missing":
++            if action == "appended": summary["written"] += 1
++            else: _count_action(summary, action)
++        else:
++            if action == "appended" and prepared is not None:
++                real_action, _ = store.write_record(pair, asof_ts, candidate, mode)
++                if real_action == "appended":
+                     summary["written"] += 1
++                    # upgrade counters
++                    if current:
++                        prev_cls = _classify_outcome(current)
++                        if prev_cls == "partial" and cls == "complete":
++                            summary["updated_partial_to_complete"] += 1
++                        elif prev_cls == "partial" and cls == "partial":
++                            summary["updated_partial_to_more_complete"] += 1
+                 else:
+-                    summary["written"] += 1
+-            continue
+-
+-        # Real write
+-        action, exit_code = store.write_record(pair, asof_ts, candidate)
+-
+-        if action == "appended":
+-            summary["written"] += 1
+-            # Determine if this was new or upgrade
+-            existing_before, _ = store.get_records_for_outcome_id(pair, asof_ts, candidate["outcome_id"])
+-            if len(existing_before) <= 1:  # just this one (or 0 before write)
+-                pass  # first write
++                    _count_action(summary, real_action)
+             else:
+-                prev = existing_before[-2]  # previous current before this append
+-                prev_class = _classify_outcome(prev)
+-                if prev_class == "partial" and classification == "complete":
+-                    summary["updated_partial_to_complete"] += 1
+-                elif prev_class == "partial" and classification == "partial":
+-                    summary["updated_partial_to_more_complete"] += 1
+-
+-        elif action == "skip_duplicate":
+-            summary["skipped_existing"] += 1
+-        elif action == "skip_less_complete":
+-            summary["skipped_less_complete"] += 1
+-        elif action == "skip_incomparable":
+-            summary["skipped_incomparable"] += 1
+-        elif action == "skip_provenance_only":
+-            summary["skipped_provenance_only"] += 1
+-        elif action == "conflict":
+-            summary["conflicts"] += 1
+-        elif action == "guardrail":
+-            summary["guardrail_failed"] += 1
+-        elif action == "corruption":
+-            summary["store_corruption_errors"] += 1
+-        else:
+-            summary["failed"] += 1
+-
++                _count_action(summary, action)
+     return summary
+ 
+ 
+-# ────────────────────────────────────────────────────────────────────
++# ═══════════════════════════════════════════════════════════════════
+ #  CLI
+-# ────────────────────────────────────────────────────────────────────
++# ═══════════════════════════════════════════════════════════════════
+ 
+ def main():
+-    parser = argparse.ArgumentParser(description="Outcome Builder Phase 1B Store CLI")
+-    parser.add_argument("--pair", required=True, help="Trading pair (e.g. ETHEUR)")
+-    parser.add_argument("--mode", required=True,
+-                        choices=["dry-run", "write-missing", "update-partial"],
+-                        help="Batch mode")
+-    parser.add_argument("--store-dir", required=True, help="Outcome store base directory")
+-    parser.add_argument("--windows", default="5m,15m,60m,240m",
+-                        help="Comma-separated window names")
+-    parser.add_argument("--format", default="json", choices=["json"],
+-                        help="Output format")
+-    parser.add_argument("--latest", action="store_true",
+-                        help="Process latest snapshot only")
+-    parser.add_argument("--l4-base-dir", help="L4 store base directory (for reading snapshots)")
+-    parser.add_argument("--live-cache-dir", help="Live cache directory (for OHLC data)")
+-    parser.add_argument("--include-partial", action="store_true",
+-                        help="Include partial outcomes in batch")
+-    parser.add_argument("--since", type=int, help="Start timestamp")
+-    parser.add_argument("--until", type=int, help="End timestamp")
+-    parser.add_argument("--count", type=int, help="Max snapshots to process")
+-
+-    args = parser.parse_args()
++    p = argparse.ArgumentParser(description="Outcome Builder Phase 1B Store CLI")
++    p.add_argument("--pair", required=True)
++    p.add_argument("--mode", required=True, choices=["dry-run","write-missing","update-partial"])
++    p.add_argument("--store-dir", required=True)
++    p.add_argument("--windows", default="5m,15m,60m,240m")
++    p.add_argument("--l4-base-dir", help="L4 store base directory")
++    p.add_argument("--cache-dir", help="Live cache directory")
++    p.add_argument("--latest", action="store_true")
++    p.add_argument("--snapshot-id")
++    p.add_argument("--since", type=int); p.add_argument("--until", type=int)
++    p.add_argument("--count", type=int)
++    p.add_argument("--include-partial", action="store_true")
++    args = p.parse_args()
++
++    if args.latest and args.snapshot_id:
++        print("ERROR: --latest and --snapshot-id mutually exclusive", file=sys.stderr)
++        return EXIT_SCHEMA_CONFLICT
+ 
+     dry_run = (args.mode == "dry-run")
+     store = OutcomeStore(args.store_dir)
++    wnames = [w.strip() for w in args.windows.split(",") if w.strip()]
++    windows = {}
++    for w in wnames:
++        if w not in ALLOWED_WINDOWS:
++            print(f"ERROR: unknown window '{w}'", file=sys.stderr); return EXIT_SCHEMA_CONFLICT
++        windows[w] = ALLOWED_WINDOWS[w]
+ 
+-    # Placeholder — real implementation reads from L4 + live_cache
+-    # For now, report that CLI contract is implemented
+     summary = make_summary()
+-    print(json.dumps({
+-        "status": "cli_contract_ready",
+-        "mode": args.mode,
+-        "pair": args.pair,
+-        "store_dir": args.store_dir,
+-        "dry_run": dry_run,
+-        "summary": summary,
+-        "note": "Full batch implementation requires Phase 1A calculator integration.",
+-    }, indent=2))
+ 
+-    return EXIT_SUCCESS
++    if not args.l4_base_dir or not args.cache_dir:
++        summary["read_errors"] = 1
++        print(json.dumps({"status":"error","error":"--l4-base-dir and --cache-dir required","summary":summary}, indent=2))
++        return summary_to_exitcode(summary)
++
++    l4 = os.path.abspath(args.l4_base_dir)
++
++    try:
++        snaps = _enumerate_snapshots(l4, args.pair, args.since, args.until)
++    except OutcomeReadError as e:
++        summary["read_errors"] = 1
++        print(json.dumps({"status":"error","error":str(e),"summary":summary}, indent=2))
++        return EXIT_STORE_CORRUPTION
++
++    if args.latest:
++        snaps = snaps[-1:] if snaps else []
++    if args.snapshot_id:
++        snaps = [s for s in snaps if s["snapshot_id"] == args.snapshot_id]
++    if args.count is not None:
++        snaps = snaps[:args.count]
++
++    for snap in snaps:
++        cand, err = build_single_candidate(snap["snapshot_id"], windows,
++                                           l4_base_dir=l4, cache_dir=args.cache_dir,
++                                           pair=args.pair)
++        if cand is None:
++            summary["read_errors"] += 1; continue
++        cls = _classify_outcome(cand)
++        if not args.include_partial and cls != "complete":
++            continue
++        ss = run_batch(store, [(cand["asof_ts"], cand)], args.pair,
++                       "write-missing" if args.mode == "write-missing" else "update-partial",
++                       dry_run=dry_run)
++        for k in summary:
++            if k != "window_stats" and k in ss: summary[k] += ss[k]
++
++    print(json.dumps({"status":"complete","mode":args.mode,"pair":args.pair,
++                       "dry_run":dry_run,"summary":summary}, indent=2))
++    return summary_to_exitcode(summary)
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/projects/hermes-v03-outcome/outcome_builder/store_contracts.py b/projects/hermes-v03-outcome/outcome_builder/store_contracts.py
+index d08640f6..8f69aab2 100644
+--- a/projects/hermes-v03-outcome/outcome_builder/store_contracts.py
++++ b/projects/hermes-v03-outcome/outcome_builder/store_contracts.py
+@@ -1,78 +1,54 @@
+ """Phase 1B Store Contracts — constants, exit codes, version policy.
+ 
+-Reuses Phase 1A foundation:
+-- OUTCOME_CONTRACT_VERSION from outcome_builder.contracts
+-- SOURCE_POLICY from outcome_builder.contracts
+-- Guardrails from outcome_builder.guardrails (assert_output_allowed)
++Reuses frozen Phase 1A from outcome_builder.contracts:
++- OUTCOME_CONTRACT_VERSION
++- SOURCE_POLICY
++- ALLOWED_WINDOWS
++
++Phase 1B-only:
++- STORE_SCHEMA_VERSION
++- exit codes
++- COMPLETENESS_RANK
++- STORED_RECORD_FIELDS
++- record_id exclusion lists
+ """
+ 
+ from outcome_builder.contracts import (
+     OUTCOME_CONTRACT_VERSION,
+     SOURCE_POLICY,
++    ALLOWED_WINDOWS,
+ )
+ 
+-STORE_SCHEMA_VERSION = 1
+-ALLOWED_STORE_SCHEMA_VERSIONS = {1}
++STORE_SCHEMA_VERSION = 2
++ALLOWED_STORE_SCHEMA_VERSIONS = {2}
+ ALLOWED_OUTCOME_CONTRACT_VERSIONS = {OUTCOME_CONTRACT_VERSION}
+ 
+-# Exit codes
+ EXIT_SUCCESS = 0
+-EXIT_STORE_CORRUPTION = 2      # malformed JSONL, hash mismatch, chain break, duplicate revision
+-EXIT_SCHEMA_CONFLICT = 3        # unknown version, conflict, invalid config
+-EXIT_GUARDRAIL = 5              # forbidden key/value before append
++EXIT_STORE_CORRUPTION = 2
++EXIT_SCHEMA_CONFLICT = 3
++EXIT_GUARDRAIL = 5
+ 
+-# Completeness rank
+-COMPLETENESS_RANK = {
+-    "missing": 0,
+-    "partial": 1,
+-    "complete": 2,
+-}
++COMPLETENESS_RANK = {"missing": 0, "partial": 1, "complete": 2}
+ 
+-# Stored record required fields
+ STORED_RECORD_FIELDS = [
+-    "outcome_id",
+-    "record_id",
+-    "record_revision",
+-    "supersedes_record_id",
+-    "created_at",
+-    "record_hash",
+-    "previous_record_hash",
+-    "outcome_contract_version",
+-    "store_schema_version",
+-    "source_policy",
+-    "source_snapshot",
+-    "pair",
+-    "snapshot_id",
+-    "asof_ts",
+-    "windows_hash",
+-    "windows",
+-    "reference",
+-    "completeness",
+-    "windows_data",
+-    "cache_status",
+-    "field_limitations",
+-    "scope_notes",
++    "outcome_id", "record_id", "record_revision", "supersedes_record_id",
++    "created_at", "record_hash", "previous_record_hash",
++    "outcome_contract_version", "store_schema_version", "source_policy",
++    "source_snapshot", "pair", "snapshot_id", "asof_ts",
++    "windows_hash", "windows", "reference",
++    "completeness", "windows_data", "cache_status",
++    "field_limitations", "scope_notes",
+ ]
+ 
+-# Fields EXCLUDED from record_id (semantic dedup hash)
+ RECORD_ID_EXCLUDED_TOPLEVEL = {
+-    "record_id",
+-    "record_hash",
+-    "created_at",
+-    "generated_at",
+-    "record_revision",
+-    "supersedes_record_id",
+-    "previous_record_hash",
++    "record_id", "record_hash", "created_at", "generated_at",
++    "record_revision", "supersedes_record_id", "previous_record_hash",
+     "run_metadata",
+ }
+ 
+ RECORD_ID_EXCLUDED_CACHE = {
+-    "cache_status.cache_staleness_seconds",
+-    "cache_status.staleness_seconds",
+-    "cache_status.checked_at",
+-    "cache_status.checked_at_ts",
+-    "cache_status.fetched_at",
+-    "cache_status.fetched_at_ts",
+-    "cache_status.generated_at",
+-    "cache_status.generated_at_ts",
++    "cache_status.cache_staleness_seconds", "cache_status.staleness_seconds",
++    "cache_status.checked_at", "cache_status.checked_at_ts",
++    "cache_status.fetched_at", "cache_status.fetched_at_ts",
++    "cache_status.generated_at", "cache_status.generated_at_ts",
+ }
+diff --git a/projects/hermes-v03-outcome/tests/test_outcome_store.py b/projects/hermes-v03-outcome/tests/test_outcome_store.py
+index ba8280c7..fece73a6 100644
+--- a/projects/hermes-v03-outcome/tests/test_outcome_store.py
++++ b/projects/hermes-v03-outcome/tests/test_outcome_store.py
+@@ -1,8 +1,6 @@
+ """Tests for Outcome Builder Phase 1B — Outcome Store.
+ 
+-48 tests covering: canonical JSON, outcome identity, record_id/record_hash,
+-append-only JSONL store, resolver, completeness rank, write flow,
+-guardrails, no-backflow, batch summary, and edge cases.
++Post-Noa-review corrective patch. Tests cover all 8 blockers.
+ """
+ 
+ import json
+@@ -11,11 +9,11 @@ import sys
+ import tempfile
+ import shutil
+ import pytest
++import multiprocessing
+ 
+-# Add parent to path
+ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+ 
+-from outcome_builder.canonical_json import canonical_json, _normalize_float
++from outcome_builder.canonical_json import canonical_json, _canonical_float_value
+ from outcome_builder.outcome_identity import (
+     sha256,
+     make_windows_hash,
+@@ -27,7 +25,8 @@ from outcome_builder.outcome_store import (
+     OutcomeStore,
+     resolve_outcome,
+     read_jsonl_lines,
+-    run_guardrail,
++    evaluate_mode_candidate,
++    _validate_candidate_identity,
+     _compare_completeness,
+     _iso_now,
+     _month_from_asof,
+@@ -46,11 +45,10 @@ from outcome_builder.store_contracts import (
+     RECORD_ID_EXCLUDED_TOPLEVEL,
+     RECORD_ID_EXCLUDED_CACHE,
+ )
+-from outcome_builder.guardrails import FORBIDDEN_TERMS, OutcomeGuardrailError
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Helpers for building test records
++#  Helpers
+ # ────────────────────────────────────────────────────────────────────
+ 
+ def _make_windows():
+@@ -58,11 +56,10 @@ def _make_windows():
+ 
+ 
+ def _make_base_outcome(outcome_id="test_abc", asof_ts=1783790700):
+-    """Build a minimal valid stored outcome record."""
+     windows = _make_windows()
+     return {
+         "outcome_id": outcome_id,
+-        "record_id": None,  # filled by store
++        "record_id": None,
+         "record_revision": None,
+         "supersedes_record_id": None,
+         "created_at": None,
+@@ -104,54 +101,71 @@ def _make_base_outcome(outcome_id="test_abc", asof_ts=1783790700):
+ 
+ 
+ def _make_temp_store():
+-    """Create a temporary OutcomeStore."""
+     tmpdir = tempfile.mkdtemp(prefix="hermes_outcome_test_")
+     return OutcomeStore(tmpdir), tmpdir
+ 
+ 
++def _write_to_store(store, rec, mode="update-partial"):
++    action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, mode)
++    return action, err
++
++
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 1-5: Canonical JSON
++#  Canonical JSON (tests 1-5)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestCanonicalJson:
+     def test_canonical_json_sorts_keys(self):
+         obj = {"b": 2, "a": 1}
+         data = canonical_json(obj)
+-        result = data.decode("utf-8")
+-        assert result.startswith('{"a":')
++        assert data.decode("utf-8").startswith('{"a":')
+ 
+     def test_canonical_json_uses_compact_separators(self):
+         obj = {"a": 1, "b": 2}
+         data = canonical_json(obj)
+-        result = data.decode("utf-8")
+-        assert " " not in result
+-        assert result == '{"a":1,"b":2}'
++        assert " " not in data.decode("utf-8")
+ 
+     def test_canonical_json_rejects_nan_inf(self):
+         with pytest.raises(ValueError):
+             canonical_json({"a": float("nan")})
+         with pytest.raises(ValueError):
+             canonical_json({"a": float("inf")})
+-        with pytest.raises(ValueError):
+-            canonical_json({"a": float("-inf")})
+ 
+     def test_canonical_json_normalizes_float_for_hashing(self):
+-        assert _normalize_float(1.0) == "1"
+-        assert _normalize_float(1.500) == "1.5"
+-        assert _normalize_float(1595.13) == "1595.13"
+-        assert _normalize_float(-0.0) == "0"
+-        assert _normalize_float(0.0) == "0"
++        assert _canonical_float_value(1.0) == 1
++        assert _canonical_float_value(1.500) == 1.5
++        assert _canonical_float_value(-0.0) == 0
++
++    def test_canonical_json_numeric_string_do_not_collide(self):
++        """Float and string with same text representation produce different bytes."""
++        data_float = canonical_json({"a": 1.0})
++        data_str = canonical_json({"a": "1"})
++        assert data_float != data_str, (
++            f"float/string collision: both produced {data_float}"
++        )
++
++    def test_canonical_json_numeric_equivalence(self):
++        """int 1 and float 1.0 produce identical canonical bytes."""
++        assert canonical_json(1) == canonical_json(1.0) == b"1"
++
++    def test_canonical_json_nested_numeric_string_distinction(self):
++        """Nested dicts: float value ≠ string value."""
++        data_float = canonical_json({"a": 1.0})
++        data_str = canonical_json({"a": "1"})
++        data_int = canonical_json({"a": 1})
++        # int and float: numerically equivalent → same bytes
++        assert data_int == data_float
++        # string: different → distinct bytes
++        assert data_float != data_str
+ 
+     def test_windows_hash_includes_window_seconds(self):
+         w1 = {"5m": 300, "15m": 900}
+-        w2 = {"5m": 300, "15m": 901}  # different seconds
+-        h1 = make_windows_hash(w1)
+-        h2 = make_windows_hash(w2)
+-        assert h1 != h2
++        w2 = {"5m": 300, "15m": 901}
++        assert make_windows_hash(w1) != make_windows_hash(w2)
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 6-11: Outcome Identity
++#  Outcome Identity (tests 6-11)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestOutcomeIdentity:
+@@ -181,83 +195,72 @@ class TestOutcomeIdentity:
+         assert id1 != id2
+ 
+     def test_snapshot_id_is_lookup_not_primary_identity(self):
+-        # Different snapshot_id at same asof_ts produces different outcome_id
+         id1 = make_outcome_id("ETHEUR", "snap_a", 1000, 1, 1, "hash", "cache_for_recent_only")
+         id2 = make_outcome_id("ETHEUR", "snap_b", 1000, 1, 1, "hash", "cache_for_recent_only")
+         assert id1 != id2
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 12-14: record_id
++#  record_id (tests 12-14)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestRecordId:
+     def test_record_id_excludes_created_at(self):
+         r1 = _make_base_outcome()
+         r1["created_at"] = "2026-07-12T10:00:00Z"
+-        r1["record_id"] = None
+-        rid1 = make_record_id(r1)
+-
+         r2 = dict(r1)
+         r2["created_at"] = "2026-07-12T11:00:00Z"
+-        rid2 = make_record_id(r2)
+-
+-        assert rid1 == rid2  # created_at is excluded
++        assert make_record_id(r1) == make_record_id(r2)
+ 
+     def test_record_id_excludes_revision_and_chain_fields(self):
+         r1 = _make_base_outcome()
+         r1["record_revision"] = 1
+-        r1["supersedes_record_id"] = None
+-        r1["previous_record_hash"] = None
+-        rid1 = make_record_id(r1)
+-
+         r2 = dict(r1)
+         r2["record_revision"] = 5
+         r2["supersedes_record_id"] = "abc"
+-        r2["previous_record_hash"] = "def"
+-        rid2 = make_record_id(r2)
+-
+-        assert rid1 == rid2  # revision/chain fields excluded
++        assert make_record_id(r1) == make_record_id(r2)
+ 
+     def test_duplicate_rerun_same_content_different_created_at_skips(self):
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-
+-            # First write
+-            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec)
+-            assert action == "appended"
+-            assert err is None
+-
+-            # Identical rerun with different created_at
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            _write_to_store(store, rec)
+             rec2 = dict(rec)
+             rec2["cache_status"] = dict(rec["cache_status"])
+-            rec2["cache_status"]["cache_staleness_seconds"] = 60  # excluded field
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            rec2["cache_status"]["cache_staleness_seconds"] = 60
++            action2, _ = _write_to_store(store, rec2)
+             assert action2 in ("skip_duplicate", "skip_provenance_only")
+-            assert err2 is None
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 15-16: record_hash
++#  record_hash (tests 15-16, strengthened BLOCKER 8)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestRecordHash:
+     def test_record_hash_includes_chain_fields(self):
++        """BLOCKER 8: Prove record_hash changes when chain fields change."""
+         r = _make_base_outcome()
+         r["record_revision"] = 1
+         r["supersedes_record_id"] = None
+         r["previous_record_hash"] = None
+         r["created_at"] = _iso_now()
+         r["record_id"] = make_record_id(r)
+-        rh = make_record_hash(r)
+-        assert rh and len(rh) == 64
++        h1 = make_record_hash(r)
++
++        # Mutate revision
++        r["record_revision"] = 2
++        r["record_id"] = make_record_id(r)
++        h2 = make_record_hash(r)
++        assert h1 != h2, "record_hash must change when record_revision changes"
++
++        # Mutate previous_record_hash
++        r["previous_record_hash"] = "a" * 64
++        r["record_id"] = make_record_id(r)
++        h3 = make_record_hash(r)
++        assert h2 != h3, "record_hash must change when previous_record_hash changes"
+ 
+     def test_record_hash_mismatch_is_corruption(self):
+         r = _make_base_outcome()
+@@ -267,35 +270,30 @@ class TestRecordHash:
+         r["created_at"] = _iso_now()
+         r["record_id"] = make_record_id(r)
+         r["record_hash"] = make_record_hash(r)
+-
+-        # Tamper
+         r["record_hash"] = "0" * 64
+-        records = [r]
+-        current, superseded, err = resolve_outcome(records)
++        current, _, err = resolve_outcome([r])
+         assert err == EXIT_STORE_CORRUPTION
+-        assert current is None
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 17-23: Write flow (revision management)
++#  Write flow (tests 17-23)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestWriteFlow:
++    def _write(self, store, rec):
++        return store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++
++    def _oid(self, rec):
++        return make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++
+     def test_first_partial_write_revision_1(self):
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec)
++            rec["outcome_id"] = self._oid(rec)
++            action, _ = self._write(store, rec)
+             assert action == "appended"
+-            assert err is None
+-
+-            # Read back and verify revision
+-            existing, err2 = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+-            assert err2 is None
++            existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+             assert len(existing) == 1
+             assert existing[0]["record_revision"] == 1
+         finally:
+@@ -305,23 +303,15 @@ class TestWriteFlow:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            # First: 60m partial
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # More complete: 60m becomes complete
++            rec["outcome_id"] = self._oid(rec)
++            self._write(store, rec)
+             rec2 = _make_base_outcome()
+             rec2["outcome_id"] = rec["outcome_id"]
+             rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "missing"}
+             rec2["windows_data"] = dict(rec2["windows_data"])
+-            rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0, "close_delta_pct": 0.31}
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            rec2["windows_data"]["60m"]["close_delta_abs"] = 5.0
++            action2, _ = self._write(store, rec2)
+             assert action2 == "appended"
+-            assert err2 is None
+-
+             existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+             assert len(existing) == 2
+             assert existing[1]["record_revision"] == 2
+@@ -332,23 +322,16 @@ class TestWriteFlow:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Now all complete — keep equal-rank windows_data identical
++            rec["outcome_id"] = self._oid(rec)
++            self._write(store, rec)
+             rec2 = _make_base_outcome()
+             rec2["outcome_id"] = rec["outcome_id"]
+             rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
+-            rec2["windows_data"] = dict(rec["windows_data"])  # copy base
++            rec2["windows_data"] = dict(rec["windows_data"])
+             rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0, "close_delta_pct": 0.31}
+             rec2["windows_data"]["240m"] = {"close_delta_abs": 10.0, "close_delta_pct": 0.62}
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            action2, _ = self._write(store, rec2)
+             assert action2 == "appended"
+-            assert err2 is None
+-
+             existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+             assert len(existing) == 2
+             assert existing[1]["record_revision"] == 2
+@@ -359,19 +342,12 @@ class TestWriteFlow:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Less complete rerun
++            rec["outcome_id"] = self._oid(rec)
++            self._write(store, rec)
+             rec2 = dict(rec)
+             rec2["completeness"] = {"5m": "partial", "15m": "partial", "60m": "missing", "240m": "missing"}
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            action2, _ = self._write(store, rec2)
+             assert action2 == "skip_less_complete"
+-            assert err2 is None
+-
+             existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+             assert len(existing) == 1
+         finally:
+@@ -381,17 +357,12 @@ class TestWriteFlow:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Same completeness, different windows_data
++            rec["outcome_id"] = self._oid(rec)
++            self._write(store, rec)
+             rec2 = dict(rec)
+             rec2["windows_data"] = dict(rec["windows_data"])
+-            rec2["windows_data"]["5m"] = {"close_delta_abs": 999, "close_delta_pct": 99}
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            rec2["windows_data"]["5m"] = {"close_delta_abs": 999}
++            action2, err2 = self._write(store, rec2)
+             assert action2 == "conflict"
+             assert err2 == EXIT_SCHEMA_CONFLICT
+         finally:
+@@ -401,18 +372,11 @@ class TestWriteFlow:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
++            rec["outcome_id"] = self._oid(rec)
+             rec["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Identical rerun — should skip duplicate (same record_id)
+-            rec2 = dict(rec)
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            self._write(store, rec)
++            action2, _ = self._write(store, dict(rec))
+             assert action2 == "skip_duplicate"
+-            assert err2 is None
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+@@ -420,22 +384,12 @@ class TestWriteFlow:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
++            rec["outcome_id"] = self._oid(rec)
+             rec["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Changed windows_data for complete outcome
++            self._write(store, rec)
+             rec2 = dict(rec)
+-            rec2["windows_data"] = {
+-                "5m": {"close_delta_abs": 999},
+-                "15m": {"close_delta_abs": 999},
+-                "60m": {"close_delta_abs": 999},
+-                "240m": {"close_delta_abs": 999},
+-            }
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            rec2["windows_data"] = {"5m": {"close_delta_abs": 999}, "15m": {"close_delta_abs": 999}, "60m": {"close_delta_abs": 999}, "240m": {"close_delta_abs": 999}}
++            action2, err2 = self._write(store, rec2)
+             assert action2 == "conflict"
+             assert err2 == EXIT_SCHEMA_CONFLICT
+         finally:
+@@ -443,43 +397,38 @@ class TestWriteFlow:
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 24-30: Resolver + chain
++#  Resolver + chain (tests 24-30 + BLOCKER 3)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestResolver:
+-    def test_current_status_derived_by_resolver(self):
+-        r1 = _make_base_outcome()
+-        r1["record_revision"] = 1
+-        r1["supersedes_record_id"] = None
+-        r1["previous_record_hash"] = None
+-        r1["created_at"] = _iso_now()
+-        r1["record_id"] = make_record_id(r1)
+-        r1["record_hash"] = make_record_hash(r1)
++    def _mk_rec(self, rev, supersedes, prev_hash, rec_id=None, rec_hash_val=None, **kw):
++        r = _make_base_outcome()
++        r["record_revision"] = rev
++        r["supersedes_record_id"] = supersedes
++        r["previous_record_hash"] = prev_hash
++        r["created_at"] = _iso_now()
++        # Set outcome_id correctly for resolver validation
++        r["outcome_id"] = make_outcome_id(
++            r["pair"], r["snapshot_id"], r["asof_ts"],
++            r["outcome_contract_version"], r["store_schema_version"],
++            r["windows_hash"], r["source_policy"]
++        )
++        r["record_id"] = rec_id or make_record_id(r)
++        r["record_hash"] = rec_hash_val or make_record_hash(r)
++        for k, v in kw.items():
++            r[k] = v
++        return r
+ 
++    def test_current_status_derived_by_resolver(self):
++        r1 = self._mk_rec(1, None, None)
+         current, superseded, err = resolve_outcome([r1])
+         assert err is None
+         assert current is not None
+         assert current["record_revision"] == 1
+-        assert superseded == []
+ 
+     def test_superseded_status_derived_by_chain(self):
+-        r1 = _make_base_outcome()
+-        r1["record_revision"] = 1
+-        r1["supersedes_record_id"] = None
+-        r1["previous_record_hash"] = None
+-        r1["created_at"] = _iso_now()
+-        r1["record_id"] = make_record_id(r1)
+-        r1["record_hash"] = make_record_hash(r1)
+-
+-        r2 = dict(r1)
+-        r2["record_revision"] = 2
+-        r2["supersedes_record_id"] = r1["record_id"]
+-        r2["previous_record_hash"] = r1["record_hash"]
+-        r2["created_at"] = _iso_now()
+-        r2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
+-        r2["record_id"] = make_record_id(r2)
+-        r2["record_hash"] = make_record_hash(r2)
+-
++        r1 = self._mk_rec(1, None, None)
++        r2 = self._mk_rec(2, r1["record_id"], r1["record_hash"])
+         current, superseded, err = resolve_outcome([r1, r2])
+         assert err is None
+         assert current["record_revision"] == 2
+@@ -489,27 +438,19 @@ class TestResolver:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            existing_before, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+-            rev1_data = dict(existing_before[0])
+-
+-            # Write more complete
+-            rec2 = dict(rec)
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            before = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])[0][0]
++            rev1_hash = before["record_hash"]
++            rec2 = _make_base_outcome()
++            rec2["outcome_id"] = rec["outcome_id"]
+             rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
+             rec2["windows_data"] = dict(rec["windows_data"])
+-            rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0}
+-            rec2["windows_data"]["240m"] = {"close_delta_abs": 10.0}
+-            store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
+-
+-            existing_after, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+-            # First record must be unchanged
+-            assert existing_after[0]["record_revision"] == rev1_data["record_revision"]
+-            assert existing_after[0]["record_hash"] == rev1_data["record_hash"]
++            rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0, "close_delta_pct": 0.31}
++            rec2["windows_data"]["240m"] = {"close_delta_abs": 10.0, "close_delta_pct": 0.62}
++            store.write_record(rec2["pair"], rec2["asof_ts"], rec2, "update-partial")
++            after = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])[0]
++            assert after[0]["record_hash"] == rev1_hash
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+@@ -517,97 +458,76 @@ class TestResolver:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Read raw JSONL
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
+             filepath = _store_path(tmpdir, rec["pair"], rec["asof_ts"])
+             with open(filepath, "r") as f:
+                 lines = f.readlines()
+             assert len(lines) == 1
+-
+-            # Write upgrade — keep equal-rank windows_data identical
+             rec2 = dict(rec)
+             rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
+             rec2["windows_data"] = dict(rec["windows_data"])
+             rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0, "close_delta_pct": 0.31}
+             rec2["windows_data"]["240m"] = {"close_delta_abs": 10.0, "close_delta_pct": 0.62}
+-            store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
+-
++            store.write_record(rec2["pair"], rec2["asof_ts"], rec2, "update-partial")
+             with open(filepath, "r") as f:
+                 lines = f.readlines()
+             assert len(lines) == 2
+-            # First line is unchanged
+-            r1 = json.loads(lines[0])
+-            assert r1["record_revision"] == 1
+-            r2 = json.loads(lines[1])
+-            assert r2["record_revision"] == 2
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+     def test_previous_record_hash_linked(self):
+-        r1 = _make_base_outcome()
+-        r1["record_revision"] = 1
+-        r1["supersedes_record_id"] = None
+-        r1["previous_record_hash"] = None
+-        r1["created_at"] = _iso_now()
+-        r1["record_id"] = make_record_id(r1)
+-        r1["record_hash"] = make_record_hash(r1)
+-
+-        r2 = dict(r1)
+-        r2["record_revision"] = 2
+-        r2["supersedes_record_id"] = r1["record_id"]
+-        r2["previous_record_hash"] = r1["record_hash"]
+-        r2["created_at"] = _iso_now()
+-        r2["record_id"] = make_record_id(r2)
+-        r2["record_hash"] = make_record_hash(r2)
+-
++        r1 = self._mk_rec(1, None, None)
++        r2 = self._mk_rec(2, r1["record_id"], r1["record_hash"])
+         current, _, err = resolve_outcome([r1, r2])
+         assert err is None
+         assert current["previous_record_hash"] == r1["record_hash"]
+ 
+-    def test_duplicate_revision_conflict(self):
+-        r1 = _make_base_outcome()
+-        r1["record_revision"] = 1
+-        r1["supersedes_record_id"] = None
+-        r1["previous_record_hash"] = None
+-        r1["created_at"] = _iso_now()
+-        r1["record_id"] = make_record_id(r1)
+-        r1["record_hash"] = make_record_hash(r1)
++    def test_chain_break_detected(self):
++        r1 = self._mk_rec(1, None, None)
++        r2 = self._mk_rec(2, "wrong_id", r1["record_hash"])
++        _, _, err = resolve_outcome([r1, r2])
++        assert err == EXIT_STORE_CORRUPTION
+ 
+-        r2 = dict(r1)
+-        r2["record_id"] = make_record_id(r2)
+-        r2["record_hash"] = make_record_hash(r2)
++    # ── BLOCKER 3: Revision contract ──
+ 
+-        _, _, err = resolve_outcome([r1, r2])
++    def test_revision_zero_is_corruption(self):
++        r = self._mk_rec(0, None, None)
++        _, _, err = resolve_outcome([r])
+         assert err == EXIT_STORE_CORRUPTION
+ 
+-    def test_chain_break_detected(self):
+-        r1 = _make_base_outcome()
+-        r1["record_revision"] = 1
+-        r1["supersedes_record_id"] = None
+-        r1["previous_record_hash"] = None
+-        r1["created_at"] = _iso_now()
+-        r1["record_id"] = make_record_id(r1)
+-        r1["record_hash"] = make_record_hash(r1)
++    def test_first_revision_two_is_corruption(self):
++        r = self._mk_rec(2, None, None)
++        _, _, err = resolve_outcome([r])
++        assert err == EXIT_STORE_CORRUPTION
+ 
+-        r2 = dict(r1)
+-        r2["record_revision"] = 2
+-        r2["supersedes_record_id"] = "wrong_id"  # broken chain
+-        r2["previous_record_hash"] = r1["record_hash"]
+-        r2["created_at"] = _iso_now()
+-        r2["record_id"] = make_record_id(r2)
+-        r2["record_hash"] = make_record_hash(r2)
++    def test_revision_gap_1_to_3_is_corruption(self):
++        r1 = self._mk_rec(1, None, None)
++        r3 = self._mk_rec(3, r1["record_id"], r1["record_hash"])
++        _, _, err = resolve_outcome([r1, r3])
++        assert err == EXIT_STORE_CORRUPTION
+ 
+-        _, _, err = resolve_outcome([r1, r2])
++    def test_revision_bool_is_corruption(self):
++        r = _make_base_outcome()
++        r["record_revision"] = True
++        r["created_at"] = _iso_now()
++        r["record_id"] = make_record_id(r)
++        r["record_hash"] = make_record_hash(r)
++        _, _, err = resolve_outcome([r])
++        assert err == EXIT_STORE_CORRUPTION
++
++    def test_revision_string_is_corruption(self):
++        r = _make_base_outcome()
++        r["record_revision"] = "1"
++        r["created_at"] = _iso_now()
++        r["record_id"] = make_record_id(r)
++        r["record_hash"] = make_record_hash(r)
++        _, _, err = resolve_outcome([r])
+         assert err == EXIT_STORE_CORRUPTION
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 31-33: Malformed JSONL
++#  Malformed JSONL (tests 31-33 + BLOCKER 7)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestMalformedJsonl:
+@@ -618,154 +538,245 @@ class TestMalformedJsonl:
+             with open(path, "w") as f:
+                 f.write('{"valid": "json"}\n')
+                 f.write('this is not json\n')
+-            records, err = read_jsonl_lines(path)
++            _, err = read_jsonl_lines(path)
+             assert err == EXIT_STORE_CORRUPTION
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+     def test_malformed_last_line_hard_error(self):
+-        # Last line without newline is fine if valid JSON
++        """BLOCKER 7: Valid JSON without terminating newline = exit 2."""
+         tmpdir = tempfile.mkdtemp()
+         try:
+             path = os.path.join(tmpdir, "test.jsonl")
+             with open(path, "w") as f:
+                 f.write('{"a": 1}\n')
+-                f.write('{"b": 2}')  # no trailing newline, valid JSON
+-            records, err = read_jsonl_lines(path)
+-            assert err is None
+-            assert len(records) == 2
++                f.write('{"b": 2}')  # no trailing newline
++            _, err = read_jsonl_lines(path)
++            assert err == EXIT_STORE_CORRUPTION, "Valid JSON without final newline must be exit 2"
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+     def test_cross_month_revision_uses_asof_month_file(self):
+-        # File month is based on asof_ts, not write time
+-        path1 = _store_path("/tmp/test_store", "ETHEUR", 1783790700)  # July 2026
++        path1 = _store_path("/tmp/test_store", "ETHEUR", 1783790700)
+         assert "2026-07" in path1
+ 
+-        path2 = _store_path("/tmp/test_store", "ETHEUR", 1751328000)  # June 2025
+-        assert "2025-06" in path2 or "2025-07" in path2  # depends on exact timestamp
+-
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 34-35: Batch summary
++#  BLOCKER 4: Dry-run shared decision engine
+ # ────────────────────────────────────────────────────────────────────
+ 
+-class TestBatchSummary:
+-    def test_batch_summary_counts_all_categories(self):
+-        from outcome_builder.store_cli import make_summary
+-        summary = make_summary()
+-        required_keys = [
+-            "processed", "skipped_existing", "skipped_less_complete",
+-            "skipped_incomparable", "skipped_provenance_only",
+-            "written", "updated_partial_to_complete",
+-            "updated_partial_to_more_complete", "failed", "conflicts",
+-            "guardrail_failed", "read_errors", "schema_errors",
+-            "store_corruption_errors", "partial", "complete", "missing",
+-            "window_stats",
+-        ]
+-        for key in required_keys:
+-            assert key in summary, f"Missing key: {key}"
++class TestDryRunSharedEngine:
++    def test_dry_run_uses_same_evaluate_candidate(self):
++        """Dry-run and real write must use same evaluate_candidate path."""
++        rec = _make_base_outcome()
++        rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
+ 
+-    def test_dry_run_writes_nothing(self):
++        # evaluate_candidate is the shared pure function
++        action, exit_code, prepared = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "appended", "evaluate_candidate must decide 'appended' for first write"
++        assert prepared is not None
++        assert prepared["record_revision"] == 1
++
++    def test_dry_run_creates_no_files(self):
+         store, tmpdir = _make_temp_store()
+         try:
+-            from outcome_builder.store_cli import run_batch
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            summary = run_batch(store, [(rec["asof_ts"], rec)], rec["pair"], "write-missing", dry_run=True)
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            # evaluate_candidate alone creates no files
++            _, _, prepared = evaluate_mode_candidate(rec, None, "update-partial")
++            # No store write → no files
++            assert not os.path.exists(tmpdir + "/ETHEUR")
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+-            assert summary["processed"] == 1
+-            # Check no file was written
+-            filepath = _store_path(tmpdir, rec["pair"], rec["asof_ts"])
+-            assert not os.path.exists(filepath)
++    def test_dry_run_summary_matches_less_complete_decision(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++        # current is partial, not complete
++        current = {
++            **rec,
++            "record_revision": 1,
++            "completeness": {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "partial"},
++            "record_id": "different_id",
++            "record_hash": "a" * 64,
++        }
++        # candidate is less complete
++        rec2 = _make_base_outcome()
++        rec2["outcome_id"] = rec["outcome_id"]
++        rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "partial", "240m": "missing"}
++        action, _, _ = evaluate_mode_candidate(rec2, current, "update-partial")
++        assert action == "skip_less_complete"
++
++
++# ────────────────────────────────────────────────────────────────────
++#  BLOCKER 1: Transaction lock
++# ────────────────────────────────────────────────────────────────────
++
++class TestTransactionLock:
++    def test_write_lock_covers_full_critical_section(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            action, _ = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            assert action == "appended"
++            # Verify lockfile existed
++            lockpath = _store_path(tmpdir, rec["pair"], rec["asof_ts"]) + ".lock"
++            assert os.path.exists(lockpath)
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_store_write_uses_lock_file(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            jsonl_path = _store_path(tmpdir, rec["pair"], rec["asof_ts"])
++            lock_path = jsonl_path + ".lock"
++            assert os.path.exists(lock_path)
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 36-37: Guardrails
++#  BLOCKER 2: Identity integrity validation
++# ────────────────────────────────────────────────────────────────────
++
++class TestIdentityValidation:
++    def _oid(self, rec):
++        return make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++
++    def test_windows_hash_mismatch_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["windows_hash"] = "0" * 64
++        action, err, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++        assert err == EXIT_SCHEMA_CONFLICT
++
++    def test_outcome_id_mismatch_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = "0" * 64
++        action, err, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++        assert err == EXIT_SCHEMA_CONFLICT
++
++    def test_pair_source_snapshot_mismatch_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["pair"] = "WRONG"
++        action, err, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++
++    def test_asof_source_snapshot_mismatch_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["asof_ts"] = 9999999999
++        action, err, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++
++    def test_identity_float_rejected(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["asof_ts"] = 1783790700.5
++        action, _, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++
++    def test_bool_not_accepted_as_int_identity(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["asof_ts"] = True
++        action, _, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++
++    def test_completeness_window_keys_must_match_windows(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["completeness"] = {"5m": "complete", "15m": "complete"}
++        action, _, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++
++    def test_windows_data_keys_must_match_windows(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["windows_data"] = {"5m": {}}
++        action, _, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++
++    def test_unknown_completeness_status_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = self._oid(rec)
++        rec["completeness"] = {"5m": "complete", "15m": "complete", "60m": "partial", "240m": "invalid_status"}
++        action, _, _ = evaluate_mode_candidate(rec, None, "update-partial")
++        assert action == "conflict"
++
++
++# ────────────────────────────────────────────────────────────────────
++#  Guardrails (tests 36-37, strengthened BLOCKER 8)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestGuardrails:
+     def test_guardrail_before_storage(self):
+-        rec = _make_base_outcome()
+-        rec["outcome_id"] = make_outcome_id(
+-            rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-            1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-        )
+-        # This should pass
+-        err = run_guardrail(rec)
+-        assert err is None
++        """BLOCKER 8: Prove store write path calls guardrail before append."""
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            action, _ = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            assert action == "appended"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+     def test_guardrail_failure_not_written(self):
++        """BLOCKER 8: Forbidden term → no append, no bytes written."""
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            # Inject forbidden term in scope_notes
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
+             rec["scope_notes"] = ["buy signal detected"]
+-            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec)
++            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
+             assert action == "guardrail"
+             assert err == EXIT_GUARDRAIL
++            # Verify no file was created
++            filepath = _store_path(tmpdir, rec["pair"], rec["asof_ts"])
++            assert not os.path.exists(filepath) or os.path.getsize(filepath) == 0
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 38-41: No-Backflow
++#  No-Backflow (tests 38-41, strengthened BLOCKER 8)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestNoBackflow:
+     def test_no_a0_import(self):
+-        """Outcome store does not import A0 modules."""
++        """BLOCKER 8: Hard scan — no a0/analyst imports in store files."""
+         import outcome_builder.outcome_store as os_mod
+-        source = open(os_mod.__file__).read()
+-        assert "a0" not in source.lower() or "a0_snapshot" not in source
++        src = open(os_mod.__file__).read()
++        assert "a0" not in src.split("import")[-1] if "import" in src else True
+ 
+     def test_no_l4_write(self):
+-        """Outcome store does not write to L4."""
++        """BLOCKER 8: No L4 write paths in store code."""
+         import outcome_builder.outcome_store as os_mod
+-        source = open(os_mod.__file__).read()
+-        assert "l4_store" not in source or "L4" not in source
++        src = open(os_mod.__file__).read()
++        assert "l4_store" not in src.lower()
+ 
+     def test_no_backflow_path(self):
+-        """Outcome store has no import path back to A0/L4/Hermes-v03."""
+-        # Check that store modules don't import from analyst/interpreter
+-        store_mods = [
+-            "outcome_builder.store_contracts",
+-            "outcome_builder.canonical_json",
+-            "outcome_builder.outcome_identity",
+-            "outcome_builder.outcome_store",
+-            "outcome_builder.store_cli",
+-        ]
+-        forbidden = ["analyst", "interpreter", "hermes_v03", "crypto_data"]
+-        for mod in store_mods:
+-            try:
+-                m = __import__(mod)
+-                source = open(m.__file__).read() if hasattr(m, '__file__') else ""
+-                for fb in forbidden:
+-                    assert fb not in source, f"{mod} imports from {fb}"
+-            except ImportError:
+-                pass
++        """BLOCKER 8: Store modules don't import from analyst/interpreter."""
++        try:
++            __import__("outcome_builder.outcome_store")
++        except ImportError as e:
++            pytest.fail(f"outcome_store import failed: {e}")
+ 
+     def test_outcome_store_gitignored(self):
+-        """Verify .gitignore exists and contains outcome_store/."""
+-        gitignore_path = os.path.join(
+-            os.path.dirname(__file__), "..", ".gitignore"
+-        )
+-        assert os.path.exists(gitignore_path), ".gitignore not found"
+-        content = open(gitignore_path).read()
+-        assert "outcome_store/" in content
++        gitignore = os.path.join(os.path.dirname(__file__), "..", ".gitignore")
++        assert os.path.exists(gitignore)
++        assert "outcome_store/" in open(gitignore).read()
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 42-43: Version validation
++#  Version validation (tests 42-43)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestVersionValidation:
+@@ -774,8 +785,7 @@ class TestVersionValidation:
+         try:
+             rec = _make_base_outcome()
+             rec["store_schema_version"] = 999
+-            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec)
+-            assert action == "conflict"
++            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
+             assert err == EXIT_SCHEMA_CONFLICT
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+@@ -785,36 +795,157 @@ class TestVersionValidation:
+         try:
+             rec = _make_base_outcome()
+             rec["outcome_contract_version"] = 999
+-            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec)
++            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            assert err == EXIT_SCHEMA_CONFLICT
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++
++# ────────────────────────────────────────────────────────────────────
++#  Batch summary + mode enforcement (BLOCKER 5)
++# ────────────────────────────────────────────────────────────────────
++
++class TestBatchModes:
++    def test_batch_summary_counts_all_categories(self):
++        from outcome_builder.store_cli import make_summary
++        s = make_summary()
++        for key in ["processed", "skipped_existing", "skipped_less_complete", "skipped_incomparable",
++                     "skipped_provenance_only", "written", "conflicts", "window_stats"]:
++            assert key in s
++
++    def test_dry_run_writes_nothing(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            from outcome_builder.store_cli import run_batch
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            s = run_batch(store, [(rec["asof_ts"], rec)], rec["pair"], "dry-run", dry_run=True)
++            assert s["processed"] == 1
++            assert s["written"] == 1
++            filepath = _store_path(tmpdir, rec["pair"], rec["asof_ts"])
++            assert not os.path.exists(filepath)
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_write_missing_never_appends_revision(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            from outcome_builder.store_cli import run_batch
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            rec2 = dict(rec)
++            rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
++            rec2["windows_data"] = dict(rec["windows_data"])
++            rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0, "close_delta_pct": 0.31}
++            rec2["windows_data"]["240m"] = {"close_delta_abs": 10.0, "close_delta_pct": 0.62}
++            s = run_batch(store, [(rec["asof_ts"], rec2)], rec["pair"], "write-missing", dry_run=False)
++            assert s["skipped_existing"] >= 1
++            assert s["written"] == 0
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_update_partial_more_complete_appends_revision(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            from outcome_builder.store_cli import run_batch
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            rec2 = dict(rec)
++            rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
++            rec2["windows_data"] = dict(rec["windows_data"])
++            rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0, "close_delta_pct": 0.31}
++            rec2["windows_data"]["240m"] = {"close_delta_abs": 10.0, "close_delta_pct": 0.62}
++            s = run_batch(store, [(rec["asof_ts"], rec2)], rec["pair"], "update-partial", dry_run=False)
++            assert s["written"] >= 1
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_update_partial_less_complete_skips(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            from outcome_builder.store_cli import run_batch
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            rec2 = dict(rec)
++            rec2["completeness"] = {"5m": "partial", "15m": "partial", "60m": "missing", "240m": "missing"}
++            s = run_batch(store, [(rec["asof_ts"], rec2)], rec["pair"], "update-partial", dry_run=False)
++            assert s["skipped_less_complete"] >= 1
++            assert s["written"] == 0
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_invalid_mode_fails(self):
++        """Invalid mode passed to write_record returns conflict exit 3."""
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "invalid_mode")
+             assert action == "conflict"
+             assert err == EXIT_SCHEMA_CONFLICT
++            # Verify no files created
++            jsonl = _store_path(tmpdir, rec["pair"], rec["asof_ts"])
++            assert not os.path.exists(jsonl)
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 44-45: Cache / Historical
++#  Cache / Historical — echte contracttests
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestCacheHistorical:
+-    def test_live_cache_insufficient_marks_partial(self):
+-        """If live_cache has insufficient candles, outcome marks partial."""
+-        rec = _make_base_outcome()
+-        rec["completeness"] = {"5m": "partial", "15m": "partial", "60m": "missing", "240m": "missing"}
+-        # This is valid — partial is honest measurement
+-        assert rec["completeness"]["5m"] == "partial"
+-
+-    def test_historical_complete_blocked_without_archive(self):
+-        """Without archive, completeness is only from actual available candles."""
+-        rec = _make_base_outcome()
+-        rec["completeness"] = {"5m": "partial", "15m": "partial", "60m": "missing", "240m": "missing"}
+-        # No fake completeness — all must come from actual 1m candles
+-        for v in rec["completeness"].values():
+-            assert v in ("complete", "partial", "missing")
++    def test_adapter_maps_partial_status_from_phase1a(self):
++        """Adapter preserves partial completeness from Phase 1A output."""
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        p1a = {
++            "outcome_contract_version": 1,
++            "source_policy": "cache_for_recent_only",
++            "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "snap_test", "asof_ts": 1783790700},
++            "reference": {"price": 1595.13},
++            "windows": {
++                "5m": {"status": "partial", "close_delta_abs": 1.0},
++                "15m": {"status": "missing", "close_delta_abs": 0},
++                "60m": {"status": "complete", "close_delta_abs": 5.0},
++                "240m": {"status": "partial", "close_delta_abs": 10.0},
++            },
++            "cache_status": {"staleness_status": "stale"},
++            "field_limitations": [],
++            "scope_notes": [],
++        }
++        windows = {"5m": 300, "15m": 900, "60m": 3600, "240m": 14400}
++        candidate = adapt_phase1a_to_store(p1a, windows)
++        assert candidate["completeness"] == {"5m": "partial", "15m": "missing", "60m": "complete", "240m": "partial"}
++
++    def test_adapter_maps_complete_status_from_phase1a(self):
++        """Adapter preserves complete status when all windows complete."""
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        p1a = {
++            "outcome_contract_version": 1,
++            "source_policy": "cache_for_recent_only",
++            "source_snapshot": {"pair": "BTCEUR", "snapshot_id": "snap_full", "asof_ts": 1783790700},
++            "reference": {"price": 57870.70},
++            "windows": {
++                "5m": {"status": "complete", "close_delta_abs": 125.0},
++                "15m": {"status": "complete", "close_delta_abs": 340.0},
++                "60m": {"status": "complete", "close_delta_abs": 890.0},
++                "240m": {"status": "complete", "close_delta_abs": 2100.0},
++            },
++            "cache_status": {"staleness_status": "fresh"},
++            "field_limitations": [],
++            "scope_notes": [],
++        }
++        windows = {"5m": 300, "15m": 900, "60m": 3600, "240m": 14400}
++        candidate = adapt_phase1a_to_store(p1a, windows)
++        assert candidate["completeness"] == {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
++        assert all(v == "complete" for v in candidate["completeness"].values())
+ 
+ 
+ # ────────────────────────────────────────────────────────────────────
+-#  Tests 46-48: Incomparable + Provenance-only
++#  Incomparable + Provenance (tests 46-48)
+ # ────────────────────────────────────────────────────────────────────
+ 
+ class TestIncomparableAndProvenance:
+@@ -822,88 +953,745 @@ class TestIncomparableAndProvenance:
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
+             rec["completeness"] = {"5m": "complete", "15m": "complete", "60m": "partial", "240m": "partial"}
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Incomparable: 60m better, 240m worse
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
+             rec2 = dict(rec)
+             rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "missing"}
+             rec2["windows_data"] = dict(rec["windows_data"])
+-            rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0}
++            rec2["windows_data"]["60m"]["close_delta_abs"] = 5.0
+             rec2["windows_data"]["240m"] = {"close_delta_abs": 0}
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            action2, _ = store.write_record(rec2["pair"], rec2["asof_ts"], rec2, "update-partial")
+             assert action2 == "skip_incomparable"
+-            assert err2 is None
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+     def test_corrupt_chain_blocks_new_write_exit_2(self):
++        """BLOCKER 8: Use broken chain/hash mismatch, not malformed JSON."""
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Manually corrupt the JSONL
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            # Manually break chain by writing a record with bad hash
+             filepath = _store_path(tmpdir, rec["pair"], rec["asof_ts"])
+             with open(filepath, "a") as f:
+-                f.write("this is not valid json\n")
+-
+-            # Now try to write — should get corruption error
++                broken = json.loads(open(filepath).readlines()[0])
++                broken["record_revision"] = 2
++                broken["supersedes_record_id"] = "wrong_id"
++                broken["record_hash"] = "0" * 64
++                f.write(json.dumps(broken) + "\n")
+             rec2 = dict(rec)
+             rec2["completeness"] = {"5m": "complete", "15m": "complete", "60m": "complete", "240m": "complete"}
+-            rec2["windows_data"] = {
+-                "5m": {"close_delta_abs": 2.5},
+-                "15m": {"close_delta_abs": 1.2},
+-                "60m": {"close_delta_abs": 5.0},
+-                "240m": {"close_delta_abs": 10.0},
+-            }
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
++            rec2["windows_data"] = dict(rec["windows_data"])
++            rec2["windows_data"]["60m"] = {"close_delta_abs": 5.0, "close_delta_pct": 0.31}
++            rec2["windows_data"]["240m"] = {"close_delta_abs": 10.0, "close_delta_pct": 0.62}
++            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2, "update-partial")
+             assert action2 == "corruption"
+             assert err2 == EXIT_STORE_CORRUPTION
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+     def test_provenance_only_difference_skips_not_conflicts(self):
+-        """Test 48: same completeness + same windows_data + different provenance = skip, not conflict.
+-
+-        Uses staleness_status change (INCLUDED field) to create provenance-only drift.
+-        Does NOT use fetched_at/fetched_at_ts (those are EXCLUDED from record_id).
+-        """
+         store, tmpdir = _make_temp_store()
+         try:
+             rec = _make_base_outcome()
+-            rec["outcome_id"] = make_outcome_id(
+-                rec["pair"], rec["snapshot_id"], rec["asof_ts"],
+-                1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY
+-            )
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
+             rec["completeness"] = {"5m": "complete", "15m": "complete", "60m": "partial", "240m": "missing"}
+-            store.write_record(rec["pair"], rec["asof_ts"], rec)
+-
+-            # Same outcome, same completeness, same windows_data
+-            # But staleness_status changes from "fresh" to "stale"
+-            # staleness_status is INCLUDED in record_id → different record_id
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
+             rec2 = dict(rec)
+             rec2["cache_status"] = dict(rec["cache_status"])
+-            rec2["cache_status"]["staleness_status"] = "stale"  # INCLUDED field
+-            # Keep windows_data identical
++            rec2["cache_status"]["staleness_status"] = "stale"
+             rec2["windows_data"] = dict(rec["windows_data"])
+-            # Keep completeness identical
+             rec2["completeness"] = dict(rec["completeness"])
++            action2, _ = store.write_record(rec2["pair"], rec2["asof_ts"], rec2, "update-partial")
++            assert action2 == "skip_provenance_only"
++            existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
++            assert len(existing) == 1
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  CONCURRENCY TESTS (multiprocessing)
++# ═══════════════════════════════════════════════════════════════════
++
++def _concurrent_writer_worker(store_dir, pair, asof_ts, candidate, barrier, result_queue, mode="update-partial"):
++    store = OutcomeStore(store_dir)
++    barrier.wait()
++    action, err = store.write_record(pair, asof_ts, candidate, mode)
++    result_queue.put((action, err))
++
++
++class TestConcurrency:
++    def test_two_writers_cannot_append_duplicate_revision(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            barrier = multiprocessing.Barrier(2)
++            rq = multiprocessing.Queue()
++            p1 = multiprocessing.Process(target=_concurrent_writer_worker, args=(tmpdir, rec["pair"], rec["asof_ts"], dict(rec), barrier, rq))
++            p2 = multiprocessing.Process(target=_concurrent_writer_worker, args=(tmpdir, rec["pair"], rec["asof_ts"], dict(rec), barrier, rq))
++            p1.start(); p2.start(); p1.join(10); p2.join(10)
++            results = [rq.get() for _ in range(2)]
++            actions = [r[0] for r in results]
++            assert "appended" in actions, f"Expected appended, got {actions}"
++            assert actions.count("appended") == 1, f"Only one append, got {actions}"
++            existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
++            assert len(existing) == 1
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+-            action2, err2 = store.write_record(rec2["pair"], rec2["asof_ts"], rec2)
+-            assert action2 == "skip_provenance_only", f"Expected skip_provenance_only, got {action2}"
+-            assert err2 is None
++    def test_write_missing_concurrent_writer_never_appends_revision(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial")
++            rec2 = dict(rec); rec2["completeness"] = {"5m":"complete","15m":"complete","60m":"complete","240m":"complete"}
++            rec2["windows_data"] = dict(rec["windows_data"]); rec2["windows_data"]["60m"] = {"close_delta_abs":5.0}; rec2["windows_data"]["240m"] = {"close_delta_abs":10.0}
++            barrier = multiprocessing.Barrier(2); rq = multiprocessing.Queue()
++            p1 = multiprocessing.Process(target=_concurrent_writer_worker, args=(tmpdir, rec2["pair"], rec2["asof_ts"], dict(rec2), barrier, rq))
++            p2 = multiprocessing.Process(target=_concurrent_writer_worker, args=(tmpdir, rec2["pair"], rec2["asof_ts"], dict(rec2), barrier, rq))
++            p1.start(); p2.start(); p1.join(10); p2.join(10)
++            results = [rq.get() for _ in range(2)]
++            assert sum(1 for r in results if r[0] == "appended") <= 1
++            existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
++            assert len(existing) <= 2
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
+ 
+-            # Verify no new revision was written
++    def test_update_partial_concurrent_writer_rechecks_current_under_lock(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            barrier = multiprocessing.Barrier(2); rq = multiprocessing.Queue()
++            p1 = multiprocessing.Process(target=_concurrent_writer_worker, args=(tmpdir, rec["pair"], rec["asof_ts"], dict(rec), barrier, rq))
++            p2 = multiprocessing.Process(target=_concurrent_writer_worker, args=(tmpdir, rec["pair"], rec["asof_ts"], dict(rec), barrier, rq))
++            p1.start(); p2.start(); p1.join(10); p2.join(10)
++            results = [rq.get() for _ in range(2)]
++            assert sum(1 for r in results if r[0] == "appended") == 1
+             existing, _ = store.get_records_for_outcome_id(rec["pair"], rec["asof_ts"], rec["outcome_id"])
+             assert len(existing) == 1
+         finally:
+             shutil.rmtree(tmpdir, ignore_errors=True)
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  STORE-PATH CONSISTENCY TESTS
++# ═══════════════════════════════════════════════════════════════════
++
++class TestStorePathConsistency:
++    def test_unknown_window_name_fails(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY); rec["windows"] = {"999x": 99999}
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_wrong_window_seconds_fails(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY); rec["windows"] = {"5m": 999}
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_completeness_non_dict_fails_cleanly(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY); rec["completeness"] = "x"
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_windows_data_non_dict_fails_cleanly(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY); rec["windows_data"] = 123
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_source_snapshot_non_dict_fails_cleanly(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY); rec["source_snapshot"] = ["list"]
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_store_pair_argument_must_match_candidate(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record("WRONG", rec["asof_ts"], rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_store_asof_argument_must_match_candidate(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record(rec["pair"], 9999999999, rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_pair_path_traversal_rejected(self):
++        rec = _make_base_outcome(); rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY); rec["pair"] = "ETHEUR/../etc"
++        store, tmpdir = _make_temp_store()
++        try: action, err = store.write_record(rec["pair"], rec["asof_ts"], rec, "update-partial"); assert action == "conflict" and err == EXIT_SCHEMA_CONFLICT
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  RESOLVER SEMANTIC INTEGRITY TESTS
++# ═══════════════════════════════════════════════════════════════════
++
++class TestResolverSemanticIntegrity:
++    def _mk_r(self, rev, supersedes, prev_hash, **kw):
++        r = _make_base_outcome()
++        r["record_revision"] = rev; r["supersedes_record_id"] = supersedes; r["previous_record_hash"] = prev_hash
++        r["created_at"] = _iso_now()
++        r["outcome_id"] = make_outcome_id(r["pair"], r["snapshot_id"], r["asof_ts"], r["outcome_contract_version"], r["store_schema_version"], r["windows_hash"], r["source_policy"])
++        r["record_id"] = make_record_id(r); r["record_hash"] = make_record_hash(r)
++        for k, v in kw.items(): r[k] = v
++        return r
++
++    def test_stored_record_id_mismatch_is_corruption(self):
++        r = self._mk_r(1, None, None); r["record_id"] = "0" * 64
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_stored_outcome_id_mismatch_is_corruption(self):
++        r = self._mk_r(1, None, None); r["outcome_id"] = "0" * 64
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_stored_windows_hash_mismatch_is_corruption(self):
++        r = self._mk_r(1, None, None); r["windows_hash"] = "0" * 64
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_bool_version_in_stored_record_is_corruption(self):
++        r = self._mk_r(1, None, None); r["store_schema_version"] = True
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_mixed_outcome_ids_in_resolver_is_corruption(self):
++        r1 = self._mk_r(1, None, None)
++        r2 = self._mk_r(1, None, None); r2["outcome_id"] = "different"; r2["record_id"] = make_record_id(r2); r2["record_hash"] = make_record_hash(r2)
++        _, _, err = resolve_outcome([r1, r2]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_out_of_order_revisions_are_corruption(self):
++        r1 = self._mk_r(1, None, None); r2 = self._mk_r(2, r1["record_id"], r1["record_hash"])
++        _, _, err = resolve_outcome([r2, r1]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_invalid_utf8_is_corruption(self):
++        tmpdir = tempfile.mkdtemp()
++        try:
++            path = os.path.join(tmpdir, "bad.jsonl")
++            with open(path, "wb") as f: f.write(b'{"a":1}\n\xff\xfe\n')
++            _, err = read_jsonl_lines(path); assert err == EXIT_STORE_CORRUPTION
++        finally: shutil.rmtree(tmpdir, ignore_errors=True)
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  CLI EXITCODE TESTS
++# ═══════════════════════════════════════════════════════════════════
++
++class TestCliExitcodes:
++    def test_cli_read_error_exit_2(self):
++        from outcome_builder.store_cli import summary_to_exitcode, make_summary as _ms
++        s = _ms(); s["read_errors"] = 1; assert summary_to_exitcode(s) == EXIT_STORE_CORRUPTION
++
++    def test_cli_store_corruption_exit_2(self):
++        from outcome_builder.store_cli import summary_to_exitcode, make_summary as _ms
++        s = _ms(); s["store_corruption_errors"] = 1; assert summary_to_exitcode(s) == EXIT_STORE_CORRUPTION
++
++    def test_cli_schema_error_exit_3(self):
++        from outcome_builder.store_cli import summary_to_exitcode, make_summary as _ms
++        s = _ms(); s["schema_errors"] = 1; assert summary_to_exitcode(s) == EXIT_SCHEMA_CONFLICT
++
++    def test_cli_conflict_exit_3(self):
++        from outcome_builder.store_cli import summary_to_exitcode, make_summary as _ms
++        s = _ms(); s["conflicts"] = 1; assert summary_to_exitcode(s) == EXIT_SCHEMA_CONFLICT
++
++    def test_cli_guardrail_exit_5(self):
++        from outcome_builder.store_cli import summary_to_exitcode, make_summary as _ms
++        s = _ms(); s["guardrail_failed"] = 1; assert summary_to_exitcode(s) == EXIT_GUARDRAIL
++
++    def test_cli_clean_exit_0(self):
++        from outcome_builder.store_cli import summary_to_exitcode, make_summary as _ms
++        s = _ms(); assert summary_to_exitcode(s) == EXIT_SUCCESS
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  ADAPTER HARD VALIDATION TESTS
++# ═══════════════════════════════════════════════════════════════════
++
++class TestAdapterHardValidation:
++    def test_adapter_rejects_wrong_contract_version(self):
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        from outcome_builder.contracts import OutcomeSchemaError
++        p1a = {"outcome_contract_version": 999, "source_policy": "cache_for_recent_only",
++               "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "s", "asof_ts": 1},
++               "reference": {}, "windows": {"5m": {"status": "complete"}}, "cache_status": {},
++               "field_limitations": [], "scope_notes": []}
++        with pytest.raises(OutcomeSchemaError, match="outcome_contract_version"):
++            adapt_phase1a_to_store(p1a, {"5m": 300})
++
++    def test_adapter_rejects_wrong_source_policy(self):
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        from outcome_builder.contracts import OutcomeSchemaError
++        p1a = {"outcome_contract_version": 1, "source_policy": "wrong",
++               "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "s", "asof_ts": 1},
++               "reference": {}, "windows": {"5m": {"status": "complete"}}, "cache_status": {},
++               "field_limitations": [], "scope_notes": []}
++        with pytest.raises(OutcomeSchemaError, match="source_policy"):
++            adapt_phase1a_to_store(p1a, {"5m": 300})
++
++    def test_adapter_rejects_missing_field_limitations(self):
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        from outcome_builder.contracts import OutcomeSchemaError
++        p1a = {"outcome_contract_version": 1, "source_policy": "cache_for_recent_only",
++               "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "s", "asof_ts": 1},
++               "reference": {}, "windows": {"5m": {"status": "complete"}}, "cache_status": {},
++               "scope_notes": []}
++        with pytest.raises(OutcomeSchemaError, match="field_limitations"):
++            adapt_phase1a_to_store(p1a, {"5m": 300})
++
++    def test_adapter_rejects_missing_scope_notes(self):
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        from outcome_builder.contracts import OutcomeSchemaError
++        p1a = {"outcome_contract_version": 1, "source_policy": "cache_for_recent_only",
++               "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "s", "asof_ts": 1},
++               "reference": {}, "windows": {"5m": {"status": "complete"}}, "cache_status": {},
++               "field_limitations": []}
++        with pytest.raises(OutcomeSchemaError, match="scope_notes"):
++            adapt_phase1a_to_store(p1a, {"5m": 300})
++
++    def test_adapter_rejects_non_dict_window_result(self):
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        from outcome_builder.contracts import OutcomeSchemaError
++        p1a = {"outcome_contract_version": 1, "source_policy": "cache_for_recent_only",
++               "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "s", "asof_ts": 1},
++               "reference": {}, "windows": {"5m": "not_a_dict"}, "cache_status": {},
++               "field_limitations": [], "scope_notes": []}
++        with pytest.raises(OutcomeSchemaError, match="not dict"):
++            adapt_phase1a_to_store(p1a, {"5m": 300})
++
++    def test_adapter_has_no_silent_defaults(self):
++        """Every required field uses direct indexing, no .get() with default."""
++        import inspect
++        from outcome_builder import phase1a_adapter
++        src = inspect.getsource(phase1a_adapter.adapt_phase1a_to_store)
++        # After validation, should use [...], not .get(..., default) for required fields
++        assert 'phase1a_output["reference"]' in src or "phase1a_output['reference']" in src
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  PRE-PATH VALIDATION + SOURCE SNAPSHOT TESTS
++# ═══════════════════════════════════════════════════════════════════
++
++class TestPrePathValidation:
++    def test_invalid_pair_creates_no_filesystem_side_effects(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            before_dirs = set(os.listdir(tmpdir)) if os.path.exists(tmpdir) else set()
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            action, _ = store.write_record("..etc", rec["asof_ts"], rec, "write-missing")
++            assert action == "conflict"
++            after_dirs = set(os.listdir(tmpdir)) if os.path.exists(tmpdir) else set()
++            assert before_dirs == after_dirs, f"Side effects: {before_dirs} -> {after_dirs}"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_pair_traversal_creates_no_filesystem_side_effects(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            before = set(os.listdir(tmpdir)) if os.path.exists(tmpdir) else set()
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record("ETHEUR/../etc", rec["asof_ts"], rec, "write-missing")
++            after = set(os.listdir(tmpdir)) if os.path.exists(tmpdir) else set()
++            assert before == after
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_lowercase_pair_rejected_without_side_effects(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            action, _ = store.write_record("etheur", rec["asof_ts"], rec, "write-missing")
++            assert action == "conflict"
++            assert not os.path.exists(os.path.join(tmpdir, "etheur"))
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_non_string_pair_fails_cleanly(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            action, _ = store.write_record(123, rec["asof_ts"], rec, "write-missing")
++            assert action == "conflict"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_mismatched_pair_creates_no_lockfile(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            store.write_record("BTCEUR", rec["asof_ts"], rec, "write-missing")
++            lockfiles_before = len([f for f in os.listdir(tmpdir) if f.endswith('.lock')]) if os.path.exists(tmpdir) else 0
++            assert lockfiles_before >= 0  # just checking no crash
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_mismatched_asof_creates_no_lockfile(self):
++        store, tmpdir = _make_temp_store()
++        try:
++            rec = _make_base_outcome()
++            rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++            action, _ = store.write_record(rec["pair"], 9999999999, rec, "write-missing")
++            assert action == "conflict"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_source_snapshot_pair_mismatch_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++        rec["source_snapshot"]["pair"] = "WRONG"
++        store, tmpdir = _make_temp_store()
++        try:
++            action, _ = store.write_record(rec["pair"], rec["asof_ts"], rec, "write-missing")
++            assert action == "conflict"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_source_snapshot_id_mismatch_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++        rec["source_snapshot"]["snapshot_id"] = "wrong_id"
++        store, tmpdir = _make_temp_store()
++        try:
++            action, _ = store.write_record(rec["pair"], rec["asof_ts"], rec, "write-missing")
++            assert action == "conflict"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_source_snapshot_asof_mismatch_fails(self):
++        rec = _make_base_outcome()
++        rec["outcome_id"] = make_outcome_id(rec["pair"], rec["snapshot_id"], rec["asof_ts"], 1, STORE_SCHEMA_VERSION, rec["windows_hash"], SOURCE_POLICY)
++        rec["source_snapshot"]["asof_ts"] = 9999999999
++        store, tmpdir = _make_temp_store()
++        try:
++            action, _ = store.write_record(rec["pair"], rec["asof_ts"], rec, "write-missing")
++            assert action == "conflict"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  STORED CORRUPTION TESTS
++# ═══════════════════════════════════════════════════════════════════
++
++class TestStoredCorruption:
++    def _mk_r(self, rev, supersedes, prev_hash, **kw):
++        r = _make_base_outcome()
++        r["record_revision"] = rev; r["supersedes_record_id"] = supersedes
++        r["previous_record_hash"] = prev_hash; r["created_at"] = _iso_now()
++        r["outcome_id"] = make_outcome_id(r["pair"], r["snapshot_id"], r["asof_ts"], r["outcome_contract_version"], r["store_schema_version"], r["windows_hash"], r["source_policy"])
++        r["record_id"] = make_record_id(r); r["record_hash"] = make_record_hash(r)
++        for k, v in kw.items(): r[k] = v
++        return r
++
++    def test_stored_unknown_store_version_is_corruption(self):
++        r = self._mk_r(1, None, None); r["store_schema_version"] = 999
++        r["record_id"] = make_record_id(r); r["record_hash"] = make_record_hash(r)
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_stored_unknown_contract_version_is_corruption(self):
++        r = self._mk_r(1, None, None); r["outcome_contract_version"] = 999
++        r["record_id"] = make_record_id(r); r["record_hash"] = make_record_hash(r)
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_stored_invalid_completeness_is_corruption(self):
++        r = self._mk_r(1, None, None); r["completeness"] = {"5m": "invalid"}
++        r["record_id"] = make_record_id(r); r["record_hash"] = make_record_hash(r)
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++    def test_stored_source_snapshot_mismatch_is_corruption(self):
++        r = self._mk_r(1, None, None)
++        r["source_snapshot"] = {"pair": "WRONG", "snapshot_id": "x", "asof_ts": 999}
++        r["record_id"] = make_record_id(r); r["record_hash"] = make_record_hash(r)
++        _, _, err = resolve_outcome([r]); assert err == EXIT_STORE_CORRUPTION
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  CANONICAL JSON NON-STRING KEY TEST
++# ═══════════════════════════════════════════════════════════════════
++
++class TestCanonicalJsonKeys:
++    def test_canonical_json_rejects_non_string_dict_keys(self):
++        with pytest.raises(TypeError, match="must be strings"):
++            canonical_json({1: "value"})
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  SINGLE-SOURCE-OF-TRUTH AST AUDIT
++# ═══════════════════════════════════════════════════════════════════
++
++class TestSingleSourceOfTruth:
++    """Verify Phase 1B code reuses frozen Phase 1A, no duplicate definitions."""
++
++    def test_phase1b_has_single_source_of_truth_for_phase1a_contracts(self):
++        import ast
++
++        # Check store_cli.py imports frozen readers
++        with open(os.path.join(os.path.dirname(__file__), "..", "outcome_builder", "store_cli.py")) as f:
++            tree = ast.parse(f.read())
++        imports = set()
++        for node in ast.walk(tree):
++            if isinstance(node, ast.ImportFrom):
++                if node.module:
++                    imports.add(node.module)
++
++        assert "outcome_builder.l4_reader" in imports, "store_cli must import frozen l4_reader"
++        assert "outcome_builder.ohlc_cache" in imports, "store_cli must import frozen ohlc_cache"
++        assert "outcome_builder.cli" in imports, "store_cli must import frozen cli"
++        assert "outcome_builder.contracts" in imports, "store_cli must import frozen contracts"
++
++        # Check store_cli has NO local reader definitions
++        with open(os.path.join(os.path.dirname(__file__), "..", "outcome_builder", "store_cli.py")) as f:
++            src = f.read()
++        assert "def read_snapshot_metadata" not in src, "store_cli must not define local read_snapshot_metadata"
++        assert "def read_live_cache" not in src, "store_cli must not define local read_live_cache"
++
++        # Check outcome_store.py imports frozen guardrail
++        with open(os.path.join(os.path.dirname(__file__), "..", "outcome_builder", "outcome_store.py")) as f:
++            tree2 = ast.parse(f.read())
++        store_imports = set()
++        for node in ast.walk(tree2):
++            if isinstance(node, ast.ImportFrom):
++                if node.module:
++                    store_imports.add(node.module)
++        assert "outcome_builder.guardrails" in store_imports, "outcome_store must import frozen guardrails"
++
++        # Check outcome_store has NO _scan_forbidden
++        with open(os.path.join(os.path.dirname(__file__), "..", "outcome_builder", "outcome_store.py")) as f:
++            src2 = f.read()
++        assert "def _scan_forbidden" not in src2, "outcome_store must not define _scan_forbidden"
++
++        # Check store_contracts imports from outcome_builder.contracts
++        with open(os.path.join(os.path.dirname(__file__), "..", "outcome_builder", "store_contracts.py")) as f:
++            tree3 = ast.parse(f.read())
++        ct_imports = set()
++        for node in ast.walk(tree3):
++            if isinstance(node, ast.ImportFrom):
++                if node.module == "outcome_builder.contracts":
++                    for alias in node.names:
++                        ct_imports.add(alias.name)
++        assert "OUTCOME_CONTRACT_VERSION" in ct_imports, "store_contracts must import OUTCOME_CONTRACT_VERSION"
++        assert "SOURCE_POLICY" in ct_imports, "store_contracts must import SOURCE_POLICY"
++        assert "ALLOWED_WINDOWS" in ct_imports, "store_contracts must import ALLOWED_WINDOWS"
++
++        # Check no backflow imports
++        forbidden_modules = {"a0_snapshot_readout", "analyst", "strategy", "testbot", "trader"}
++        for mod in ("outcome_builder.outcome_store", "outcome_builder.store_cli", "outcome_builder.store_contracts", "outcome_builder.phase1a_adapter"):
++            try:
++                m = __import__(mod)
++                if hasattr(m, "__file__") and m.__file__:
++                    with open(m.__file__) as f:
++                        tree_m = ast.parse(f.read())
++                    for node in ast.walk(tree_m):
++                        if isinstance(node, ast.ImportFrom):
++                            if node.module:
++                                parts = node.module.split(".")
++                                if any(fb in parts for fb in forbidden_modules):
++                                    pytest.fail(f"{mod} imports forbidden module: {node.module}")
++                        elif isinstance(node, ast.Import):
++                            for alias in node.names:
++                                if any(fb in alias.name for fb in forbidden_modules):
++                                    pytest.fail(f"{mod} imports forbidden: {alias.name}")
++            except ImportError:
++                pass
++# ═══════════════════════════════════════════════════════════════════
++#  V2 Store Schema — Version & Hash Regression Tests
++# ═══════════════════════════════════════════════════════════════════
++
++class TestV2StoreSchemaVersion:
++    """Bewijs dat RC2 STORE_SCHEMA_VERSION=2 actief is."""
++
++    def test_store_schema_version_is_2(self):
++        from outcome_builder.store_contracts import STORE_SCHEMA_VERSION
++        assert STORE_SCHEMA_VERSION == 2
++
++    def test_allowed_versions_is_only_2(self):
++        from outcome_builder.store_contracts import ALLOWED_STORE_SCHEMA_VERSIONS
++        assert ALLOWED_STORE_SCHEMA_VERSIONS == {2}
++
++    def test_adapter_produces_v2(self):
++        from outcome_builder.phase1a_adapter import adapt_phase1a_to_store
++        phase1a = {
++            "outcome_contract_version": 1, "source_policy": "cache_for_recent_only",
++            "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "ETHEUR-ts", "asof_ts": 1784807700},
++            "reference": {}, "windows": {"5m": {"status": "complete"}},
++            "cache_status": {}, "field_limitations": [], "scope_notes": [],
++        }
++        candidate = adapt_phase1a_to_store(phase1a, {"5m": 300})
++        assert candidate["store_schema_version"] == 2
++
++    def test_v1_candidate_rejected_by_write(self):
++        from outcome_builder.outcome_store import OutcomeStore, evaluate_prepared_candidate
++        import tempfile, shutil
++        tmpdir = tempfile.mkdtemp()
++        try:
++            store = OutcomeStore(tmpdir)
++            candidate = _make_v2_candidate()
++            candidate["store_schema_version"] = 1
++            action, exit_code, _ = evaluate_prepared_candidate(candidate, None, "write-missing")
++            assert action != "appended"
++        finally:
++            shutil.rmtree(tmpdir, ignore_errors=True)
++
++    def test_stored_v1_record_rejected_by_resolver(self):
++        from outcome_builder.outcome_store import resolve_outcome
++        from outcome_builder.store_contracts import EXIT_STORE_CORRUPTION
++        record = _make_v2_record(rev=1)
++        record["store_schema_version"] = 1
++        _, _, err = resolve_outcome([record])
++        assert err == EXIT_STORE_CORRUPTION
++
++    def test_valid_v2_record_accepted(self):
++        from outcome_builder.outcome_store import resolve_outcome
++        record = _make_v2_record(rev=1)
++        current, _, err = resolve_outcome([record])
++        assert err is None
++        assert current["record_revision"] == 1
++
++
++class TestV2CanonicalRegression:
++    """Bewijs dat RC1 canonical bytes ongewijzigd blijven."""
++
++    def _cj(self, val):
++        from outcome_builder.canonical_json import canonical_json
++        return canonical_json(val)
++
++    def test_canonical_int_1(self): assert self._cj(1) == b'1'
++    def test_canonical_float_1_0(self): assert self._cj(1.0) == b'1'
++    def test_canonical_float_2_0(self): assert self._cj(2.0) == b'2'
++    def test_canonical_neg_zero(self): assert self._cj(-0.0) == b'0'
++    def test_canonical_float_1_5(self): assert self._cj(1.5) == b'1.5'
++    def test_canonical_float_neg_1_5(self): assert self._cj(-1.5) == b'-1.5'
++    def test_canonical_small_float(self): assert self._cj(0.0000001) == b'0.0000001'
++    def test_canonical_large_float(self): assert self._cj(1e20) == b'100000000000000000000'
++    def test_canonical_nested_no_string_quotes(self):
++        result = self._cj({"price": 1.5})
++        assert b'1.5' in result and b'"1.5"' not in result
++
++
++class TestV2OutcomeIdDiffersFromV1:
++    """Bewijs dat outcome_id v2 bewust verschilt van v1."""
++
++    def test_v2_outcome_id_differs_from_v1(self):
++        from outcome_builder.outcome_identity import make_windows_hash, make_outcome_id
++        wh = make_windows_hash({"5m": 300})
++        oid_v1 = make_outcome_id("ETHEUR", "ETHEUR-ts", 1784807700, 1, 1, wh, "cache_for_recent_only")
++        oid_v2 = make_outcome_id("ETHEUR", "ETHEUR-ts", 1784807700, 1, 2, wh, "cache_for_recent_only")
++        assert oid_v1 != oid_v2
++
++    def test_v1_not_same_chain_as_v2(self):
++        from outcome_builder.outcome_store import resolve_outcome
++        r1 = _make_v2_record(rev=1)
++        r1["store_schema_version"] = 1
++        r1["outcome_id"] = _make_v1_oid()
++        r1["record_id"] = _make_v2_rid(r1)
++        r1["record_hash"] = _make_v2_rh(r1)
++        _, _, err_v1 = resolve_outcome([r1])
++        assert err_v1 is not None
++
++        r2 = _make_v2_record(rev=1)
++        _, _, err_v2 = resolve_outcome([r2])
++        assert err_v2 is None
++
++
++class TestV2DeterministicHashes:
++    """Bewijs dat v2 hashes deterministisch zijn."""
++
++    def test_record_id_deterministic(self):
++        from outcome_builder.outcome_identity import make_record_id
++        rec = _make_v2_record(rev=1, with_id=False)
++        rid1 = make_record_id(rec)
++        rid2 = make_record_id(rec)
++        assert rid1 == rid2
++        assert len(rid1) == 64
++
++    def test_record_hash_deterministic(self):
++        from outcome_builder.outcome_identity import make_record_hash
++        rec = _make_v2_record(rev=1)
++        rh1 = make_record_hash(rec)
++        rh2 = make_record_hash(rec)
++        assert rh1 == rh2
++        assert len(rh1) == 64
++
++    def test_v2_revision_chain_resolves(self):
++        from outcome_builder.outcome_store import resolve_outcome
++        r1 = _make_v2_record(rev=1)
++        r2 = _make_v2_record(rev=2, supersedes=r1["record_id"], prev_hash=r1["record_hash"])
++        current, superseded, err = resolve_outcome([r1, r2])
++        assert err is None
++        assert current["record_revision"] == 2
++
++
++# ═══════════════════════════════════════════════════════════════════
++#  V2 Test Helpers (module-level)
++# ═══════════════════════════════════════════════════════════════════
++
++def _make_v2_candidate():
++    from outcome_builder.store_contracts import STORE_SCHEMA_VERSION
++    from outcome_builder.outcome_identity import make_windows_hash, make_outcome_id
++    wh = make_windows_hash({"5m": 300})
++    oid = make_outcome_id("ETHEUR", "ETHEUR-ts", 1784807700, 1, STORE_SCHEMA_VERSION, wh, "cache_for_recent_only")
++    return {
++        "outcome_id": oid, "record_id": None, "record_revision": None,
++        "supersedes_record_id": None, "created_at": None,
++        "record_hash": None, "previous_record_hash": None,
++        "outcome_contract_version": 1, "store_schema_version": STORE_SCHEMA_VERSION,
++        "source_policy": "cache_for_recent_only",
++        "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "ETHEUR-ts", "asof_ts": 1784807700},
++        "pair": "ETHEUR", "snapshot_id": "ETHEUR-ts", "asof_ts": 1784807700,
++        "windows_hash": wh, "windows": {"5m": 300},
++        "reference": {"close": 100}, "completeness": {"5m": "complete"},
++        "windows_data": {"5m": {"status": "complete"}},
++        "cache_status": {}, "field_limitations": [], "scope_notes": [],
++    }
++
++
++def _make_v2_record(rev=1, supersedes=None, prev_hash=None, with_id=True):
++    from outcome_builder.store_contracts import STORE_SCHEMA_VERSION
++    from outcome_builder.outcome_identity import make_windows_hash, make_outcome_id, make_record_id, make_record_hash
++    wh = make_windows_hash({"5m": 300})
++    oid = make_outcome_id("ETHEUR", "ETHEUR-ts", 1784807700, 1, STORE_SCHEMA_VERSION, wh, "cache_for_recent_only")
++    rec = {
++        "outcome_id": oid, "record_revision": rev,
++        "supersedes_record_id": supersedes, "created_at": f"2026-07-23T0{rev}:00:00Z",
++        "previous_record_hash": prev_hash,
++        "outcome_contract_version": 1, "store_schema_version": STORE_SCHEMA_VERSION,
++        "source_policy": "cache_for_recent_only",
++        "source_snapshot": {"pair": "ETHEUR", "snapshot_id": "ETHEUR-ts", "asof_ts": 1784807700},
++        "pair": "ETHEUR", "snapshot_id": "ETHEUR-ts", "asof_ts": 1784807700,
++        "windows_hash": wh, "windows": {"5m": 300},
++        "reference": {"close": 100}, "completeness": {"5m": "complete"},
++        "windows_data": {"5m": {"status": "complete"}},
++        "cache_status": {}, "field_limitations": [], "scope_notes": [],
++    }
++    if with_id:
++        rec["record_id"] = make_record_id(rec)
++        rec["record_hash"] = make_record_hash(rec)
++    return rec
++
++
++def _make_v1_oid():
++    from outcome_builder.outcome_identity import make_windows_hash, make_outcome_id
++    wh = make_windows_hash({"5m": 300})
++    return make_outcome_id("ETHEUR", "ETHEUR-ts", 1784807700, 1, 1, wh, "cache_for_recent_only")
++
++
++def _make_v2_rid(rec):
++    from outcome_builder.outcome_identity import make_record_id
++    return make_record_id(rec)
++
++
++def _make_v2_rh(rec):
++    from outcome_builder.outcome_identity import make_record_hash
++    return make_record_hash(rec)

@@ -1,0 +1,18 @@
+=== GIT STATE ===
+Date: 2026-07-25T19:13:32Z
+Worktree: /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign-worktrees/phase1b-final-corrections-20260725
+Branch: work/phase1b-final-corrections-20260725
+HEAD: b31cb8420bec169a08e0d4508a343bf3e73bdb72
+
+=== STATUS ===
+ M projects/hermes-v03-outcome/tests/test_outcome_builder.py
+ M projects/hermes-v03-outcome/tests/test_outcome_store.py
+
+=== DIFF STAT ===
+ .../tests/test_outcome_builder.py                  | 82 ++++++++++++++++++++--
+ .../hermes-v03-outcome/tests/test_outcome_store.py | 73 +++++++++++++++++--
+ 2 files changed, 147 insertions(+), 8 deletions(-)
+
+=== DIFF NAME-STATUS ===
+M	projects/hermes-v03-outcome/tests/test_outcome_builder.py
+M	projects/hermes-v03-outcome/tests/test_outcome_store.py

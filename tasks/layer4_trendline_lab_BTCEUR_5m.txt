@@ -1,0 +1,73 @@
+Layer 4 Trendline Lab — BTCEUR 5m
+============================================================
+Candles: 200  Fractalen: 50  Toppen: 23  Swing highs: 20
+
+Strength: count=20 min=0.495 max=0.8979 avg=0.6589
+  last_10: [0.8441, 0.5801, 0.61, 0.7874, 0.6803, 0.8979, 0.8256, 0.7181, 0.6783, 0.7562]
+
+Upper points: 10
+  idx=121  strength=0.844  wick=54858.6  body=54838.8
+  idx=126  strength=0.580  wick=54731.7  body=54704.5
+  idx=145  strength=0.610  wick=55594.2  body=55580.0
+  idx=157  strength=0.787  wick=55265.0  body=55157.5
+  idx=162  strength=0.680  wick=55282.6  body=55251.9
+  idx=167  strength=0.898  wick=55345.8  body=55297.8
+  idx=173  strength=0.826  wick=55187.2  body=55132.5
+  idx=180  strength=0.718  wick=55211.7  body=55149.9
+  idx=186  strength=0.678  wick=55184.1  body=55156.4
+  idx=197  strength=0.756  wick=55111.0  body=55050.1
+
+Candidates: 10
+Valid: 2/10
+
+  Candidate 1: p1=121 p2=197 span=76 slope=3.321053
+    valid=False touches=3(+1extra) score=0
+    body_v=50/79(0.633) close_ab=46(0.582) cuts=8(0.101)
+    last_touch=197 since=2
+    rejected: too_many_body_violations:0.633; too_many_closes_above:0.582
+  Candidate 2: p1=126 p2=197 span=71 slope=5.342254
+    valid=False touches=3(+1extra) score=0
+    body_v=53/74(0.716) close_ab=51(0.689) cuts=4(0.054)
+    last_touch=197 since=2
+    rejected: too_many_body_violations:0.716; too_many_closes_above:0.689
+  Candidate 3: p1=121 p2=186 span=65 slope=5.007692
+    valid=False touches=4(+2extra) score=0
+    body_v=34/79(0.430) close_ab=30(0.380) cuts=12(0.152)
+    last_touch=186 since=13
+    rejected: too_many_body_violations:0.430; too_many_closes_above:0.380
+  Candidate 4: p1=126 p2=186 span=60 slope=7.540000
+    valid=False touches=3(+1extra) score=0
+    body_v=45/74(0.608) close_ab=41(0.554) cuts=6(0.081)
+    last_touch=186 since=13
+    rejected: too_many_body_violations:0.608; too_many_closes_above:0.554
+  Candidate 5: p1=121 p2=180 span=59 slope=5.984746
+    valid=False touches=4(+2extra) score=0
+    body_v=31/79(0.392) close_ab=27(0.342) cuts=9(0.114)
+    last_touch=180 since=19
+    rejected: too_many_body_violations:0.392; too_many_closes_above:0.342
+  Candidate 6: p1=126 p2=180 span=54 slope=8.888889
+    valid=False touches=4(+2extra) score=0
+    body_v=35/74(0.473) close_ab=32(0.432) cuts=6(0.081)
+    last_touch=180 since=19
+    rejected: too_many_body_violations:0.473; too_many_closes_above:0.432
+  Candidate 7: p1=121 p2=173 span=52 slope=6.319231
+    valid=False touches=4(+2extra) score=0
+    body_v=31/79(0.392) close_ab=26(0.329) cuts=9(0.114)
+    last_touch=180 since=19
+    rejected: too_many_body_violations:0.392; too_many_closes_above:0.329
+  Candidate 8: p1=145 p2=197 span=52 slope=-9.292308
+    valid=True touches=6(+4extra) score=100
+    body_v=0/55(0.000) close_ab=0(0.000) cuts=0(0.000)
+    last_touch=197 since=2
+  Candidate 9: p1=126 p2=173 span=47 slope=9.691489
+    valid=False touches=4(+2extra) score=0
+    body_v=33/74(0.446) close_ab=30(0.405) cuts=5(0.068)
+    last_touch=180 since=19
+    rejected: too_many_body_violations:0.446; too_many_closes_above:0.405
+  Candidate 10: p1=121 p2=167 span=46 slope=10.591304
+    valid=True touches=5(+3extra) score=0
+    body_v=11/79(0.139) close_ab=11(0.139) cuts=3(0.038)
+    last_touch=167 since=32
+
+Top:
+  Score=100 touches=6 extra=4 violations=0

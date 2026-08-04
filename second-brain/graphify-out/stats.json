@@ -1,11 +1,15 @@
 {
-  "generated": "2026-05-18T04:00:01.242854",
-  "total_nodes": 5,
-  "total_edges": 6,
+  "generated": "2026-06-06T09:09:26.036012",
+  "total_nodes": 46,
+  "total_edges": 51,
   "nodes_by_type": {
-    "log": 1,
+    "unknown": 14,
+    "entity": 4,
     "source_summary": 1,
-    "fix": 2,
-    "project": 1
+    "fix": 7,
+    "concept": 1,
+    "project": 12,
+    "synthesis": 3,
+    "decision": 4
   }
 }

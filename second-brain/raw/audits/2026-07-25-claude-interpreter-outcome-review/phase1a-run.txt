@@ -1,0 +1,54 @@
+test_27_of_240_is_partial (__main__.TestCalculator.test_27_of_240_is_partial) ... ok
+test_candle_at_asof_included (__main__.TestCalculator.test_candle_at_asof_included) ... ok
+test_candle_at_window_end_excluded (__main__.TestCalculator.test_candle_at_window_end_excluded) ... ok
+test_close_delta_remains_signed (__main__.TestCalculator.test_close_delta_remains_signed) ... ok
+test_complete_5m (__main__.TestCalculator.test_complete_5m) ... ok
+test_high_low_correct (__main__.TestCalculator.test_high_low_correct) ... ok
+test_max_down_from_candles (__main__.TestCalculator.test_max_down_from_candles) ... ok
+test_max_down_zero_when_low_above_reference (__main__.TestCalculator.test_max_down_zero_when_low_above_reference) ... ok
+test_max_up_from_candles (__main__.TestCalculator.test_max_up_from_candles) ... ok
+test_missing_240m (__main__.TestCalculator.test_missing_240m) ... ok
+test_missing_window_null_fields (__main__.TestCalculator.test_missing_window_null_fields) ... ok
+test_off_boundary_first_candle_asof (__main__.TestCalculator.test_off_boundary_first_candle_asof) ... ok
+test_partial_60m (__main__.TestCalculator.test_partial_60m) ... ok
+test_invalid_window_exit_3 (__main__.TestCliSubprocess.test_invalid_window_exit_3) ... ok
+test_missing_cache_exit_2 (__main__.TestCliSubprocess.test_missing_cache_exit_2) ... ok
+test_missing_snapshot_exit_2 (__main__.TestCliSubprocess.test_missing_snapshot_exit_2) ... ok
+test_success_exit_0 (__main__.TestCliSubprocess.test_success_exit_0) ... ok
+test_parse_windows_invalid (__main__.TestContracts.test_parse_windows_invalid) ... ok
+test_parse_windows_valid (__main__.TestContracts.test_parse_windows_valid) ... ok
+test_validate_schema_version_missing (__main__.TestContracts.test_validate_schema_version_missing) ... ok
+test_validate_schema_version_ok (__main__.TestContracts.test_validate_schema_version_ok) ... ok
+test_validate_schema_version_unsupported (__main__.TestContracts.test_validate_schema_version_unsupported) ... ok
+test_blocks_lowercase_tp_sl (__main__.TestGuardrails.test_blocks_lowercase_tp_sl) ... ok
+test_blocks_sl_uppercase (__main__.TestGuardrails.test_blocks_sl_uppercase) ... ok
+test_blocks_stop_loss_phrase (__main__.TestGuardrails.test_blocks_stop_loss_phrase) ... ok
+test_blocks_take_profit_phrase (__main__.TestGuardrails.test_blocks_take_profit_phrase) ... ok
+test_blocks_tp_uppercase (__main__.TestGuardrails.test_blocks_tp_uppercase) ... ok
+test_clean_output_passes (__main__.TestGuardrails.test_clean_output_passes) ... ok
+test_field_limitations_whitelist_passes (__main__.TestGuardrails.test_field_limitations_whitelist_passes) ... ok
+test_forbidden_key_fails (__main__.TestGuardrails.test_forbidden_key_fails) ... ok
+test_forbidden_value_fails (__main__.TestGuardrails.test_forbidden_value_fails) ... ok
+test_nested_forbidden_key_fails (__main__.TestGuardrails.test_nested_forbidden_key_fails) ... ok
+test_non_whitelist_scope_fails (__main__.TestGuardrails.test_non_whitelist_scope_fails) ... ok
+test_scope_notes_whitelist_passes (__main__.TestGuardrails.test_scope_notes_whitelist_passes) ... ok
+test_missing_schema_version_fails (__main__.TestL4Reader.test_missing_schema_version_fails) ... ok
+test_mode_ro_no_writes (__main__.TestL4Reader.test_mode_ro_no_writes) ... ok
+test_reads_snapshot (__main__.TestL4Reader.test_reads_snapshot) ... ok
+test_rejects_missing_pair (__main__.TestL4Reader.test_rejects_missing_pair) ... ok
+test_rejects_missing_snapshot (__main__.TestL4Reader.test_rejects_missing_snapshot) ... ok
+test_schema_version_1_passes (__main__.TestL4Reader.test_schema_version_1_passes) ... ok
+test_no_a0_import (__main__.TestNoBackflow.test_no_a0_import)
+Verify outcome_builder does not import from a0_snapshot_readout. ... ok
+test_malformed_cache_fails (__main__.TestOhlcCache.test_malformed_cache_fails) ... ok
+test_missing_cache_file_fails (__main__.TestOhlcCache.test_missing_cache_file_fails) ... ok
+test_missing_fetched_at_fails (__main__.TestOhlcCache.test_missing_fetched_at_fails) ... ok
+test_reads_cache (__main__.TestOhlcCache.test_reads_cache) ... ok
+test_semantic_sanity_fail (__main__.TestOhlcCache.test_semantic_sanity_fail) ... ok
+test_semantic_sanity_pass (__main__.TestOhlcCache.test_semantic_sanity_pass) ... ok
+test_stale_cache_warning (__main__.TestOhlcCache.test_stale_cache_warning) ... ok
+
+----------------------------------------------------------------------
+Ran 48 tests in 0.413s
+
+OK

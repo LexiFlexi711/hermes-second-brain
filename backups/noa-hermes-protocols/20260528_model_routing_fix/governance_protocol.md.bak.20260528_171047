@@ -1,0 +1,184 @@
+# Governance Protocol — 5 Operationele Regels
+
+**Versie:** 1.0.0  
+**Datum:** 2026-05-26  
+**Auteur:** Noa (via Lexi's opdracht)  
+**Status:** Actief — bindend voor alle Hermes sessies
+
+---
+
+## Inleiding
+
+Dit protocol definieert 5 harde operationele regels die Lexi heeft ingesteld voor alle werk dat Hermes uitvoert. Ze zijn gebaseerd op het **ECGT principe** (Eerst Controleren, Daarna Garanderen, Transparant Afhandelen).
+
+Elke regel is een absolute vereiste — geen uitzonderingen tenzij Lexi expliciet anders zegt.
+
+---
+
+## Regel 1: Actielog Verplicht 📋
+
+### Wat
+Elke wijziging die Hermes aanbrengt aan systeem/config/protocollen/infra wordt genoteerd in `/home/sjoe/.hermes/actielog.md`.
+
+### Wanneer
+- Configuratie wijzigingen (config.yaml, .env, skills)
+- Protocol/document aanpassingen (SOUL.md, .hermes.md, protocol bestanden)
+- Docker/Server wijzigingen (compose bestanden, firewall, containers)
+- Git operaties (commits, pushes, branches)
+- Install/verwijder acties (apt, pip, npm)
+
+### Hoe
+Elke entry bevat:
+```markdown
+## 2026-05-26 07:51 — Korte titel
+- **Wat:** Beschrijving van wat er veranderd is
+- **Waarom:** Reden voor de wijziging
+- **Files:** Lijst van gewijzigde/nieuwe bestanden
+- **Status:** ✅ Voltooid / ⚠️ Gedeeltelijk / ❌ Mislukt
+- **Backup:** Pad naar backup indien gemaakt
+```
+
+### Wie
+Hermes (Noa) voert het logboek bij. Lexi kan het opvragen met "toon actielog".
+
+---
+
+## Regel 2: Kostenrapport per Model/Tool 💰
+
+### Wat
+Bij elke sessie wordt in de footer of bij het afsluiten een overzicht gegeven van welke modellen/tools gebruikt zijn.
+
+### Verplichte velden in elke sessie-output
+- `MODEL_USED: <model>` — welk model deze sessie gebruikt
+- `ESTIMATED_CONTEXT_SIZE: <N>` — geschatte token input
+- `EXPENSIVE_MODEL_USED: <yes/no>` — of Pro/Claude ingezet is
+- `COST_RISK: <low/medium/high>` — inschatting
+
+### Wekelijkse kostenrapportage
+Elke maandag produceert Hermes een beknopt rapport:
+- Totaal geschat verbruik ($)
+- Per model: Flash / Flash:free / Pro / Gemini / Claude
+- Per toolset: delegatie / terminal / web / ...
+- Vergelijking met voorgaande week
+- Budget resterend ($6/dag limiet)
+
+### Bijlage
+Zie `~/Noa-Hermes/autonomous/protocols/model_routing_policy.md` voor de volledige routing policy.
+
+---
+
+## Regel 3: No-Write Zonder Plan 🚫
+
+### Wat
+**Geen enkele wijziging aan server, Docker, firewall, Caddy, systemd, of infrastructurele configuratie mag uitgevoerd worden zonder een schriftelijk plan.**
+
+### Uitzonderingen
+- Read-only taken (status checks, logs bekijken, lezen van config)
+- Hermes eigen skills/memory/config (die vallen onder Regel 1)
+- Dringende veiligheidscorrecties (maar dan achteraf alsnog plan + actielog)
+
+### Verplichte structuur van een plan
+```markdown
+## Plan: [Titel]
+- **Doel:** Wat willen we bereiken?
+- **Scope:** Welke bestanden/systemen worden aangeraakt?
+- **Risico:** Hoog/Middel/Laag — met uitleg
+- **Stappen:** Genummerde lijst (stap 1, 2, 3...)
+- **Backup:** Backup maken vóór start (pad noteren)
+- **Rollback:** Hoe keren we terug bij falen?
+- **Healthcheck:** Welke test bewijst dat het werkt?
+- **Akkoord Lexi:** [ ] wachtend / [x] goedgekeurd
+```
+
+### Procedure
+1. Hermes stelt plan op
+2. Toont plan aan Lexi
+3. Wacht op expliciet akkoord ("doe maar", "voer uit", "go")
+4. Backup maken
+5. Uitvoeren stap voor stap
+6. Healthcheck na elke stap
+7. Actielog bijwerken
+8. Bij falen → rollback onmiddellijk
+
+---
+
+## Regel 4: Healthcheck Vóór en Na Elke Wijziging 🩺
+
+### Wat
+Elke infra- of systeemwijziging vereist een healthcheck **vóór** (om uitgangssituatie te kennen) en **na** (om te bevestigen dat alles nog werkt).
+
+### Standaard healthchecks
+- **YAML/JSON syntax:** `python3 -c "import yaml; yaml.safe_load(open('...'))"`
+- **Docker:** `docker ps` — alle containers running?
+- **Network:** `curl -s -o /dev/null -w '%{http_code}' http://localhost:PORT` — services bereikbaar?
+- **Config:** `hermes config check` — Hermes config valide?
+- **Disk:** `df -h /` — geen onverwachte schijfvolumes
+- **Processen:** `ps aux | grep <service>` — service leeft?
+
+### Per type wijziging (minimaal)
+
+| Type wijziging | Voor-check | Na-check |
+|---------------|-----------|----------|
+| Config.yaml aanpassen | YAML syntax + backup | YAML syntax + hermes config check |
+| Docker compose | `docker ps` (status) | `docker ps` (alleen + running) |
+| Nieuwe container | Poort vrij? (`ss -tlnp`) | Container running + HTTP 200 |
+| Firewall/UFW | `ufw status` | `ufw status` + curl test |
+| Protocol/skill aanpassen | Huidige backup | Syntax check + werkt het? |
+
+### Bij falen
+- **Direct stoppen** met verdere stappen
+- **Rollback uitvoeren** (zie Regel 5)
+- **Rapporteren** aan Lexi met: wat ging fout, wat was de staat, wat is het rollback plan
+
+---
+
+## Regel 5: Rollback-Pad bij Elke Infra-Aanpassing ↩️
+
+### Wat
+Voor elke wijziging aan infrastructuur (Docker, config, Caddy, systemd, firewall, netwerk) wordt **vooraf** een concreet rollback-pad gedocumenteerd en getoond aan Lexi.
+
+### Rollback types
+
+| Type aanpassing | Rollback methode |
+|----------------|-----------------|
+| Config bestand | Backup kopie terugplaatsen (`cp backup orig`) |
+| Docker container | `docker compose down nieuwe-service` |
+| Firewall rule | `ufw delete ...` of restore van backup |
+| Systemd service | `systemctl revert <service>` of backup unit |
+| Caddyfile | Caddy backup terugzetten + `caddy reload` |
+| Klimwijziging in bestand | `git checkout -- <file>` of backup |
+| Nieuwe container image | `docker compose rm -s nieuwe-service` |
+
+### Verplichte vermelding in het plan
+```
+## Rollback
+- **Methode:** [type]
+- **Backup pad:** /home/sjoe/...backup_2026...
+- **Tijd:** [geschatte rollback tijd]
+- **Test:** [commando om te verifiëren dat rollback gelukt is]
+```
+
+### Rollback procedure
+1. STOP — geen verdere stappen
+2. Herstel van backup of voer rollback commando uit
+3. Healthcheck (Regel 4) — bewijs dat alles terug is zoals voorheen
+4. Rapport aan Lexi: wat ging fout, wat is er gebeurd, staat is hersteld
+
+---
+
+## Afkondiging & Handhaving
+
+Dit protocol is bindend vanaf **26 Mei 2026**. Lexi kan het tijdelijk opschorten met "governance uit" maar enkel voor die ene actie, niet blijvend.
+
+Bij overtreding:
+- 1e keer: waarschuwing + actielog aanpassen
+- 2e keer: rapport aan Lexi
+- 3e keer: volledige sessie reset + escalatie
+
+---
+
+## Wijzigingshistorie
+
+| Datum | Versie | Wijziging |
+|-------|--------|-----------|
+| 2026-05-26 | 1.0.0 | Initiële versie — 5 governance regels |

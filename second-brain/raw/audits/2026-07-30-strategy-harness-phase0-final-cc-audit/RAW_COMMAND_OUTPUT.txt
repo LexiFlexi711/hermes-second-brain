@@ -1,0 +1,1368 @@
+=== STRATEGY HARNESS PHASE 0 FINAL AUDIT - RAW OUTPUT LOG ===
+Started: 2026-07-30T08:46:20Z
+=== SECTION 4: IMPORT ISOLATION ===
+strategy_harness -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-strategy-harness/strategy_harness/__init__.py
+strategy_harness.runner -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-strategy-harness/strategy_harness/runner.py
+strategy_harness.strategy_runtime -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-strategy-harness/strategy_harness/strategy_runtime.py
+strategy_harness.outcome_adapter -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-strategy-harness/strategy_harness/outcome_adapter.py
+strategy_harness.canonical_json -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-strategy-harness/strategy_harness/canonical_json.py
+outcome_builder.canonical_json -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-outcome/outcome_builder/canonical_json.py
+outcome_builder.outcome_store -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-outcome/outcome_builder/outcome_store.py
+outcome_builder.l4_reader -> /tmp/cc-strategy-harness-phase0-final-audit-20260730/projects/hermes-v03-outcome/outcome_builder/l4_reader.py
+=== SECTION 5: COLLECT-ONLY ===
+projects/hermes-v03-strategy-harness/tests/test_a0_adapter.py::TestExtractSourceSnapshot::test_invalid_l4_dir_raises
+projects/hermes-v03-strategy-harness/tests/test_a0_adapter.py::TestExtractSourceSnapshot::test_empty_pair_rejected
+projects/hermes-v03-strategy-harness/tests/test_batch_runner.py::TestBatchRunner::test_two_valid_snapshots
+projects/hermes-v03-strategy-harness/tests/test_batch_runner.py::TestBatchRunner::test_rerun_all_skipped
+projects/hermes-v03-strategy-harness/tests/test_batch_runner.py::TestBatchRunner::test_duplicate_snapshot_id
+projects/hermes-v03-strategy-harness/tests/test_batch_runner.py::TestBatchRunner::test_not_applicable_count
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonSource::test_uses_frozen_outcome_builder
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_one_and_one_point_zero_identical_bytes
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_string_one_different_from_numeric
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_minus_zero_is_zero
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_nan_rejected
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_infinity_rejected
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_dict_order_irrelevant
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_utf8_deterministic
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_no_exponent_notation
+projects/hermes-v03-strategy-harness/tests/test_canonical_json.py::TestCanonicalJsonGolden::test_large_float_no_exponent
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestSourceMetadataWithoutContentHash::test_no_content_hash_key_when_not_provided
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestSourceMetadataWithoutContentHash::test_snapshot_id_is_never_content_hash
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestSourceMetadataWithoutContentHash::test_empty_string_not_added_as_content_hash
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestSourceMetadataWithoutContentHash::test_real_content_hash_preserved_when_provided
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestStrategyInputWithoutHash::test_source_snapshot_without_hash_is_valid
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestStrategyInputWithoutHash::test_decision_preserves_source_snapshot
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestStrategyInputWithoutHash::test_identities_deterministic_without_hash
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestStrategyInputWithoutHash::test_different_asof_produces_different_decision
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithoutHash::test_exact_pair_snapshot_asof_accepted
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithoutHash::test_wrong_pair_rejected
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithoutHash::test_wrong_snapshot_id_rejected
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithoutHash::test_wrong_asof_ts_rejected
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithoutHash::test_missing_content_hash_causes_no_error
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithoutHash::test_no_hash_verification_claimed_when_none_provided
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithRealHash::test_identical_hash_accepted
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithRealHash::test_mismatched_hash_rejected
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithRealHash::test_snapshot_id_never_compared_to_content_hash
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestOutcomeMatchingWithRealHash::test_source_snapshot_content_hash_not_record_level
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestForbiddenRegression::test_no_snapshot_id_as_content_hash_in_a0_adapter
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestForbiddenRegression::test_no_snapshot_id_as_hash_in_strategy_runtime
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestForbiddenRegression::test_no_snapshot_id_hash_compare_in_outcome_adapter
+projects/hermes-v03-strategy-harness/tests/test_content_hash_regression.py::TestForbiddenRegression::test_extract_returns_no_content_hash_key
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_valid_input
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_missing_required_key
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_unknown_version
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_wrong_type
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_forbidden_key_top_level
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_forbidden_key_nested
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_nan_rejected
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_infinity_rejected
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_empty_pair_rejected
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestStrategyInputValidation::test_non_int_asof_rejected
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestDecisionValidation::test_valid_noop_decision
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestDecisionValidation::test_invalid_signal
+projects/hermes-v03-strategy-harness/tests/test_contracts.py::TestDecisionValidation::test_non_bool_eligible
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestResultIdentities::test_result_id_not_equal_result_hash
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestResultIdentities::test_result_id_reproducible
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestResultIdentities::test_result_hash_reproducible
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestResultIdentities::test_decision_change_changes_result_id
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestResultIdentities::test_decision_change_changes_result_hash
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestResultIdentities::test_score_change_changes_ids
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestResultIdentities::test_identical_input_gives_identical_ids
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestEvaluationId::test_outcome_identity_changes_evaluation_id
+projects/hermes-v03-strategy-harness/tests/test_identities.py::TestEvaluationId::test_empty_outcome_identity_still_hashes
+projects/hermes-v03-strategy-harness/tests/test_leakage_boundary.py::TestLeakageGuards::test_zone_a_clean
+projects/hermes-v03-strategy-harness/tests/test_leakage_boundary.py::TestLeakageGuards::test_noop_no_forbidden_imports
+projects/hermes-v03-strategy-harness/tests/test_leakage_boundary.py::TestLeakageGuards::test_strategy_runtime_no_outcome_imports
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestNoopStrategy::test_always_no_signal
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestNoopStrategy::test_input_not_mutated
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestNoopStrategy::test_deterministic
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestIdentities::test_input_hash_deterministic
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestIdentities::test_input_hash_changes_with_data
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestIdentities::test_decision_id
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestCanonicalJson::test_key_order_irrelevant
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestCanonicalJson::test_one_and_one_point_zero_equal
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestCanonicalJson::test_string_one_different
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestCanonicalJson::test_bytes_deterministic
+projects/hermes-v03-strategy-harness/tests/test_noop_strategy.py::TestLeakageGuards::test_zone_a_no_outcome_imports
+projects/hermes-v03-strategy-harness/tests/test_outcome_adapter.py::TestOutcomeAdapterErrors::test_missing_store_dir
+projects/hermes-v03-strategy-harness/tests/test_outcome_adapter.py::TestOutcomeAdapterErrors::test_corrupt_jsonl_hard_failure
+projects/hermes-v03-strategy-harness/tests/test_outcome_adapter.py::TestOutcomeAdapterErrors::test_no_trailing_newline_corrupt
+projects/hermes-v03-strategy-harness/tests/test_outcome_adapter.py::TestOutcomeAdapterErrors::test_empty_jsonl_valid
+projects/hermes-v03-strategy-harness/tests/test_outcome_adapter.py::TestOutcomeAdapterErrors::test_multiple_matches_conflict
+projects/hermes-v03-strategy-harness/tests/test_outcome_adapter.py::TestOutcomeAdapterErrors::test_pair_mismatch_rejected
+projects/hermes-v03-strategy-harness/tests/test_result_store.py::TestResultStore::test_write_one_record
+projects/hermes-v03-strategy-harness/tests/test_result_store.py::TestResultStore::test_trailing_newline
+projects/hermes-v03-strategy-harness/tests/test_result_store.py::TestResultStore::test_identical_rerun_idempotent
+projects/hermes-v03-strategy-harness/tests/test_result_store.py::TestResultStore::test_dry_run_no_write
+projects/hermes-v03-strategy-harness/tests/test_result_store.py::TestResultStore::test_different_result_same_eval_id_conflict
+projects/hermes-v03-strategy-harness/tests/test_result_store.py::TestResultStore::test_no_revision_2
+projects/hermes-v03-strategy-harness/tests/test_runner.py::TestRunner::test_dry_run_no_write
+projects/hermes-v03-strategy-harness/tests/test_runner.py::TestRunner::test_write_creates_result
+projects/hermes-v03-strategy-harness/tests/test_runner.py::TestRunner::test_rerun_idempotent
+projects/hermes-v03-strategy-harness/tests/test_runner.py::TestRunner::test_no_signal_not_applicable
+projects/hermes-v03-strategy-harness/tests/test_runner.py::TestRunner::test_decision_freeze
+
+91 tests collected in 0.11s
+EXITCODE: 0
+=== SECTION 5: FULL RUN ===
+........................................................................ [ 79%]
+...................                                                      [100%]
+91 passed in 0.23s
+EXITCODE: 0
+=== SECTION 5: COMPILEALL ===
+EXITCODE: 0
+=== SECTION 6.1: LIVE WRITE-RUN result_id/result_hash PROOF ===
+OUTDIR=/tmp/cc_strategy_harness_phase0_final_Z5YlsU
+--- runner return result dict ---
+{
+  "decision": {
+    "details": {},
+    "eligible": false,
+    "reason_codes": [
+      "NOOP_STRATEGY"
+    ],
+    "signal": "NO_SIGNAL"
+  },
+  "decision_id": "d8669e8705c74c8cf59ddc383f63b4011bd1504794b0f55932be39f6424be6cc",
+  "evaluation_id": "e2d6e10ae04c704630aa78d59be4e5049f0dc708b236bef49fa4f9288e9f443e",
+  "harness_result_version": 1,
+  "harness_store_schema_version": 1,
+  "outcome_reference": {
+    "outcome_id": "audit-oid",
+    "record_id": "audit-rid",
+    "record_revision": 1,
+    "windows_hash": "audit-whash"
+  },
+  "result_hash": "e508e84e0f85b1459c3bf28e5ea6d501af95dacd16c038c9b4f1e852ca41f043",
+  "score": {
+    "limitations": [
+      "NO_TRADING_PERFORMANCE_EVALUATED"
+    ],
+    "metrics": {},
+    "reason_codes": [
+      "NO_SIGNAL"
+    ],
+    "status": "NOT_APPLICABLE",
+    "strategy_score_version": 1
+  },
+  "source_snapshot": {
+    "asof_ts": 1700000000,
+    "pair": "ETHEUR",
+    "snapshot_id": "audit-snap-1"
+  },
+  "strategy": {
+    "strategy_id": "noop",
+    "strategy_version": 1
+  },
+  "strategy_input_hash": "b2aeadc0bd12e3434f254f4fc94429481ca57caeaa7c04c7d358d4b1bc68c020"
+}
+
+runner[result] has result_id key: False
+runner[result][result_hash] : e508e84e0f85b1459c3bf28e5ea6d501af95dacd16c038c9b4f1e852ca41f043
+
+--- physical file bytes ---
+b'{"decision":{"details":{},"eligible":false,"reason_codes":["NOOP_STRATEGY"],"signal":"NO_SIGNAL"},"decision_id":"d8669e8705c74c8cf59ddc383f63b4011bd1504794b0f55932be39f6424be6cc","evaluation_id":"e2d6e10ae04c704630aa78d59be4e5049f0dc708b236bef49fa4f9288e9f443e","harness_result_version":1,"harness_store_schema_version":1,"outcome_reference":{"outcome_id":"audit-oid","record_id":"audit-rid","record_revision":1,"windows_hash":"audit-whash"},"result_hash":"7c63300d2e47986e98469176e69c09debab429a8d549386fef871be1aafb298e","result_id":"5cc7b961172b243f9d4631e4ed6931103c41604dd980495d99c29978b53d6f3f","score":{"limitations":["NO_TRADING_PERFORMANCE_EVALUATED"],"metrics":{},"reason_codes":["NO_SIGNAL"],"status":"NOT_APPLICABLE","strategy_score_version":1},"source_snapshot":{"asof_ts":1700000000,"pair":"ETHEUR","snapshot_id":"audit-snap-1"},"strategy":{"strategy_id":"noop","strategy_version":1},"strategy_input_hash":"b2aeadc0bd12e3434f254f4fc94429481ca57caeaa7c04c7d358d4b1bc68c020"}\n'
+physical full-line SHA-256 (incl newline): e508e84e0f85b1459c3bf28e5ea6d501af95dacd16c038c9b4f1e852ca41f043
+
+--- stored JSONL record ---
+{
+  "decision": {
+    "details": {},
+    "eligible": false,
+    "reason_codes": [
+      "NOOP_STRATEGY"
+    ],
+    "signal": "NO_SIGNAL"
+  },
+  "decision_id": "d8669e8705c74c8cf59ddc383f63b4011bd1504794b0f55932be39f6424be6cc",
+  "evaluation_id": "e2d6e10ae04c704630aa78d59be4e5049f0dc708b236bef49fa4f9288e9f443e",
+  "harness_result_version": 1,
+  "harness_store_schema_version": 1,
+  "outcome_reference": {
+    "outcome_id": "audit-oid",
+    "record_id": "audit-rid",
+    "record_revision": 1,
+    "windows_hash": "audit-whash"
+  },
+  "result_hash": "7c63300d2e47986e98469176e69c09debab429a8d549386fef871be1aafb298e",
+  "result_id": "5cc7b961172b243f9d4631e4ed6931103c41604dd980495d99c29978b53d6f3f",
+  "score": {
+    "limitations": [
+      "NO_TRADING_PERFORMANCE_EVALUATED"
+    ],
+    "metrics": {},
+    "reason_codes": [
+      "NO_SIGNAL"
+    ],
+    "status": "NOT_APPLICABLE",
+    "strategy_score_version": 1
+  },
+  "source_snapshot": {
+    "asof_ts": 1700000000,
+    "pair": "ETHEUR",
+    "snapshot_id": "audit-snap-1"
+  },
+  "strategy": {
+    "strategy_id": "noop",
+    "strategy_version": 1
+  },
+  "strategy_input_hash": "b2aeadc0bd12e3434f254f4fc94429481ca57caeaa7c04c7d358d4b1bc68c020"
+}
+
+stored_rec[result_hash]        : 7c63300d2e47986e98469176e69c09debab429a8d549386fef871be1aafb298e
+stored_rec[result_id]          : 5cc7b961172b243f9d4631e4ed6931103c41604dd980495d99c29978b53d6f3f
+runner[result][result_hash] == physical_line_sha  : True
+runner[result][result_hash] == stored_rec[result_hash] : False
+file-level SHA-256 of results.jsonl: e508e84e0f85b1459c3bf28e5ea6d501af95dacd16c038c9b4f1e852ca41f043
+file_sha == physical_line_sha (single record file): True
+=== SECTION 6.2 / 7: REAL A0 OUTPUT — BTCEUR ===
+exitcode: 0
+stderr:
+bytes: 27153
+=== SECTION 6.2 / 7: REAL A0 OUTPUT — ETHEUR ===
+exitcode: 0
+stderr:
+bytes: 31807
+=== SECTION 6.2: FIND ALL 'score' KEY PATHS IN REAL A0 OUTPUT ===
+--- BTCEUR: found 12 score-keyed paths ---
+  depth=6  path=trendlines.5m.stored_values.trendlines.recent.upper.score  value=10
+  depth=6  path=trendlines.5m.stored_values.trendlines.major.upper.score  value=0
+  depth=6  path=trendlines.15m.stored_values.trendlines.recent.lower.score  value=110
+  depth=6  path=trendlines.15m.stored_values.trendlines.major.lower.score  value=54
+  depth=6  path=trendlines.60m.stored_values.trendlines.recent.lower.score  value=75
+  depth=6  path=trendlines.60m.stored_values.trendlines.recent.upper.score  value=110
+  depth=6  path=trendlines.60m.stored_values.trendlines.major.lower.score  value=100
+  depth=6  path=trendlines.60m.stored_values.trendlines.major.upper.score  value=100
+  depth=6  path=trendlines.240m.stored_values.trendlines.recent.lower.score  value=110
+  depth=6  path=trendlines.240m.stored_values.trendlines.recent.upper.score  value=110
+  depth=6  path=trendlines.240m.stored_values.trendlines.major.lower.score  value=100
+  depth=6  path=trendlines.240m.stored_values.trendlines.major.upper.score  value=0
+--- ETHEUR: found 16 score-keyed paths ---
+  depth=6  path=trendlines.5m.stored_values.trendlines.recent.lower.score  value=110
+  depth=6  path=trendlines.5m.stored_values.trendlines.recent.upper.score  value=110
+  depth=6  path=trendlines.5m.stored_values.trendlines.major.lower.score  value=100
+  depth=6  path=trendlines.5m.stored_values.trendlines.major.upper.score  value=100
+  depth=6  path=trendlines.15m.stored_values.trendlines.recent.lower.score  value=110
+  depth=6  path=trendlines.15m.stored_values.trendlines.recent.upper.score  value=110
+  depth=6  path=trendlines.15m.stored_values.trendlines.major.lower.score  value=96
+  depth=6  path=trendlines.15m.stored_values.trendlines.major.upper.score  value=100
+  depth=6  path=trendlines.60m.stored_values.trendlines.recent.lower.score  value=110
+  depth=6  path=trendlines.60m.stored_values.trendlines.recent.upper.score  value=110
+  depth=6  path=trendlines.60m.stored_values.trendlines.major.lower.score  value=100
+  depth=6  path=trendlines.60m.stored_values.trendlines.major.upper.score  value=100
+  depth=6  path=trendlines.240m.stored_values.trendlines.recent.lower.score  value=110
+  depth=6  path=trendlines.240m.stored_values.trendlines.recent.upper.score  value=110
+  depth=6  path=trendlines.240m.stored_values.trendlines.major.lower.score  value=100
+  depth=6  path=trendlines.240m.stored_values.trendlines.major.upper.score  value=100
+=== SECTION 6.2 / 7: REAL A0 -> build_strategy_input -> run_strategy (BTCEUR) ===
+score paths surviving _filter_market_context filtering: 0
+
+run_strategy valid: True
+=== DEBUG: trace _filter_market_context depth on real data ===
+Traceback (most recent call last):
+  File "<string>", line 10, in <module>
+KeyError: 'trendlines'
+=== SECTION 6.2 confirm: ETHEUR + full before/after diff summary ===
+BTCEUR: score-keyed fields before=12 after_filter=0 run_strategy_valid=True
+  example stripped value: ('trendlines.5m.stored_values.trendlines.recent.upper.score', 10)
+ETHEUR: score-keyed fields before=16 after_filter=0 run_strategy_valid=True
+  example stripped value: ('trendlines.5m.stored_values.trendlines.recent.lower.score', 110)
+OUTCOME_DIR=/tmp/cc_strategy_harness_phase0_final_Ir1Xv9
+OUTPUT_DIR=/tmp/cc_strategy_harness_phase0_final_DUDCEQ
+=== SECTION 7: REAL-DATA AUDIT (BTCEUR + ETHEUR) ===
+=== BUILDING TEMP OUTCOME RECORDS (frozen API) ===
+BTCEUR: write_record action=corruption exit_code=2 outcome_id=acf3499f500626f2c5b8ccf10f1c6499e77b6f9609bbb929aae4ca89bdc10ab4
+ETHEUR: write_record action=corruption exit_code=2 outcome_id=0b73d1c16120f40cc5f6a928f7947bc7f49610bebb70266db356bc25cd2ee821
+
+=== REAL-DATA PIPELINE RUNS (actual CLI, subprocess) ===
+--- BTCEUR dry-run ---
+cmd: single --pair BTCEUR --snapshot-id BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/btceur_single --dry-run --json
+exitcode: 1
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b"
+}
+
+--- BTCEUR write ---
+cmd: single --pair BTCEUR --snapshot-id BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/btceur_single --json
+exitcode: 1
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b"
+}
+
+--- BTCEUR rerun (idempotent expected) ---
+cmd: single --pair BTCEUR --snapshot-id BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/btceur_single --json
+exitcode: 1
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b"
+}
+
+--- ETHEUR dry-run ---
+cmd: single --pair ETHEUR --snapshot-id ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/etheur_single --dry-run --json
+exitcode: 1
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc"
+}
+
+--- ETHEUR write ---
+cmd: single --pair ETHEUR --snapshot-id ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/etheur_single --json
+exitcode: 1
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc"
+}
+
+--- ETHEUR rerun (idempotent expected) ---
+cmd: single --pair ETHEUR --snapshot-id ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/etheur_single --json
+exitcode: 1
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc"
+}
+
+
+=== BATCH RUN (both snapshots, then idempotent rerun) ===
+--- batch BTCEUR first run ---
+cmd: batch --pair BTCEUR --snapshot-ids BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/batch_out --json
+exitcode: 1
+stdout: {
+  "summary": {
+    "requested": 1,
+    "processed": 0,
+    "written": 0,
+    "skipped_existing": 0,
+    "not_applicable": 0,
+    "unscorable": 0,
+    "failed": 1,
+    "all_ok": false
+  },
+  "results": [
+    {
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "processed": 1,
+      "written": 0,
+      "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+      "decision": {
+        "strategy_decision_version": 1,
+        "strategy_id": "noop",
+        "strategy_version": 1,
+        "source_snapshot": {
+          "pair": "BTCEUR",
+          "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+          "asof_ts": 1785401940
+        },
+        "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+        "decision": {
+          "signal": "NO_SIGNAL",
+          "eligible": false,
+          "reason_codes": [
+            "NOOP_STRATEGY"
+          ],
+          "details": {}
+        }
+      },
+      "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b"
+    }
+  ]
+}
+
+--- batch BTCEUR idempotent rerun ---
+cmd: batch --pair BTCEUR --snapshot-ids BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_Ir1Xv9 --output-dir /tmp/cc_strategy_harness_phase0_final_DUDCEQ/batch_out --json
+exitcode: 1
+stdout: {
+  "summary": {
+    "requested": 1,
+    "processed": 0,
+    "written": 0,
+    "skipped_existing": 0,
+    "not_applicable": 0,
+    "unscorable": 0,
+    "failed": 1,
+    "all_ok": false
+  },
+  "results": [
+    {
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "processed": 1,
+      "written": 0,
+      "error": "Outcome not found: OUTCOME_STORE_EMPTY: no JSONL files found",
+      "decision": {
+        "strategy_decision_version": 1,
+        "strategy_id": "noop",
+        "strategy_version": 1,
+        "source_snapshot": {
+          "pair": "BTCEUR",
+          "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+          "asof_ts": 1785401940
+        },
+        "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+        "decision": {
+          "signal": "NO_SIGNAL",
+          "eligible": false,
+          "reason_codes": [
+            "NOOP_STRATEGY"
+          ],
+          "details": {}
+        }
+      },
+      "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b"
+    }
+  ]
+}
+
+SCRIPT_EXITCODE: 0
+OUTCOME_DIR=/tmp/cc_strategy_harness_phase0_final_5wupYy
+OUTPUT_DIR=/tmp/cc_strategy_harness_phase0_final_VvEvK1
+=== SECTION 7 (retry): REAL-DATA AUDIT (BTCEUR + ETHEUR) ===
+=== BUILDING TEMP OUTCOME RECORDS (frozen API) ===
+BTCEUR: write_record action=appended exit_code=None outcome_id=acf3499f500626f2c5b8ccf10f1c6499e77b6f9609bbb929aae4ca89bdc10ab4
+ETHEUR: write_record action=appended exit_code=None outcome_id=0b73d1c16120f40cc5f6a928f7947bc7f49610bebb70266db356bc25cd2ee821
+
+=== REAL-DATA PIPELINE RUNS (actual CLI, subprocess) ===
+--- BTCEUR dry-run ---
+cmd: single --pair BTCEUR --snapshot-id BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/btceur_single --dry-run --json
+exitcode: 0
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "skipped_existing": 0,
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+  "result": {
+    "harness_result_version": 1,
+    "harness_store_schema_version": 1,
+    "strategy": {
+      "strategy_id": "noop",
+      "strategy_version": 1
+    },
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    },
+    "outcome_reference": {
+      "outcome_id": "acf3499f500626f2c5b8ccf10f1c6499e77b6f9609bbb929aae4ca89bdc10ab4",
+      "record_id": "ebc0d7ed717667ae7c8a1741b64dff79186e163f98206d20068989b306dd7219",
+      "record_revision": 1,
+      "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+    },
+    "score": {
+      "strategy_score_version": 1,
+      "status": "NOT_APPLICABLE",
+      "reason_codes": [
+        "NO_SIGNAL"
+      ],
+      "metrics": {},
+      "limitations": [
+        "NO_TRADING_PERFORMANCE_EVALUATED"
+      ]
+    },
+    "result_hash": "",
+    "evaluation_id": "12c2115ad693f74d17d28d8c8cb5f73a28c6ccc5a440043cf831adb9bd10cbef"
+  },
+  "error": null
+}
+
+--- BTCEUR write ---
+cmd: single --pair BTCEUR --snapshot-id BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/btceur_single --json
+exitcode: 0
+stdout: {
+  "processed": 1,
+  "written": 1,
+  "skipped_existing": 0,
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+  "result": {
+    "harness_result_version": 1,
+    "harness_store_schema_version": 1,
+    "strategy": {
+      "strategy_id": "noop",
+      "strategy_version": 1
+    },
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    },
+    "outcome_reference": {
+      "outcome_id": "acf3499f500626f2c5b8ccf10f1c6499e77b6f9609bbb929aae4ca89bdc10ab4",
+      "record_id": "ebc0d7ed717667ae7c8a1741b64dff79186e163f98206d20068989b306dd7219",
+      "record_revision": 1,
+      "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+    },
+    "score": {
+      "strategy_score_version": 1,
+      "status": "NOT_APPLICABLE",
+      "reason_codes": [
+        "NO_SIGNAL"
+      ],
+      "metrics": {},
+      "limitations": [
+        "NO_TRADING_PERFORMANCE_EVALUATED"
+      ]
+    },
+    "result_hash": "3982a4d5767c4638257e77bf1eeae13bfbb31ebc9bf1759c9110d3ca218c7835",
+    "evaluation_id": "12c2115ad693f74d17d28d8c8cb5f73a28c6ccc5a440043cf831adb9bd10cbef"
+  },
+  "error": null
+}
+
+--- BTCEUR rerun (idempotent expected) ---
+cmd: single --pair BTCEUR --snapshot-id BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/btceur_single --json
+exitcode: 0
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "skipped_existing": 1,
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+  "result": {
+    "harness_result_version": 1,
+    "harness_store_schema_version": 1,
+    "strategy": {
+      "strategy_id": "noop",
+      "strategy_version": 1
+    },
+    "source_snapshot": {
+      "pair": "BTCEUR",
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+    "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    },
+    "outcome_reference": {
+      "outcome_id": "acf3499f500626f2c5b8ccf10f1c6499e77b6f9609bbb929aae4ca89bdc10ab4",
+      "record_id": "ebc0d7ed717667ae7c8a1741b64dff79186e163f98206d20068989b306dd7219",
+      "record_revision": 1,
+      "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+    },
+    "score": {
+      "strategy_score_version": 1,
+      "status": "NOT_APPLICABLE",
+      "reason_codes": [
+        "NO_SIGNAL"
+      ],
+      "metrics": {},
+      "limitations": [
+        "NO_TRADING_PERFORMANCE_EVALUATED"
+      ]
+    },
+    "result_hash": "3982a4d5767c4638257e77bf1eeae13bfbb31ebc9bf1759c9110d3ca218c7835",
+    "evaluation_id": "12c2115ad693f74d17d28d8c8cb5f73a28c6ccc5a440043cf831adb9bd10cbef"
+  },
+  "error": null
+}
+
+BTCEUR results.jsonl: 1 line(s), file sha256=3982a4d5767c4638257e77bf1eeae13bfbb31ebc9bf1759c9110d3ca218c7835
+--- ETHEUR dry-run ---
+cmd: single --pair ETHEUR --snapshot-id ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/etheur_single --dry-run --json
+exitcode: 0
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "skipped_existing": 0,
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc",
+  "result": {
+    "harness_result_version": 1,
+    "harness_store_schema_version": 1,
+    "strategy": {
+      "strategy_id": "noop",
+      "strategy_version": 1
+    },
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    },
+    "outcome_reference": {
+      "outcome_id": "0b73d1c16120f40cc5f6a928f7947bc7f49610bebb70266db356bc25cd2ee821",
+      "record_id": "b0264c8777b07d25b9d4121d1e404b1ef8361a91d15611c9087e0346cd0a83f9",
+      "record_revision": 1,
+      "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+    },
+    "score": {
+      "strategy_score_version": 1,
+      "status": "NOT_APPLICABLE",
+      "reason_codes": [
+        "NO_SIGNAL"
+      ],
+      "metrics": {},
+      "limitations": [
+        "NO_TRADING_PERFORMANCE_EVALUATED"
+      ]
+    },
+    "result_hash": "",
+    "evaluation_id": "7777b2f73e99e7c52a42228adfdcbd7d4794956b05ae89040df6d89655cb28c0"
+  },
+  "error": null
+}
+
+--- ETHEUR write ---
+cmd: single --pair ETHEUR --snapshot-id ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/etheur_single --json
+exitcode: 0
+stdout: {
+  "processed": 1,
+  "written": 1,
+  "skipped_existing": 0,
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc",
+  "result": {
+    "harness_result_version": 1,
+    "harness_store_schema_version": 1,
+    "strategy": {
+      "strategy_id": "noop",
+      "strategy_version": 1
+    },
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    },
+    "outcome_reference": {
+      "outcome_id": "0b73d1c16120f40cc5f6a928f7947bc7f49610bebb70266db356bc25cd2ee821",
+      "record_id": "b0264c8777b07d25b9d4121d1e404b1ef8361a91d15611c9087e0346cd0a83f9",
+      "record_revision": 1,
+      "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+    },
+    "score": {
+      "strategy_score_version": 1,
+      "status": "NOT_APPLICABLE",
+      "reason_codes": [
+        "NO_SIGNAL"
+      ],
+      "metrics": {},
+      "limitations": [
+        "NO_TRADING_PERFORMANCE_EVALUATED"
+      ]
+    },
+    "result_hash": "7ff971eb1b3f217da17399a2a21049c54cc793223a6a452abb4f6922e0539707",
+    "evaluation_id": "7777b2f73e99e7c52a42228adfdcbd7d4794956b05ae89040df6d89655cb28c0"
+  },
+  "error": null
+}
+
+--- ETHEUR rerun (idempotent expected) ---
+cmd: single --pair ETHEUR --snapshot-id ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/etheur_single --json
+exitcode: 0
+stdout: {
+  "processed": 1,
+  "written": 0,
+  "skipped_existing": 1,
+  "decision": {
+    "strategy_decision_version": 1,
+    "strategy_id": "noop",
+    "strategy_version": 1,
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    }
+  },
+  "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc",
+  "result": {
+    "harness_result_version": 1,
+    "harness_store_schema_version": 1,
+    "strategy": {
+      "strategy_id": "noop",
+      "strategy_version": 1
+    },
+    "source_snapshot": {
+      "pair": "ETHEUR",
+      "snapshot_id": "ETHEUR-1785401940-1m5m15m60m240m-a1f6c66c725d",
+      "asof_ts": 1785401940
+    },
+    "strategy_input_hash": "6d3cd7592cfd78b98be17784185a8594208fb6d4171ca9df6eeafa552d16b419",
+    "decision_id": "8fe7d610b15dad35b7192abb95308ac2a52787027b06ff1644419671e5ae12cc",
+    "decision": {
+      "signal": "NO_SIGNAL",
+      "eligible": false,
+      "reason_codes": [
+        "NOOP_STRATEGY"
+      ],
+      "details": {}
+    },
+    "outcome_reference": {
+      "outcome_id": "0b73d1c16120f40cc5f6a928f7947bc7f49610bebb70266db356bc25cd2ee821",
+      "record_id": "b0264c8777b07d25b9d4121d1e404b1ef8361a91d15611c9087e0346cd0a83f9",
+      "record_revision": 1,
+      "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+    },
+    "score": {
+      "strategy_score_version": 1,
+      "status": "NOT_APPLICABLE",
+      "reason_codes": [
+        "NO_SIGNAL"
+      ],
+      "metrics": {},
+      "limitations": [
+        "NO_TRADING_PERFORMANCE_EVALUATED"
+      ]
+    },
+    "result_hash": "7ff971eb1b3f217da17399a2a21049c54cc793223a6a452abb4f6922e0539707",
+    "evaluation_id": "7777b2f73e99e7c52a42228adfdcbd7d4794956b05ae89040df6d89655cb28c0"
+  },
+  "error": null
+}
+
+ETHEUR results.jsonl: 1 line(s), file sha256=7ff971eb1b3f217da17399a2a21049c54cc793223a6a452abb4f6922e0539707
+
+=== BATCH RUN (both snapshots, then idempotent rerun) ===
+--- batch BTCEUR first run ---
+cmd: batch --pair BTCEUR --snapshot-ids BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/batch_out --json
+exitcode: 0
+stdout: {
+  "summary": {
+    "requested": 1,
+    "processed": 1,
+    "written": 1,
+    "skipped_existing": 0,
+    "not_applicable": 1,
+    "unscorable": 0,
+    "failed": 0,
+    "all_ok": true
+  },
+  "results": [
+    {
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "processed": 1,
+      "written": 1,
+      "skipped_existing": 0,
+      "decision": {
+        "strategy_decision_version": 1,
+        "strategy_id": "noop",
+        "strategy_version": 1,
+        "source_snapshot": {
+          "pair": "BTCEUR",
+          "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+          "asof_ts": 1785401940
+        },
+        "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+        "decision": {
+          "signal": "NO_SIGNAL",
+          "eligible": false,
+          "reason_codes": [
+            "NOOP_STRATEGY"
+          ],
+          "details": {}
+        }
+      },
+      "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+      "result": {
+        "harness_result_version": 1,
+        "harness_store_schema_version": 1,
+        "strategy": {
+          "strategy_id": "noop",
+          "strategy_version": 1
+        },
+        "source_snapshot": {
+          "pair": "BTCEUR",
+          "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+          "asof_ts": 1785401940
+        },
+        "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+        "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+        "decision": {
+          "signal": "NO_SIGNAL",
+          "eligible": false,
+          "reason_codes": [
+            "NOOP_STRATEGY"
+          ],
+          "details": {}
+        },
+        "outcome_reference": {
+          "outcome_id": "acf3499f500626f2c5b8ccf10f1c6499e77b6f9609bbb929aae4ca89bdc10ab4",
+          "record_id": "ebc0d7ed717667ae7c8a1741b64dff79186e163f98206d20068989b306dd7219",
+          "record_revision": 1,
+          "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+        },
+        "score": {
+          "strategy_score_version": 1,
+          "status": "NOT_APPLICABLE",
+          "reason_codes": [
+            "NO_SIGNAL"
+          ],
+          "metrics": {},
+          "limitations": [
+            "NO_TRADING_PERFORMANCE_EVALUATED"
+          ]
+        },
+        "result_hash": "3982a4d5767c4638257e77bf1eeae13bfbb31ebc9bf1759c9110d3ca218c7835",
+        "evaluation_id": "12c2115ad693f74d17d28d8c8cb5f73a28c6ccc5a440043cf831adb9bd10cbef"
+      },
+      "error": null
+    }
+  ]
+}
+
+--- batch BTCEUR idempotent rerun ---
+cmd: batch --pair BTCEUR --snapshot-ids BTCEUR-1785401940-1m5m15m60m240m-90922149f762 --l4-dir /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store --outcome-store /tmp/cc_strategy_harness_phase0_final_5wupYy --output-dir /tmp/cc_strategy_harness_phase0_final_VvEvK1/batch_out --json
+exitcode: 0
+stdout: {
+  "summary": {
+    "requested": 1,
+    "processed": 1,
+    "written": 0,
+    "skipped_existing": 1,
+    "not_applicable": 1,
+    "unscorable": 0,
+    "failed": 0,
+    "all_ok": true
+  },
+  "results": [
+    {
+      "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+      "processed": 1,
+      "written": 0,
+      "skipped_existing": 1,
+      "decision": {
+        "strategy_decision_version": 1,
+        "strategy_id": "noop",
+        "strategy_version": 1,
+        "source_snapshot": {
+          "pair": "BTCEUR",
+          "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+          "asof_ts": 1785401940
+        },
+        "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+        "decision": {
+          "signal": "NO_SIGNAL",
+          "eligible": false,
+          "reason_codes": [
+            "NOOP_STRATEGY"
+          ],
+          "details": {}
+        }
+      },
+      "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+      "result": {
+        "harness_result_version": 1,
+        "harness_store_schema_version": 1,
+        "strategy": {
+          "strategy_id": "noop",
+          "strategy_version": 1
+        },
+        "source_snapshot": {
+          "pair": "BTCEUR",
+          "snapshot_id": "BTCEUR-1785401940-1m5m15m60m240m-90922149f762",
+          "asof_ts": 1785401940
+        },
+        "strategy_input_hash": "fa7a2395e045224540cf6a49962068dd7460ef518640668c306c2a81544efb23",
+        "decision_id": "63277c9d9fa3ed8ed5bce603cc05050c858108bf6b34e2cc6311b9dca2bcf76b",
+        "decision": {
+          "signal": "NO_SIGNAL",
+          "eligible": false,
+          "reason_codes": [
+            "NOOP_STRATEGY"
+          ],
+          "details": {}
+        },
+        "outcome_reference": {
+          "outcome_id": "acf3499f500626f2c5b8ccf10f1c6499e77b6f9609bbb929aae4ca89bdc10ab4",
+          "record_id": "ebc0d7ed717667ae7c8a1741b64dff79186e163f98206d20068989b306dd7219",
+          "record_revision": 1,
+          "windows_hash": "236bc2125138c38b3e35154fee7acccfe48e9092c0ea0e50321aa762849a81fc"
+        },
+        "score": {
+          "strategy_score_version": 1,
+          "status": "NOT_APPLICABLE",
+          "reason_codes": [
+            "NO_SIGNAL"
+          ],
+          "metrics": {},
+          "limitations": [
+            "NO_TRADING_PERFORMANCE_EVALUATED"
+          ]
+        },
+        "result_hash": "3982a4d5767c4638257e77bf1eeae13bfbb31ebc9bf1759c9110d3ca218c7835",
+        "evaluation_id": "12c2115ad693f74d17d28d8c8cb5f73a28c6ccc5a440043cf831adb9bd10cbef"
+      },
+      "error": null
+    }
+  ]
+}
+
+batch results.jsonl: 1 line(s), file sha256=3982a4d5767c4638257e77bf1eeae13bfbb31ebc9bf1759c9110d3ca218c7835
+SCRIPT_EXITCODE: 0
+=== SECTION 6.3 / 6.4: VALIDATOR EDGE CASE PROBES ===
+=== 6.3 STRATEGY INPUT VALIDATOR EDGE CASES ===
+forbidden_key_root: valid=False  errors=["outcome: forbidden key 'outcome'"]
+forbidden_key_depth26_beyond_max_depth20: valid=True  errors=[]
+custom_object_in_market_context: valid= True  (no crash)
+tuple_value: valid= True (tuple not dict/list -> not recursed into, no forbidden check applied to its contents)
+set_value: valid= True (no crash)
+bytes_value: valid= True (bytes silently accepted as valid, not caught by NaN/forbidden checks)
+non_string_key: valid= False errors= ['market_context: non-string key 1']
+bool_as_asof_ts: valid= True   (True isinstance int in Python! bool is subclass of int)
+empty_snapshot_id: valid= False
+unknown_extra_top_level_field: valid= True  (extra unknown fields NOT rejected - no closed-set check)
+legit_a0_key_named_windows: valid= False  (rejected due to blind keyname match, 'windows' is forbidden regardless of meaning)
+
+=== 6.4 DECISION VALIDATOR EDGE CASES ===
+decision_not_a_dict: valid=True  errors=[]
+decision_is_list: valid=True  errors=[]
+decision_is_none: valid=True  errors=[]
+details_not_a_dict_NOT_VALIDATED: valid=True  errors=[]
+reason_codes_mixed_types_dup_lowercase_NOT_VALIDATED_BEYOND_LIST_TYPE: valid=True  errors=[]
+reason_codes_unsorted_NOT_VALIDATED: valid=True  errors=[]
+empty_strategy_id_NOT_VALIDATED: valid=True  errors=[]
+strategy_version_zero_NOT_VALIDATED: valid=True  errors=[]
+strategy_version_string_NOT_VALIDATED: valid=True  errors=[]
+source_snapshot_not_dict_NOT_VALIDATED_IN_DECISION: valid=True  errors=[]
+empty_strategy_input_hash_NOT_VALIDATED: valid=True  errors=[]
+too_short_strategy_input_hash_NOT_VALIDATED: valid=True  errors=[]
+forbidden_outcome_field_in_details_NOT_CHECKED: valid=True  errors=[]
+EXITCODE: 0
+=== SECTION 8: SOURCE SAFETY MANIFEST (BEFORE) ===
+51 files manifested (before)
+total 21761
+drwxrwxrwx 1 sjoe root 184320 Jul  3 23:35 .
+drwxrwxrwx 1 sjoe root  28672 Jun  7 09:43 ..
+-rwxrwxrwx 1 sjoe root  26401 May 24 21:23 0GEUR_15m.json
+-rwxrwxrwx 1 sjoe root  16434 May 24 21:23 0GEUR_240m.json
+-rwxrwxrwx 1 sjoe root  20149 May 24 21:23 0GEUR_60m.json
+-rwxrwxrwx 1 sjoe root  27617 Jun  6 18:10 1INCHEUR_15m.json
+-rwxrwxrwx 1 sjoe root  17241 Jun  6 18:10 1INCHEUR_240m.json
+-rwxrwxrwx 1 sjoe root  21222 Jun  6 18:10 1INCHEUR_60m.json
+-rwxrwxrwx 1 sjoe root  27906 Jun  3 22:07 2ZEUR_15m.json
+-rwxrwxrwx 1 sjoe root  17332 Jun  3 22:07 2ZEUR_240m.json
+-rwxrwxrwx 1 sjoe root  21271 Jun  3 22:07 2ZEUR_60m.json
+-rwxrwxrwx 1 sjoe root  12642 Jun 11 12:43 AAVEEUR_1440m.json
+-rwxrwxrwx 1 sjoe root  27179 Jun 11 13:06 AAVEEUR_15m.json
+-rwxrwxrwx 1 sjoe root  16699 Jun 11 13:06 AAVEEUR_240m.json
+-rwxrwxrwx 1 sjoe root  20713 Jun 11 13:06 AAVEEUR_60m.json
+-rwxrwxrwx 1 sjoe root  13676 Jul 30 11:27 ABEUR_1440m.json
+-rwxrwxrwx 1 sjoe root  28543 Jul 30 11:27 ABEUR_15m.json
+-rwxrwxrwx 1 sjoe root 102335 Jul 30 11:27 ABEUR_1m.json
+-rwxrwxrwx 1 sjoe root  17516 Jul 30 11:27 ABEUR_240m.json
+=== SECTION 8: live_cache directory-level snapshot (BEFORE) ===
+854
+19940580	/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/crypto-data/logs/live_cache
+NOTE: audit never passed --cache-dir to any CLI/runner call; cache_dir param is unused by a0_adapter.read_a0_context (see finding). live_cache is a live-updating directory written by the running trading pipeline outside this audit's control -- full per-file hashing before/after is not meaningful since external processes mutate it continuously; recording directory-level stats instead.
+=== SECTION 8: GIT STATUS -- main worktree ===
+?? projects/hermes-v03-interpreter/l4_store/
+?? projects/hermes-v03-interpreter/l4_store_clean_proof/
+?? projects/hermes-v03-interpreter/l4_store_live_test/
+?? projects/hermes-v03-interpreter/l4_store_runner_cleanproof/
+?? projects/hermes-v03-interpreter/l4_store_runner_test/
+?? projects/hermes-v03-interpreter/l4_store_v2_test/
+?? projects/hermes-v03-interpreter/logs/
+?? projects/hermes-v03-interpreter/run/
+?? projects/hermes-v03-interpreter/tmp_fill_diagnose/
+?? projects/hermes-v03-interpreter/tmp_real_audit/
+?? projects/hermes-v03/L0_data/__init__.py.fix01
+?? projects/hermes-v03/L5_chart/__init__.py.fix02
+?? projects/hermes-v03/charts/prominence_fixed/
+?? projects/hermes-v03/server.py.fix01
+?? review/
+?? scripts/render_l88_test.py
+=== SECTION 8: GIT STATUS -- audit worktree ===
+GATE_OUT=/tmp/cc_foundation_gate_phase0_final_KBxFPV
+=== SECTION 9: FOUNDATION RELEASE GATE ===
+=== FOUNDATION RELEASE GATE V2 ===
+Repo: /tmp/cc-strategy-harness-phase0-final-audit-20260730
+Output: /tmp/cc_foundation_gate_phase0_final_KBxFPV
+
+=== RUNNING 14 SUITES ===
+
+  [interpreter-l1-validate] ✅ 11p/0f exit=0 0.0s
+  [interpreter-l2-full-matrix] ✅ 98p/0f exit=0 0.0s
+  [interpreter-l3-snapshot-build] ✅ 76p/0f exit=0 0.1s
+  [interpreter-l4-snapshot-store] ✅ 198p/0f exit=0 0.7s
+  [interpreter-inspector] ✅ 15p/0f exit=0 1.2s
+  [interpreter-filler-runner] ✅ 29p/0f exit=0 0.5s
+  [interpreter-tools-audit-integrity] ✅ 59p/0f exit=0 0.4s
+  [interpreter-tools-real-data-e2e] ✅ 126p/0f exit=0 0.6s
+  [interpreter-fill-l4-store] ✅ 61p/0f exit=0 0.3s
+  [interpreter-pair-id-index] ✅ 6p/0f exit=0 0.5s
+  [analyst-a0-snapshot-readout] ✅ 68p/0f exit=0 1.0s
+  [outcome-phase1a-builder] ✅ 48p/0f exit=0 0.8s
+  [outcome-phase1b-store] ✅ 138p/0f exit=0 1.1s
+  [gate-unit-tests] ✅ 18p/0f exit=0 0.4s
+
+=== REAL-DATA ===
+  real-data all_green=True production_safe=True
+
+=== FROZEN INTEGRITY ===
+  A0 frozen=True Phase1A frozen=True b5f5b9a_clean=True
+
+=== BACKFLOW ===
+  violations=0 all_green=True
+
+=== INDEX ===
+  columns=True explain_ok=True
+
+============================================================
+FOUNDATION GREEN — READY FOR STRATEGY TEST HARNESS
+============================================================
+GATE_EXITCODE: 0
+=== SECTION 8: SOURCE SAFETY MANIFEST (AFTER) + COMPARISON ===
+51 files manifested (after)
+DIFFS FOUND:
+  /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store/BTCEUR/2026-07.sqlite SHA_CHANGED before=70aa0732b382ce40c26c2674cc88043ca2fba53001780c766f33538c15ce889b after=bf771dd61b036c6449bacd280f5a0f5a86f56c73ba2959151a12977259ea962f
+  /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/l4_store/ETHEUR/2026-07.sqlite SHA_CHANGED before=165b3b7b18788d97f67cc6ac099169602a0ca2afd0456f229bcb326cb4ab68c5 after=ec40f377a75e104bca5a18a24efd4c5f7d8aea00dfb53c05cac5613069d52543
+=== live_cache directory-level (AFTER) ===
+854
+19940774	/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/crypto-data/logs/live_cache
+=== GIT STATUS -- main worktree (after) ===
+?? projects/hermes-v03-interpreter/l4_store/
+?? projects/hermes-v03-interpreter/l4_store_clean_proof/
+?? projects/hermes-v03-interpreter/l4_store_live_test/
+?? projects/hermes-v03-interpreter/l4_store_runner_cleanproof/
+?? projects/hermes-v03-interpreter/l4_store_runner_test/
+?? projects/hermes-v03-interpreter/l4_store_v2_test/
+?? projects/hermes-v03-interpreter/logs/
+?? projects/hermes-v03-interpreter/run/
+?? projects/hermes-v03-interpreter/tmp_fill_diagnose/
+?? projects/hermes-v03-interpreter/tmp_real_audit/
+?? projects/hermes-v03/L0_data/__init__.py.fix01
+?? projects/hermes-v03/L5_chart/__init__.py.fix02
+?? projects/hermes-v03/charts/prominence_fixed/
+?? projects/hermes-v03/server.py.fix01
+?? review/
+?? scripts/render_l88_test.py
+=== GIT STATUS -- audit worktree (after) ===
+=== HEAD still exact target SHA? ===
+835c077fb0e380348bbfdb18e7b736c018af7e44
+=== INVESTIGATE L4 SQLITE CHANGE: current row counts / latest asof_ts ===
+BTCEUR:
+6185|1785403980
+ETHEUR:
+6140|1785403920
+(earlier in this audit, before ANY test/gate run, BTCEUR count=6179 max_asof=1785401940, ETHEUR count=6134 max_asof=1785401940)
+
+=== is a live process currently writing? check file mtimes and running processes ===
+Modify: 2026-07-30 11:33:43.930877500 +0200
+Modify: 2026-07-30 11:33:42.216550100 +0200
+
+=== check for live interpreter/pipeline processes ===
+sjoe       37014  0.0  0.0   8680  2304 ?        Ss   Jun18   0:00 /usr/bin/bash -lic set +m; cd /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v01/charts/full/replay_charts/full_context_v5 && python3 -m http.server 8900
+sjoe      342180  1.5  1.4 2471876 229344 pts/1  Sl+  10:40   0:49 /home/sjoe/.hermes/hermes-agent/venv/bin/python3 /home/sjoe/.hermes/hermes-agent/venv/bin/hermes
+sjoe      342197  0.0  0.1 106120 16640 ?        Ssl  10:40   0:00 /home/sjoe/.hermes/hermes-agent/venv/bin/python3 /home/sjoe/.hermes/hermes-agent/tools/mcp_stdio_watchdog.py --ppid 342180 -- /usr/bin/node /home/sjoe/.hermes/mcp-local/mcp-health-monitor/node_modules/mcp-server-health-monitor/dist/index.js
+sjoe      342199  0.0  0.5 1500724 84668 ?       Ssl  10:40   0:00 /usr/bin/node /home/sjoe/.hermes/mcp-local/mcp-health-monitor/node_modules/mcp-server-health-monitor/dist/index.js
+sjoe      342208  0.0  0.1 106124 16896 ?        Ssl  10:40   0:00 /home/sjoe/.hermes/hermes-agent/venv/bin/python3 /home/sjoe/.hermes/hermes-agent/tools/mcp_stdio_watchdog.py --ppid 342180 -- /usr/bin/npx -y --args @modelcontextprotocol/server-filesystem --args /home/sjoe/system/hermes-second-brain --args /home/sjoe/Noa-Hermes --args /home/sjoe/scripts --args /home/sjoe/.hermes/skills
+sjoe      342210  0.0  0.1 106116 16512 ?        Ssl  10:40   0:00 /home/sjoe/.hermes/hermes-agent/venv/bin/python3 /home/sjoe/.hermes/hermes-agent/tools/mcp_stdio_watchdog.py --ppid 342180 -- /usr/bin/npx -y plex-mcp-server
+sjoe      342212  0.0  0.5 1735672 95944 ?       Ssl  10:40   0:01 npm exec @modelcontextprotocol/server-filesystem /home/sjoe/system/hermes-second-brain /home/sjoe/Noa-Hermes /home/sjoe/scripts /home/sjoe/.hermes/skills
+sjoe      342244  0.0  0.0   2800  1664 ?        S    10:40   0:00 sh -c "mcp-server-filesystem" /home/sjoe/system/hermes-second-brain /home/sjoe/Noa-Hermes /home/sjoe/scripts /home/sjoe/.hermes/skills
+sjoe      342245  0.0  0.4 1712828 70216 ?       Sl   10:40   0:00 node /home/sjoe/.npm/_npx/a3241bba59c344f5/node_modules/.bin/mcp-server-filesystem /home/sjoe/system/hermes-second-brain /home/sjoe/Noa-Hermes /home/sjoe/scripts /home/sjoe/.hermes/skills
+sjoe      391672  0.0  0.0   5696  1792 ?        S    11:34   0:00 tee -a /home/sjoe/system/hermes-second-brain/second-brain/raw/audits/2026-07-30-strategy-harness-phase0-final-cc-audit/RAW_COMMAND_OUTPUT.txt
+sjoe     1364484  0.0  0.0  12548  3196 ?        Ss   Jun16   8:29 tmux new -s hermes
+sjoe     1494590  0.0  0.0   8676  2548 ?        Ss   Jun12   0:00 /usr/bin/bash -lic set +m; rm -rf /tmp/hermes-cdp-profile && mkdir -p /tmp/hermes-cdp-profile && /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome \   --headless \   --no-sandbox \   --disable-gpu \   --disable-dev-shm-usage \   --remote-debugging-port=9222 \   --remote-debugging-address=127.0.0.1 \   --user-data-dir=/tmp/hermes-cdp-profile \   --disable-features=TranslateUI \   --window-size=1280,800 \   2>/tmp/hermes_vision/cdp_chrome.log
+sjoe     1494602  0.6  0.3 51188364 59752 ?      Sl   Jun12 419:52 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 --user-data-dir=/tmp/hermes-cdp-profile --disable-features=TranslateUI --window-size=1280,800 --noerrdialogs --no-first-run --ozone-platform=headless --ozone-override-screen-size=800,600 --use-angle=swiftshader-webgl
+sjoe     1494610  0.0  0.0 50751916 6784 ?       S    Jun12   0:00 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=zygote --no-zygote-sandbox --no-sandbox --headless --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --no-first-run --ozone-platform=headless --ozone-override-screen-size=800,600 --use-angle=swiftshader-webgl
+sjoe     1494611  0.0  0.0 50751916 7680 ?       S    Jun12   0:00 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=zygote --no-sandbox --headless --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --no-first-run --ozone-platform=headless --ozone-override-screen-size=800,600 --use-angle=swiftshader-webgl
+sjoe     1494637  1.2  0.1 51036772 18440 ?      Sl   Jun12 871:22 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=gpu-process --no-sandbox --disable-dev-shm-usage --headless --ozone-platform=headless --use-angle=swiftshader-webgl --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --gpu-preferences=UAAAAAAAAAAgAQAEAAAAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAYAAAAAAAAABgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAgAAAAAAAAA --use-gl=disabled --shared-files --field-trial-handle=3,i,9367380403551844176,8995536839172271259,262144 --disable-features=PaintHolding,TranslateUI --variations-seed-version --pseudonymization-salt-handle=7,i,11351084696537932285,17027815984780099985,4 --trace-process-track-uuid=3190708988185955192
+sjoe     1494658  0.0  0.1 50794176 24196 ?      Sl   Jun12   2:45 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=network --no-sandbox --disable-dev-shm-usage --use-angle=swiftshader-webgl --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --shared-files=network_parent_dirs_pipe:100,v8_context_snapshot_data:101 --field-trial-handle=3,i,9367380403551844176,8995536839172271259,262144 --disable-features=PaintHolding,TranslateUI --variations-seed-version --pseudonymization-salt-handle=7,i,11351084696537932285,17027815984780099985,4 --trace-process-track-uuid=3190708989122997041
+sjoe     1494719  0.0  0.0 50834288 8468 ?       Sl   Jun12   1:56 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=utility --no-sandbox --disable-dev-shm-usage --use-angle=swiftshader-webgl --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,9367380403551844176,8995536839172271259,262144 --disable-features=PaintHolding,TranslateUI --variations-seed-version --pseudonymization-salt-handle=7,i,11351084696537932285,17027815984780099985,4 --trace-process-track-uuid=3190708990060038890
+sjoe     1494747  0.0  0.0 1518500460 12448 ?    Sl   Jun12   0:53 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=renderer --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --no-sandbox --disable-dev-shm-usage --remote-debugging-port=9222 --ozone-platform=headless --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=6 --time-ticks-at-unix-epoch=-1781176074575470 --launch-time-ticks=70543366031 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,9367380403551844176,8995536839172271259,262144 --disable-features=PaintHolding,TranslateUI --variations-seed-version --pseudonymization-salt-handle=7,i,11351084696537932285,17027815984780099985,4 --trace-process-track-uuid=3190708991934122588
+sjoe     1494748  0.0  0.0 1518510652 14552 ?    Sl   Jun12   0:49 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=renderer --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --no-sandbox --disable-dev-shm-usage --remote-debugging-port=9222 --ozone-platform=headless --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1781176074575470 --launch-time-ticks=70543368349 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,9367380403551844176,8995536839172271259,262144 --disable-features=PaintHolding,TranslateUI --variations-seed-version --pseudonymization-salt-handle=7,i,11351084696537932285,17027815984780099985,4 --trace-process-track-uuid=3190708990997080739
+sjoe     1494824  0.0  0.0 1518457912 8980 ?     Sl   Jun12   0:44 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=renderer --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --no-sandbox --disable-dev-shm-usage --remote-debugging-port=9222 --ozone-platform=headless --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=8 --time-ticks-at-unix-epoch=-1781176074575470 --launch-time-ticks=70543540493 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,9367380403551844176,8995536839172271259,262144 --disable-features=PaintHolding,TranslateUI --variations-seed-version --pseudonymization-salt-handle=7,i,11351084696537932285,17027815984780099985,4 --trace-process-track-uuid=3190708993808206286
+sjoe     1494966  0.0  0.0 1518457912 8992 ?     Sl   Jun12   0:44 /home/sjoe/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome --type=renderer --crashpad-handler-pid=1494605 --enable-crash-reporter=, --noerrdialogs --user-data-dir=/tmp/hermes-cdp-profile --change-stack-guard-on-fork=enable --no-sandbox --disable-dev-shm-usage --remote-debugging-port=9222 --ozone-platform=headless --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=9 --time-ticks-at-unix-epoch=-1781176074575470 --launch-time-ticks=70545519618 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,9367380403551844176,8995536839172271259,262144 --disable-features=PaintHolding,TranslateUI --variations-seed-version --pseudonymization-salt-handle=7,i,11351084696537932285,17027815984780099985,4 --trace-process-track-uuid=3190708994745248135
+sjoe     1630336  0.0  0.0   8600  2560 ?        Ss   Jun28   0:00 /usr/bin/bash -lic set +m; cd /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03 && python3 server.py
+sjoe     1841838  0.0  0.0   7340  2304 pts/2    Ss+  Jul03   0:00 bash -c hermes chat -m deepseek/deepseek-v4-pro 2>&1
+sjoe     1841839  0.9  0.7 1104204 115880 pts/2  Sl+  Jul03 374:15 /home/sjoe/.hermes/hermes-agent/venv/bin/python3 /home/sjoe/.hermes/hermes-agent/venv/bin/hermes chat -m deepseek/deepseek-v4-pro
+sjoe     3796625  0.0  0.2 1510004 37296 ?       Ssl  Jul09   0:12 /usr/bin/node /home/sjoe/.hermes/mcp-local/mcp-health-monitor/node_modules/mcp-server-health-monitor/dist/index.js
+sjoe     3796647  0.0  0.0 1735680 4968 ?        Ssl  Jul09   0:01 npm exec @modelcontextprotocol/server-filesystem /home/sjoe/system/hermes-second-brain /home/sjoe/Noa-Hermes /home/sjoe/scripts /home/sjoe/.hermes/skills
+sjoe     3796671  0.0  0.0   2800  1664 ?        S    Jul09   0:00 sh -c "mcp-server-filesystem" /home/sjoe/system/hermes-second-brain /home/sjoe/Noa-Hermes /home/sjoe/scripts /home/sjoe/.hermes/skills
+sjoe     3796672  0.0  0.2 1721944 40276 ?       Sl   Jul09   0:12 node /home/sjoe/.npm/_npx/a3241bba59c344f5/node_modules/.bin/mcp-server-filesystem /home/sjoe/system/hermes-second-brain /home/sjoe/Noa-Hermes /home/sjoe/scripts /home/sjoe/.hermes/skills
+=== SECTION 6.5 / 6.6: IDENTITY & RESULT-STORE CORRUPTION PROBES ===
+=== 6.5 OUTCOME IDENTITY CORRUPTION TESTS (via strategy_harness.outcome_adapter, real frozen identity fns) ===
+baseline_valid: found=True  error=None
+corrupt_windows_hash_nonempty: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+corrupt_outcome_id_nonempty: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+corrupt_record_id_nonempty: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+corrupt_record_hash_nonempty: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+corrupt_previous_record_hash_rev1_nonnull: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+corrupt_record_revision_99: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+corrupt_store_schema_version_unknown: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+corrupt_source_snapshot_pair: found=False  error=OUTCOME_NOT_FOUND: no outcome for pair=ETHEUR snapshot_id=s1 asof_ts=1000
+content_hash_demanded_but_record_has_none_SILENTLY_ACCEPTED: found=True  error=None
+content_hash_demanded_and_present_matching: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+content_hash_demanded_and_present_mismatching: found=False  error=OUTCOME_RESOLVER_FAILED: error code 2
+
+=== 6.6 RESULT STORE CORRUPTION TESTS (real write_result, real files) ===
+write_into_empty_file: True None
+existing_partial_last_line_no_newline: False CORRUPT_RESULT_STORE: incomplete last line
+existing_empty_middle_line: True None
+existing_unparseable_record: False CORRUPT_RESULT_STORE: unparseable record
+dry_run_no_dir_created: True  written= False
+EXITCODE: 0
+=== 6.6 supplementary: TRAILING vs INTERIOR blank line detection gap ===
+interior_blank_line_between_two_records: False CORRUPT_RESULT_STORE: empty line
+trailing_blank_line_before_eof (gap due to .strip()): True None

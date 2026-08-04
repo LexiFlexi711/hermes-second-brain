@@ -1,0 +1,1 @@
+Inspector: 15 collected, 15 passed, 0 failed, 0 skipped, 0 warnings, exitcode 0

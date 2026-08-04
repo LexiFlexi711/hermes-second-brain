@@ -127,34 +127,98 @@ def main():
     print(f"Stats: {dict(stats['nodes_by_type'])}")
 
     html_content = f"""<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LLM Wiki Knowledge Graph</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noa Second Brain — Knowledge Graph</title>
     <script src="https://cdn.jsdelivr.net/npm/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
-        body {{ margin: 0; padding: 0; font-family: Arial, sans-serif; }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; overflow: hidden; }}
         #graph {{ width: 100vw; height: 100vh; }}
-        .info {{ position: absolute; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }}
+        .info {{ position: absolute; top: 20px; left: 20px; background: rgba(13,17,23,0.9); padding: 16px 20px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 10; }}
+        .info h2 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #58a6ff; }}
+        .info p {{ font-size: 12px; color: #8b949e; margin: 2px 0; }}
+        .info .stats {{ display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }}
+        .info .stat {{ background: #161b22; padding: 4px 10px; border-radius: 6px; font-size: 11px; border: 1px solid #21262d; }}
+        .info .stat span {{ color: #58a6ff; font-weight: 600; }}
+        .legend {{ position: absolute; bottom: 20px; left: 20px; background: rgba(13,17,23,0.9); padding: 12px 16px; border-radius: 12px; border: 1px solid #30363d; backdrop-filter: blur(8px); z-index: 10; display: flex; gap: 12px; flex-wrap: wrap; }}
+        .legend-item {{ display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8b949e; }}
+        .legend-dot {{ width: 10px; height: 10px; border-radius: 50%; }}
     </style>
 </head>
 <body>
     <div class="info">
-        <h2>LLM Wiki Knowledge Graph</h2>
-        <p>Nodes: {len(graph['nodes'])} | Edges: {len(graph['edges'])}</p>
-        <p><small>Generated: {stats['generated']}</small></p>
+        <h2>🧠 Noa Second Brain</h2>
+        <p>{len(graph['nodes'])} nodes · {len(graph['edges'])} edges · {stats['generated']}</p>
+        <div class="stats">
+            {''.join(f'<div class="stat">{t}: <span>{c}</span></div>' for t, c in sorted(stats['nodes_by_type'].items()))}
+        </div>
+    </div>
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#58a6ff"></div> project</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div> concept</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d29922"></div> decision</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f85149"></div> fix</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#bc8cff"></div> entity</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#79c0ff"></div> synthesis</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff7b72"></div> source_summary</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7ee787"></div> skills</div>
     </div>
     <div id="graph"></div>
     <script>
-        const data = {{
-            nodes: new vis.DataSet({json.dumps(graph['nodes'])}),
-            edges: new vis.DataSet({json.dumps(graph['edges'])})
+        const typeColors = {{
+            'project': '#58a6ff', 'concept': '#3fb950', 'decision': '#d29922',
+            'fix': '#f85149', 'entity': '#bc8cff', 'synthesis': '#79c0ff',
+            'source_summary': '#ff7b72', 'skills': '#7ee787', 'log': '#8b949e'
         }};
+        const nodes = new vis.DataSet({json.dumps(graph['nodes'])});
+        const edges = new vis.DataSet({json.dumps(graph['edges'])});
         const options = {{
-            nodes: {{ shape: 'dot', size: 20, font: {{ size: 14 }}, borderWidth: 2 }},
-            edges: {{ width: 2, smooth: {{ type: 'continuous' }}, arrows: {{ to: true }} }},
-            physics: {{ stabilization: true, barnesHut: {{ gravitationalConstant: -2000, springConstant: 0.04, springLength: 95 }} }}
+            nodes: {{
+                shape: 'dot',
+                size: 20,
+                font: {{ size: 13, color: '#c9d1d9', face: 'Segoe UI' }},
+                borderWidth: 2,
+                borderWidthSelected: 3,
+                color: {{
+                    border: '#30363d',
+                    background: '#161b22',
+                    highlight: {{ border: '#58a6ff', background: '#1c2128' }},
+                    hover: {{ border: '#58a6ff', background: '#1c2128' }}
+                }}
+            }},
+            edges: {{
+                width: 1.5,
+                color: {{ color: '#30363d', highlight: '#58a6ff', hover: '#58a6ff', opacity: 0.6 }},
+                smooth: {{ type: 'curvedCW', roundness: 0.15 }},
+                arrows: {{ to: {{ enabled: true, scaleFactor: 0.8 }} }}
+            }},
+            physics: {{
+                solver: 'forceAtlas2Based',
+                forceAtlas2Based: {{ gravitationalConstant: -40, centralGravity: 0.005, springLength: 120, springConstant: 0.08, damping: 0.4 }},
+                stabilization: {{ iterations: 200, updateInterval: 25, onlyDynamicEdges: false }}
+            }},
+            interaction: {{
+                hover: true,
+                tooltipDelay: 200,
+                zoomView: true,
+                dragView: true,
+                dragNodes: true
+            }}
         }};
-        new vis.Network(document.getElementById('graph'), data, options);
+        nodes.forEach(n => {{
+            n.color = {{ background: typeColors[n.type] || '#8b949e', border: '#30363d' }};
+            n.title = `<b>${{n.label}}</b><br><small>${{n.type}} · ${{n.group}}</small>`;
+        }});
+        const network = new vis.Network(document.getElementById('graph'), {{ nodes, edges }}, options);
+        network.on('click', function(params) {{
+            if (params.nodes.length > 0) {{
+                const nodeId = params.nodes[0];
+                network.focus(nodeId, {{ scale: 1.5, animation: true }});
+            }}
+        }});
     </script>
 </body>
 </html>"""

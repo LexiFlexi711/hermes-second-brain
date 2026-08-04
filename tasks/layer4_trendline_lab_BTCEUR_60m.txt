@@ -1,0 +1,66 @@
+Layer 4 Trendline Lab — BTCEUR 60m
+============================================================
+Candles: 200  Fractalen: 56  Toppen: 27  Swing highs: 23
+
+Strength: count=23 min=0.4 max=0.8564 avg=0.6238
+  last_10: [0.7295, 0.7756, 0.6129, 0.6, 0.6819, 0.758, 0.7308, 0.8564, 0.734, 0.7329]
+
+Upper points: 10
+  idx=113  strength=0.729  wick=54995.8  body=54855.2
+  idx=128  strength=0.776  wick=53912.8  body=53830.1
+  idx=133  strength=0.613  wick=53680.8  body=53628.7
+  idx=139  strength=0.600  wick=53438.7  body=53370.5
+  idx=147  strength=0.682  wick=54399.8  body=54197.3
+  idx=167  strength=0.758  wick=54785.5  body=54721.1
+  idx=174  strength=0.731  wick=55186.1  body=55042.0
+  idx=180  strength=0.856  wick=55063.1  body=54969.9
+  idx=184  strength=0.734  wick=55103.4  body=54991.0
+  idx=195  strength=0.733  wick=55594.2  body=55270.8
+
+Candidates: 10
+Valid: 9/10
+
+  Candidate 1: p1=113 p2=195 span=82 slope=7.297561
+    valid=True touches=3(+1extra) score=100
+    body_v=0/87(0.000) close_ab=0(0.000) cuts=0(0.000)
+    last_touch=195 since=4
+  Candidate 2: p1=113 p2=184 span=71 slope=1.515493
+    valid=True touches=5(+3extra) score=100
+    body_v=4/87(0.046) close_ab=2(0.023) cuts=4(0.046)
+    last_touch=184 since=15
+  Candidate 3: p1=113 p2=180 span=67 slope=1.004478
+    valid=True touches=5(+3extra) score=100
+    body_v=4/87(0.046) close_ab=2(0.023) cuts=4(0.046)
+    last_touch=184 since=15
+  Candidate 4: p1=128 p2=195 span=67 slope=25.095522
+    valid=True touches=8(+6extra) score=100
+    body_v=0/72(0.000) close_ab=0(0.000) cuts=0(0.000)
+    last_touch=195 since=4
+  Candidate 5: p1=133 p2=195 span=62 slope=30.861290
+    valid=True touches=7(+5extra) score=100
+    body_v=1/67(0.015) close_ab=1(0.015) cuts=5(0.075)
+    last_touch=195 since=4
+  Candidate 6: p1=113 p2=174 span=61 slope=3.119672
+    valid=True touches=5(+3extra) score=100
+    body_v=0/87(0.000) close_ab=0(0.000) cuts=2(0.023)
+    last_touch=184 since=15
+  Candidate 7: p1=128 p2=184 span=56 slope=21.260714
+    valid=True touches=6(+4extra) score=100
+    body_v=2/72(0.028) close_ab=1(0.014) cuts=3(0.042)
+    last_touch=184 since=15
+  Candidate 8: p1=139 p2=195 span=56 slope=38.491071
+    valid=True touches=5(+3extra) score=44
+    body_v=7/61(0.115) close_ab=5(0.082) cuts=9(0.148)
+    last_touch=195 since=4
+  Candidate 9: p1=113 p2=167 span=54 slope=-3.894444
+    valid=False touches=3(+1extra) score=0
+    body_v=22/87(0.253) close_ab=16(0.184) cuts=7(0.080)
+    last_touch=167 since=32
+    rejected: too_many_body_violations:0.253; too_old_no_recent_touch:32>30
+  Candidate 10: p1=128 p2=180 span=52 slope=22.121154
+    valid=True touches=7(+5extra) score=100
+    body_v=1/72(0.014) close_ab=1(0.014) cuts=2(0.028)
+    last_touch=195 since=4
+
+Top:
+  Score=100 touches=8 extra=6 violations=0

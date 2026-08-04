@@ -1,0 +1,83 @@
+INTERPRETER INDEX AUDIT — pair vs pair_id
+Gegenereerd: 2026-07-25 (zie git-state.txt voor exacte timestamp)
+Bron: actuele main-worktreebestanden, geen eerdere rapporten gebruikt.
+
+=== EXACT PAD ===
+/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/projects/hermes-v03-interpreter/L4_snapshot_store/__init__.py
+
+=== CREATE TABLE snapshots (regels 111-127) ===
+111	        conn.execute("""
+112	            CREATE TABLE IF NOT EXISTS snapshots (
+113	                snapshot_id TEXT PRIMARY KEY,
+114	                snapshot_version INTEGER NOT NULL,
+115	                pair TEXT NOT NULL,
+116	                pair_id TEXT NOT NULL,
+117	                asof_ts INTEGER NOT NULL,
+118	                generated_at INTEGER NOT NULL,
+119	                content_hash TEXT NOT NULL,
+120	                expected_timeframes_json TEXT NOT NULL,
+121	                raw_hashes_json TEXT NOT NULL,
+122	                meta_json TEXT NOT NULL,
+123	                l2_status_json TEXT NOT NULL,
+124	                diagnostics_json TEXT NOT NULL,
+125	                stored_at INTEGER NOT NULL
+126	            )
+127	        """)
+
+Conclusie: "pair" en "pair_id" zijn twee aparte kolommen (regel 115 en 116),
+geen alias van elkaar.
+
+=== ACTUELE DEFINITIE idx_snapshots_pair_asof (regels 129-132) ===
+129	        conn.execute("""
+130	            CREATE INDEX IF NOT EXISTS idx_snapshots_pair_asof
+131	            ON snapshots(pair, asof_ts)
+132	        """)
+
+Index dekt kolommen: (pair, asof_ts)
+
+=== ACTUELE query_snapshots QUERY (regels 1227-1289) ===
+1227	def query_snapshots(pair: str, start_ts: int, end_ts: int,
+1228	                    base_dir: str, limit: int = 1000) -> dict:
+...
+1245	    clean_pair = _pair_id(pair)
+...
+1280	        try:
+1281	            conn = sqlite3.connect(db_fpath)
+1282	            cursor = conn.execute(
+1283	                """SELECT snapshot_id, pair, asof_ts, generated_at, content_hash
+1284	                   FROM snapshots
+1285	                   WHERE pair_id = ? AND asof_ts >= ? AND asof_ts <= ?
+1286	                   ORDER BY asof_ts ASC
+1287	                   LIMIT ?""",
+1288	                (clean_pair, start_ts, end_ts, limit - len(all_snapshots)),
+1289	            )
+
+Query filtert op kolommen: (pair_id, asof_ts) — bind-parameter clean_pair
+op regel 1288 correspondeert met "pair_id = ?" op regel 1285.
+
+=== CONCLUSIE: pair vs pair_id inconsistentie ===
+BEWEZEN, aan de hand van bovenstaande regelnummers uit de actuele
+main-worktreebestanden:
+
+- De tabel "snapshots" heeft twee losse kolommen: "pair" en "pair_id"
+  (regel 115-116).
+- De index "idx_snapshots_pair_asof" is gedefinieerd op (pair, asof_ts)
+  (regel 130-131) — dus op de kolom "pair", NIET op "pair_id".
+- De query in query_snapshots() filtert met "WHERE pair_id = ? AND
+  asof_ts >= ? AND asof_ts <= ?" (regel 1285) — dus op de kolom
+  "pair_id", NIET op "pair".
+
+Gevolg: de bestaande index idx_snapshots_pair_asof(pair, asof_ts) dekt
+niet de daadwerkelijke WHERE-clausule van query_snapshots (pair_id,
+asof_ts). SQLite kan deze index niet gebruiken voor deze query op basis
+van de kolomnamen alleen; er is geen index op (pair_id, asof_ts).
+
+Dit is een reële inconsistentie tussen index en query, geen naamsverschil
+zonder betekenis — "pair" en "pair_id" zijn aantoonbaar verschillende
+kolommen met verschillende inhoud ("pair" is display/raw pair-string;
+"pair_id" is de canonieke sleutel geproduceerd door _pair_id()).
+
+Geen EXPLAIN QUERY PLAN uitgevoerd in dit audit — bovenstaande conclusie
+is gebaseerd op statische schema/query-inspectie van kolomnamen, niet op
+een gemeten queryplan. Wil je dat ik dat alsnog met EXPLAIN QUERY PLAN
+verifieer, dan is dat een aparte, expliciete vervolgstap.

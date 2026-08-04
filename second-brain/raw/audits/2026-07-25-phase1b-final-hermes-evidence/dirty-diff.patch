@@ -1,0 +1,177 @@
+diff --git a/projects/hermes-v03-outcome/tests/test_outcome_builder.py b/projects/hermes-v03-outcome/tests/test_outcome_builder.py
+index 419fc273..a0a356d2 100644
+--- a/projects/hermes-v03-outcome/tests/test_outcome_builder.py
++++ b/projects/hermes-v03-outcome/tests/test_outcome_builder.py
+@@ -509,10 +509,84 @@ class TestCliSubprocess(unittest.TestCase):
+ 
+ class TestNoBackflow(unittest.TestCase):
+     def test_no_a0_import(self):
+-        """Verify outcome_builder does not import from a0_snapshot_readout."""
+-        import importlib
+-        with self.assertRaises(ImportError):
+-            importlib.import_module("a0_snapshot_readout")
++        """BLOCKER 8: AST import audit — no a0/analyst/strategy/testbot/trader,
++        Phase 1B store modules, or Interpreter-write imports in any frozen
++        Phase 1A Outcome Builder file."""
++        import ast
++        import os as _os
++
++        _BUILDER_DIR = _os.path.join(
++            _os.path.dirname(__file__), "..", "outcome_builder"
++        )
++        _PHASE1A_FILES = [
++            "__init__.py",
++            "contracts.py",
++            "l4_reader.py",
++            "ohlc_cache.py",
++            "calculator.py",
++            "guardrails.py",
++            "cli.py",
++        ]
++
++        _FORBIDDEN_MODULES = {
++            "a0",
++            "snapshot_readout",
++            "analyst",
++            "strategy",
++            "testbot",
++            "trader",
++            # Phase 1B store modules:
++            "outcome_store",
++            "store_cli",
++            "store_contracts",
++            "phase1a_adapter",
++            "canonical_json",
++            "outcome_identity",
++            # Interpreter write-modules:
++            "l3_snapshot_build",
++            "l4_snapshot_store",
++            "l4_filler",
++            "l4_runner",
++            "l4_inspector",
++        }
++
++        violations = []
++        for fname in _PHASE1A_FILES:
++            fpath = _os.path.join(_BUILDER_DIR, fname)
++            with open(fpath, "r", encoding="utf-8") as fh:
++                try:
++                    tree = ast.parse(fh.read(), filename=fname)
++                except SyntaxError as e:
++                    self.fail(f"Parse error in {fname}: {e}")
++
++            for node in ast.walk(tree):
++                if isinstance(node, ast.Import):
++                    for alias in node.names:
++                        top = alias.name.split(".")[0]
++                        if top in _FORBIDDEN_MODULES or any(
++                            token in alias.name for token in _FORBIDDEN_MODULES
++                        ):
++                            violations.append(
++                                f"{fname}: import {alias.name} (line {node.lineno})"
++                            )
++                elif isinstance(node, ast.ImportFrom):
++                    if node.module is None:
++                        continue
++                    top = node.module.split(".")[0]
++                    if top in _FORBIDDEN_MODULES or any(
++                        token in node.module for token in _FORBIDDEN_MODULES
++                    ):
++                        for alias in node.names:
++                            violations.append(
++                                f"{fname}: from {node.module} import "
++                                f"{alias.name} (line {node.lineno})"
++                            )
++
++        if violations:
++            self.fail(
++                "Forbidden imports found in Phase 1A files:\n"
++                + "\n".join(violations)
++            )
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/projects/hermes-v03-outcome/tests/test_outcome_store.py b/projects/hermes-v03-outcome/tests/test_outcome_store.py
+index fece73a6..4696d41b 100644
+--- a/projects/hermes-v03-outcome/tests/test_outcome_store.py
++++ b/projects/hermes-v03-outcome/tests/test_outcome_store.py
+@@ -751,10 +751,75 @@ class TestGuardrails:
+ 
+ class TestNoBackflow:
+     def test_no_a0_import(self):
+-        """BLOCKER 8: Hard scan — no a0/analyst imports in store files."""
+-        import outcome_builder.outcome_store as os_mod
+-        src = open(os_mod.__file__).read()
+-        assert "a0" not in src.split("import")[-1] if "import" in src else True
++        """BLOCKER 8: AST import audit — no a0/analyst/strategy/testbot/trader
++        or Interpreter-write imports in any Phase 1B store file."""
++        import ast
++        import os as _os
++
++        _STORE_DIR = _os.path.join(
++            _os.path.dirname(__file__), "..", "outcome_builder"
++        )
++        _PHASE1B_FILES = [
++            "outcome_store.py",
++            "store_cli.py",
++            "store_contracts.py",
++            "phase1a_adapter.py",
++            "canonical_json.py",
++            "outcome_identity.py",
++        ]
++
++        _FORBIDDEN_MODULES = {
++            "a0",
++            "snapshot_readout",
++            "analyst",
++            "strategy",
++            "testbot",
++            "trader",
++            # Interpreter write-modules:
++            "l3_snapshot_build",
++            "l4_snapshot_store",
++            "l4_filler",
++            "l4_runner",
++            "l4_inspector",
++        }
++
++        violations = []
++        for fname in _PHASE1B_FILES:
++            fpath = _os.path.join(_STORE_DIR, fname)
++            with open(fpath, "r", encoding="utf-8") as fh:
++                try:
++                    tree = ast.parse(fh.read(), filename=fname)
++                except SyntaxError as e:
++                    pytest.fail(f"Parse error in {fname}: {e}")
++
++            for node in ast.walk(tree):
++                if isinstance(node, ast.Import):
++                    for alias in node.names:
++                        top = alias.name.split(".")[0]
++                        if top in _FORBIDDEN_MODULES or any(
++                            token in alias.name for token in _FORBIDDEN_MODULES
++                        ):
++                            violations.append(
++                                f"{fname}: import {alias.name} (line {node.lineno})"
++                            )
++                elif isinstance(node, ast.ImportFrom):
++                    if node.module is None:
++                        continue
++                    top = node.module.split(".")[0]
++                    if top in _FORBIDDEN_MODULES or any(
++                        token in node.module for token in _FORBIDDEN_MODULES
++                    ):
++                        for alias in node.names:
++                            violations.append(
++                                f"{fname}: from {node.module} import "
++                                f"{alias.name} (line {node.lineno})"
++                            )
++
++        if violations:
++            pytest.fail(
++                "Forbidden imports found in Phase 1B store files:\n"
++                + "\n".join(violations)
++            )
+ 
+     def test_no_l4_write(self):
+         """BLOCKER 8: No L4 write paths in store code."""

@@ -1,50 +1,139 @@
 ---
-title: Noa Second Brain Index
+title: Noa Second Brain Index (auto-gegenereerd voorstel)
 type: index
-updated: 2026-05-20
+updated: 2026-07-12 12:48
 ---
 
 # Noa Second Brain Index
 
-## Projects
+> ⚠️ Dit is een **automatisch voorstel**. Controleer of alle entries kloppen
+> voordat je de bestaande index.md vervangt.
 
-- [[hermes-openclaw-noa-agent]]
-- [[crypto-tradebot]]
-- [[Ubuntu Server]]
-- [[n8n Automation]]
-- [[Python Leerpad]]
-- [[pullback-trader-strategy]]
+## Audits
 
-## Entities
-
-- [[trade-specialist-agent]]
-- [[secretary-agent]]
-
-## Fixes
-
-- [[2026-05-17-hermes-yaml-prefix-fix]]
-
-## Decisions
-
-Nog geen gecureerde beslissingen.
+- [[hermes-skill-tool-hygiene-audit-2026-07-07]] — Hermes Skill / Tool Hygiene Audit (audit)
 
 ## Concepts
 
-Nog geen gecureerde concepten.
+- [[lexi-trend-line-methodology]] — lexi-trend-line-methodology
+- [[ollama-cloud-lanes]] — Ollama Cloud Lanes (concept)
+- [[openrouter-kimi-free-agent]] — OpenRouter Kimi Free Agent (concept)
+- [[skill-creation-policy]] — Skill Creation Policy (concept)
+
+## Decisions
+
+- [[2026-05-20-hermes-md-startup-owner]] — .hermes.md = eigenaar van startup regels (decision)
+- [[2026-05-20-identity-architecture]] — Identity Architecture — SOUL.md = primaire identiteit (decision)
+- [[2026-05-20-noa-identity-skill-verworpen]] — noa-identity skill voorstel — verworpen (decision)
+- [[2026-05-20-skill-creation-policy-optie-b]] — Skill Creation Policy — apart protocol (Optie B) (decision)
+- [[2026-07-10-mcp-tools-decision]] — MCP Tools Audit — Beslissing (decision)
+- [[l8-market-context-mvp]] — l8-market-context-mvp
+- [[model-routing-autonoom-2026-06-29]] — Model routing — Noa routeert autonoom tussen Flash en Pro (decision)
+- [[structure-roles-horizontal-zone-known-debt]] — structure_roles horizontal zone substitution is non-production known debt (decision)
+
+## Entities
+
+- [[claude-code-role]] — Claude Code Role Test — Director/Executor/Owner (entity)
+- [[lennox]] — Lennox (entity)
+- [[secretary-agent]] — Secretary Agent (entity)
+- [[trade-specialist-agent]] — Trade Specialist Agent (entity)
+
+## Fixes
+
+- [[2026-05-17-hermes-brain-read-test]] — Hermes Brain Read Test (fix)
+- [[2026-05-17-hermes-yaml-prefix-fix]] — Hermes YAML prefix fix (fix)
+- [[2026-05-28-data-bridge-migratie-git-cleanup]] — Data bridge migratie + git cleanup (fix)
+- [[2026-05-29-stuck-trades-cache-freshness-in-memory-bug]] — Stuck trades door stale cache_freshness in-memory bug (fix)
+- [[2026-06-02-v3a-backtest-divergentie]] — 2026-06-02-v3a-backtest-divergentie
+- [[2026-06-07-outer-envelope-tunnel-v5]] — FASE 1C — outer-envelope tunnel scorer v1-v5 afgekeurd (fix)
+- [[2026-06-08-hermes-v01-active-upper-lower-score]] — Hermes v01 — active_upper/lower score-based rewrite (fix)
+- [[2026-06-08-hermes-v01-flask-dashboard]] — Hermes v01 — Live Flask Dashboard (fix)
+- [[2026-06-15-hermes-api-key-envfix]] — Hermes API Key Env Fix (fix)
+- [[2026-06-21-l88-stale-archive-repair]] — 2026-06-21-l88-stale-archive-repair
+- [[2026-07-01-l4-audit-integrity-hardening]] — 2026-07-01-l4-audit-integrity-hardening (fix)
+- [[hermes-mcp-cleanup-health-monitor-fix]] — Hermes MCP Cleanup + Health-Monitor Fix (fix)
+- [[hermes-v01-structuur-audit]] — hermes-v01-structuur-audit
+- [[layer3-label-audit-20260612]] — layer3-label-audit-20260612
+- [[layer4-5m-trendline-fix-2026-06-12]] — layer4-5m-trendline-fix-2026-06-12
+- [[moa-unknown-toolset-config-2026-06-26]] — MOA unknown toolset — opgelost (fix)
+- [[ohlc-bridge-ssh-disconnect-systemd]] — OHLC Bridge Writer — SSH disconnect fix + systemd service (fix)
+- [[pullback-bounce-v0-backtest]] — pullback-bounce-v0-backtest
+- [[status-overview-ram-fix]] — status_overview.py — RAM-column fix (fix)
+- [[v1-backtest-fee-analyse]] — V1 Backtest — Fee Analyse (fix)
+- [[watchdog-reboot-2026-05-31]] — Watchdog reboot om 16:14 (hoge load) (fix)
+
+## Governance
+
+- [[2026-07-10-verified-delegation-policy]] — Verified Delegation Policy — No Synthetic Agents (governance)
+
+## Policies
+
+- [[hermes-autonomie-policy]] — Hermes Autonomie Policy (policy)
+- [[hermes-context-policy]] — Hermes Context Policy (policy)
+- [[hermes-final-review-policy]] — Hermes Final Review Policy (policy)
+- [[hermes-health-monitor-policy]] — Hermes Health-Monitor Policy (policy)
+
+## Projects
+
+- [[2026-05-26-sessie-model-routing-langfuse]] — Sessie 26 Mei — Model routing optimalisatie + Governance + Langfuse setup (synthesis)
+- [[5-strategievoorstellen-architect]] — DE ARCHITECT — 5 Strategievoorstellen (concept)
+- [[a0-snapshot-readout]] — a0-snapshot-readout
+- [[crypto-data-pipeline]] — Crypto Data Pipeline (project)
+- [[crypto-test-bot-architectuur]] — crypto-test-bot-architectuur (project)
+- [[crypto-test-botv3-pipeline]] — Crypto Test Bot V3 — Scripts en Pipeline (project)
+- [[crypto-test-botv3]] — Crypto Test Bot V3 (project)
+- [[crypto-tradebot-research-overview]] — Crypto Tradebot — Volledig Onderzoeksoverzicht (project)
+- [[crypto-tradebot]] — Crypto Tradebot (project)
+- [[e10k-per-maand-bijverdienste]] — €10k/maand Bijverdienste — Missie (project)
+- [[eveline-mail-analyse-2026-06-22]] — Eveline Mail Analyse — 22 Juni 2026 (synthesis)
+- [[eveline-mail-analyse-rapport-2026-06-22]] — Volledig Mail Analyse Rapport — Lexi vs Eveline (synthesis)
+- [[hermes-architecture]] — hermes-architecture
+- [[hermes-layer8-market-context-baseline]] — hermes-layer8-market-context-baseline
+- [[hermes-layer9-final-baseline]] — hermes-layer9-final-baseline
+- [[hermes-layer9-reporting-contract]] — hermes-layer9-reporting-contract
+- [[hermes-layer9-validation-lab-ontwerp]] — hermes-layer9-validation-lab-ontwerp
+- [[hermes-openclaw-noa-agent]] — Hermes OpenClaw Noa Agent (project)
+- [[hermes-v01-layer2-v02-status]] — hermes-v01-layer2-v02-status
+- [[hermes-v03-interpreter]] — Hermes-v03-interpreter — apart project naast Hermes-v03 (project)
+- [[hermes-v03-status-2026-06-23]] — hermes-v03-status-2026-06-23
+- [[hermes-vision-capture]] — Hermes Vision Capture (project)
+- [[l4-autofill-24u-status]] — 24U L4 AUTOFILL STATUS — ETHEUR + BTCEUR STABIEL (project)
+- [[l4-raw-blobs-dedup-audit]] — L4 RAW_BLOBS DEDUP AUDIT — 0% DEDUP VERKLAARD (project)
+- [[l4-runner-v2-production-active]] — L4 RUNNER V2 PRODUCTIE ACTIEF — PAIR-ISOLATED MODE (project)
+- [[noa-reign-roadmap-v2]] — NOA-Reign — Roadmap v2 (project)
+- [[outcome-builder-phase-1a]] — Outcome Builder Phase 1A (project)
+- [[pullback-trader-strategy]] — Pullback Trader Strategy (project)
+- [[topic-intelligence-scanner]] — topic-intelligence-scanner (project)
+- [[webdesign-mini-agency]] — Webdesign Mini-Agency (project)
+- [[weekly-scout]] — Weekly Scout — R&D Department (project)
+
+## Protocols
+
+- [[second-brain-read-policy]] — second-brain-read-policy
+
+## Research
+
+- [[downtrend-near-resistance-archetype]] — downtrend-near-resistance-archetype
+
+## Skills
+
+- [[composio-top-hermes-skills]] — Top Hermes Skills from Composio (source_summary)
 
 ## Synthesis
 
-- [[team-meeting-006-tradebot-audit]] — V1/V2 audit, SL krimping, macro-paralysis, prompts
-
-- [[meeting_008]] — Tradebot audit: rampzalige resultaten (V1 0 trades, V2 30% WR, beide bots dood)
-
-- [[team_gap_analysis_002]]
-- [[team_meeting_003_accuracy]]
-- [[team_meeting_004_improvements]]
-- [[team_meeting_005_pullback_strategy]]
-- [[meeting_002_tradebot_audit]]
-
-
-## Source Summaries
-
-- [[composio-top-hermes-skills]]
+- [[2026-06-02-fundament-analyse]] — 2026-06-02-fundament-analyse (synthesis)
+- [[2026-06-04-hermes-status]] — 2026-06-04-hermes-status (synthesis)
+- [[hermes-line-tuning-merge-nota-2026-06-10]] — Hermes Line Tuning Candidate — Merge Nota (synthesis)
+- [[hermes-v01-micro-fixes-2026-06-10]] — Hermes v01 — micro-fixes sprint (juni 2026) (synthesis)
+- [[l8-market-context-build-2026-06-16]] — l8-market-context-build-2026-06-16
+- [[meeting-002]] — meeting-002
+- [[meeting-008]] — meeting-008
+- [[meeting-008b-pullback-v1-v2-v3-full-audit]] — meeting-008b-pullback-v1-v2-v3-full-audit
+- [[meeting-009-pullback-audit]] — meeting-009-pullback-audit
+- [[meeting-010]] — meeting-010
+- [[team-gap-analysis-002]] — team-gap-analysis-002
+- [[team-meeting-003-accuracy]] — team-meeting-003-accuracy
+- [[team-meeting-004-improvements]] — team-meeting-004-improvements
+- [[team-meeting-005-pullback-strategy]] — team-meeting-005-pullback-strategy
+- [[team-meeting-006]] — team-meeting-006
+- [[team-meeting-009]] — team-meeting-009

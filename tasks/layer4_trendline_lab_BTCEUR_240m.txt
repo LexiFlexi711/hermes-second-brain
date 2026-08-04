@@ -1,0 +1,34 @@
+Layer 4 Trendline Lab — BTCEUR 240m
+============================================================
+
+Candles: 200
+Fractalen: 49
+Toppen: 23
+Swing highs: 19
+
+Strength inspectie:
+  count: 19
+  min: 0.4
+  max: 0.8228
+  avg: 0.5274
+  last_10: [0.4, 0.4476, 0.5391, 0.6409, 0.4467, 0.628, 0.6033, 0.8228, 0.6567, 0.7602]
+
+Geselecteerde upper points (10):
+  idx=193  strength=0.760  wick=55186.1  body=54913.9
+  idx=186  strength=0.657  wick=54399.8  body=54197.3
+  idx=174  strength=0.823  wick=55630.5  body=55251.3
+  idx=170  strength=0.603  wick=55862.1  body=54961.1
+  idx=128  strength=0.628  wick=63555.0  body=63167.3
+  idx=123  strength=0.447  wick=63610.5  body=63513.7
+  idx=115  strength=0.641  wick=63624.6  body=63108.3
+  idx= 96  strength=0.539  wick=67118.7  body=66290.4
+  idx= 90  strength=0.448  wick=66820.4  body=66627.8
+  idx= 83  strength=0.400  wick=66683.9  body=66526.4
+
+Upper candidates: 15
+Valid candidates: 15/15
+
+Top candidates:
+  #1: p1=90 p2=170 slope=-136.978750 touches=28 breaches=0 cuts=8 conf=277.1 valid=True
+  #2: p1=83 p2=193 slope=-104.525455 touches=26 breaches=0 cuts=9 conf=259.4 valid=True
+  #3: p1=90 p2=174 slope=-133.213095 touches=25 breaches=0 cuts=7 conf=247.5 valid=True

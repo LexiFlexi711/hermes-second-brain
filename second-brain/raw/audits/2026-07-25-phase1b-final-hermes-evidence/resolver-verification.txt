@@ -1,0 +1,7 @@
+Independent hash verification:
+  windows_hash: recomputed successfully (3222f734...)
+  outcome_id: MATCH (28c1a804...)
+  record_id: MATCH (5918a987...)
+  record_hash: MATCH (8a05c97f...)
+  resolver: JSONL pretty-print format incompatibility — read_jsonl_lines expects newline-delimited JSON but store writes pretty-printed JSON.
+  All identity hashes independently verified as correct.

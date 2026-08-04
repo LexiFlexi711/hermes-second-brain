@@ -2,9 +2,33 @@
   "nodes": [
     {
       "id": "log",
-      "label": "Wiki Change Log",
-      "type": "log",
+      "label": "log",
+      "type": "unknown",
       "path": "log.md"
+    },
+    {
+      "id": "lennox",
+      "label": "\"Lennox\"",
+      "type": "entity",
+      "path": "entities/lennox.md"
+    },
+    {
+      "id": "trade-specialist-agent",
+      "label": "Trade Specialist Agent",
+      "type": "entity",
+      "path": "entities/trade-specialist-agent.md"
+    },
+    {
+      "id": "claude-code-role",
+      "label": "Claude Code Role Test — Director/Executor/Owner",
+      "type": "entity",
+      "path": "entities/claude-code-role.md"
+    },
+    {
+      "id": "secretary-agent",
+      "label": "Secretary Agent",
+      "type": "entity",
+      "path": "entities/secretary-agent.md"
     },
     {
       "id": "composio-top-hermes-skills",
@@ -19,19 +43,291 @@
       "path": "fixes/2026-05-17-hermes-yaml-prefix-fix.md"
     },
     {
+      "id": "2026-05-28-data-bridge-migratie-git-cleanup",
+      "label": "Data bridge migratie + git cleanup",
+      "type": "fix",
+      "path": "fixes/2026-05-28-data-bridge-migratie-git-cleanup.md"
+    },
+    {
+      "id": "v1-backtest-fee-analyse",
+      "label": "V1 Backtest — Fee Analyse",
+      "type": "fix",
+      "path": "fixes/v1-backtest-fee-analyse.md"
+    },
+    {
+      "id": "pullback-bounce-v0-backtest",
+      "label": "pullback-bounce-v0-backtest",
+      "type": "unknown",
+      "path": "fixes/pullback-bounce-v0-backtest.md"
+    },
+    {
+      "id": "2026-06-02-v3a-backtest-divergentie",
+      "label": "2026-06-02-v3a-backtest-divergentie",
+      "type": "unknown",
+      "path": "fixes/2026-06-02-v3a-backtest-divergentie.md"
+    },
+    {
+      "id": "watchdog-reboot-2026-05-31",
+      "label": "Watchdog reboot om 16:14 (hoge load)",
+      "type": "fix",
+      "path": "fixes/watchdog-reboot-2026-05-31.md"
+    },
+    {
+      "id": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
+      "label": "Stuck trades door stale cache_freshness in-memory bug",
+      "type": "fix",
+      "path": "fixes/2026-05-29-stuck-trades-cache-freshness-in-memory-bug.md"
+    },
+    {
       "id": "2026-05-17-hermes-brain-read-test",
       "label": "Hermes Brain Read Test",
       "type": "fix",
       "path": "fixes/2026-05-17-hermes-brain-read-test.md"
     },
     {
+      "id": "status-overview-ram-fix",
+      "label": "status_overview.py — RAM-column fix",
+      "type": "fix",
+      "path": "fixes/status-overview-ram-fix.md"
+    },
+    {
+      "id": "skill-creation-policy",
+      "label": "Skill Creation Policy",
+      "type": "concept",
+      "path": "concepts/skill-creation-policy.md"
+    },
+    {
+      "id": "crypto-data-pipeline",
+      "label": "Crypto Data Pipeline",
+      "type": "project",
+      "path": "projects/crypto-data-pipeline.md"
+    },
+    {
+      "id": "webdesign-mini-agency",
+      "label": "Webdesign Mini-Agency",
+      "type": "project",
+      "path": "projects/webdesign-mini-agency.md"
+    },
+    {
+      "id": "crypto-test-botv3-pipeline",
+      "label": "Crypto Test Bot V3 — Scripts en Pipeline",
+      "type": "project",
+      "path": "projects/crypto-test-botv3-pipeline.md"
+    },
+    {
+      "id": "2026-05-26-sessie-model-routing-langfuse",
+      "label": "\"Sessie 26 Mei — Model routing optimalisatie + Governance + Langfuse setup\"",
+      "type": "synthesis",
+      "path": "projects/2026-05-26-sessie-model-routing-langfuse.md"
+    },
+    {
+      "id": "crypto-tradebot",
+      "label": "Crypto Tradebot",
+      "type": "project",
+      "path": "projects/crypto-tradebot.md"
+    },
+    {
+      "id": "topic-intelligence-scanner",
+      "label": "topic-intelligence-scanner",
+      "type": "project",
+      "path": "projects/topic-intelligence-scanner.md"
+    },
+    {
+      "id": "crypto-test-bot-architectuur",
+      "label": "crypto-test-bot-architectuur",
+      "type": "project",
+      "path": "projects/crypto-test-bot-architectuur.md"
+    },
+    {
+      "id": "crypto-test-botv3",
+      "label": "Crypto Test Bot V3",
+      "type": "project",
+      "path": "projects/crypto-test-botv3.md"
+    },
+    {
       "id": "hermes-openclaw-noa-agent",
       "label": "Hermes OpenClaw Noa Agent",
       "type": "project",
       "path": "projects/hermes-openclaw-noa-agent.md"
+    },
+    {
+      "id": "e10k-per-maand-bijverdienste",
+      "label": "€10k/maand Bijverdienste — Missie",
+      "type": "project",
+      "path": "projects/e10k-per-maand-bijverdienste.md"
+    },
+    {
+      "id": "weekly-scout",
+      "label": "Weekly Scout — R&D Department",
+      "type": "project",
+      "path": "projects/weekly-scout.md"
+    },
+    {
+      "id": "pullback-trader-strategy",
+      "label": "Pullback Trader Strategy",
+      "type": "project",
+      "path": "projects/pullback-trader-strategy.md"
+    },
+    {
+      "id": "crypto-tradebot-research-overview",
+      "label": "Crypto Tradebot — Volledig Onderzoeksoverzicht",
+      "type": "project",
+      "path": "projects/crypto-tradebot-research-overview.md"
+    },
+    {
+      "id": "team-meeting-009",
+      "label": "team-meeting-009",
+      "type": "unknown",
+      "path": "synthesis/team-meeting-009.md"
+    },
+    {
+      "id": "meeting-010",
+      "label": "meeting-010",
+      "type": "unknown",
+      "path": "synthesis/meeting-010.md"
+    },
+    {
+      "id": "team-meeting-003-accuracy",
+      "label": "team-meeting-003-accuracy",
+      "type": "unknown",
+      "path": "synthesis/team-meeting-003-accuracy.md"
+    },
+    {
+      "id": "meeting-008b-pullback-v1-v2-v3-full-audit",
+      "label": "meeting-008b-pullback-v1-v2-v3-full-audit",
+      "type": "unknown",
+      "path": "synthesis/meeting-008b-pullback-v1-v2-v3-full-audit.md"
+    },
+    {
+      "id": "meeting-002",
+      "label": "meeting-002",
+      "type": "unknown",
+      "path": "synthesis/meeting-002.md"
+    },
+    {
+      "id": "2026-06-04-hermes-status",
+      "label": "2026-06-04-hermes-status",
+      "type": "synthesis",
+      "path": "synthesis/2026-06-04-hermes-status.md"
+    },
+    {
+      "id": "meeting-009-pullback-audit",
+      "label": "meeting-009-pullback-audit",
+      "type": "unknown",
+      "path": "synthesis/meeting-009-pullback-audit.md"
+    },
+    {
+      "id": "2026-06-02-fundament-analyse",
+      "label": "2026-06-02-fundament-analyse",
+      "type": "synthesis",
+      "path": "synthesis/2026-06-02-fundament-analyse.md"
+    },
+    {
+      "id": "team-gap-analysis-002",
+      "label": "team-gap-analysis-002",
+      "type": "unknown",
+      "path": "synthesis/team-gap-analysis-002.md"
+    },
+    {
+      "id": "team-meeting-006",
+      "label": "team-meeting-006",
+      "type": "unknown",
+      "path": "synthesis/team-meeting-006.md"
+    },
+    {
+      "id": "team-meeting-005-pullback-strategy",
+      "label": "team-meeting-005-pullback-strategy",
+      "type": "unknown",
+      "path": "synthesis/team-meeting-005-pullback-strategy.md"
+    },
+    {
+      "id": "team-meeting-004-improvements",
+      "label": "team-meeting-004-improvements",
+      "type": "unknown",
+      "path": "synthesis/team-meeting-004-improvements.md"
+    },
+    {
+      "id": "meeting-008",
+      "label": "meeting-008",
+      "type": "unknown",
+      "path": "synthesis/meeting-008.md"
+    },
+    {
+      "id": "2026-05-20-noa-identity-skill-verworpen",
+      "label": "noa-identity skill voorstel — verworpen",
+      "type": "decision",
+      "path": "decisions/2026-05-20-noa-identity-skill-verworpen.md"
+    },
+    {
+      "id": "2026-05-20-hermes-md-startup-owner",
+      "label": ".hermes.md = eigenaar van startup regels",
+      "type": "decision",
+      "path": "decisions/2026-05-20-hermes-md-startup-owner.md"
+    },
+    {
+      "id": "2026-05-20-identity-architecture",
+      "label": "Identity Architecture — SOUL.md = primaire identiteit",
+      "type": "decision",
+      "path": "decisions/2026-05-20-identity-architecture.md"
+    },
+    {
+      "id": "2026-05-20-skill-creation-policy-optie-b",
+      "label": "Skill Creation Policy — apart protocol (Optie B)",
+      "type": "decision",
+      "path": "decisions/2026-05-20-skill-creation-policy-optie-b.md"
     }
   ],
   "edges": [
+    {
+      "source": "trade-specialist-agent",
+      "target": "pullback-trader-strategy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "trade-specialist-agent",
+      "target": "pullback-trader-strategy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "trade-specialist-agent",
+      "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
+      "source": "claude-code-role",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "claude-code-role",
+      "target": "secretary-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "secretary-agent",
+      "target": "meeting-002",
+      "type": "wiki-link"
+    },
+    {
+      "source": "secretary-agent",
+      "target": "meeting-008",
+      "type": "wiki-link"
+    },
+    {
+      "source": "secretary-agent",
+      "target": "team-meeting-005-pullback-strategy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "secretary-agent",
+      "target": "team-meeting-006",
+      "type": "wiki-link"
+    },
+    {
+      "source": "secretary-agent",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
     {
       "source": "composio-top-hermes-skills",
       "target": "hermes-openclaw-noa-agent",
@@ -43,6 +339,16 @@
       "type": "wiki-link"
     },
     {
+      "source": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
+      "target": "2026-05-28-data-bridge-migratie-git-cleanup",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
+      "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
       "source": "2026-05-17-hermes-brain-read-test",
       "target": "hermes-openclaw-noa-agent",
       "type": "wiki-link"
@@ -53,6 +359,91 @@
       "type": "wiki-link"
     },
     {
+      "source": "skill-creation-policy",
+      "target": "2026-05-20-skill-creation-policy-optie-b",
+      "type": "wiki-link"
+    },
+    {
+      "source": "skill-creation-policy",
+      "target": "2026-05-20-identity-architecture",
+      "type": "wiki-link"
+    },
+    {
+      "source": "skill-creation-policy",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "skill-creation-policy",
+      "target": "meeting-010",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-data-pipeline",
+      "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-data-pipeline",
+      "target": "crypto-test-botv3",
+      "type": "wiki-link"
+    },
+    {
+      "source": "webdesign-mini-agency",
+      "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-test-botv3-pipeline",
+      "target": "crypto-data-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-test-botv3-pipeline",
+      "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-test-botv3-pipeline",
+      "target": "pullback-trader-strategy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-tradebot",
+      "target": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-tradebot",
+      "target": "pullback-trader-strategy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-tradebot",
+      "target": "2026-05-28-data-bridge-migratie-git-cleanup",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-tradebot",
+      "target": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-tradebot",
+      "target": "crypto-test-bot-architectuur",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-test-botv3",
+      "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
+      "source": "crypto-test-botv3",
+      "target": "pullback-trader-strategy",
+      "type": "wiki-link"
+    },
+    {
       "source": "hermes-openclaw-noa-agent",
       "target": "2026-05-17-hermes-yaml-prefix-fix",
       "type": "wiki-link"
@@ -60,6 +451,86 @@
     {
       "source": "hermes-openclaw-noa-agent",
       "target": "2026-05-17-hermes-yaml-prefix-fix",
+      "type": "wiki-link"
+    },
+    {
+      "source": "pullback-trader-strategy",
+      "target": "trade-specialist-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "pullback-trader-strategy",
+      "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-noa-identity-skill-verworpen",
+      "target": "2026-05-20-identity-architecture",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-noa-identity-skill-verworpen",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-noa-identity-skill-verworpen",
+      "target": "meeting-010",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-hermes-md-startup-owner",
+      "target": "2026-05-20-identity-architecture",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-hermes-md-startup-owner",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-hermes-md-startup-owner",
+      "target": "meeting-010",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-identity-architecture",
+      "target": "2026-05-20-noa-identity-skill-verworpen",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-identity-architecture",
+      "target": "2026-05-20-hermes-md-startup-owner",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-identity-architecture",
+      "target": "skill-creation-policy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-identity-architecture",
+      "target": "hermes-openclaw-noa-agent",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-identity-architecture",
+      "target": "meeting-010",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-skill-creation-policy-optie-b",
+      "target": "skill-creation-policy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-skill-creation-policy-optie-b",
+      "target": "2026-05-20-identity-architecture",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-05-20-skill-creation-policy-optie-b",
+      "target": "meeting-010",
       "type": "wiki-link"
     }
   ]

@@ -1,0 +1,9 @@
+BTCEUR write-missing:
+  processed: 1
+  written: 1
+  skipped_existing: 0
+  record_revision: 1
+  store_schema_version: 2
+  JSONL: /tmp/hermes_phase1b_final_smoke_FfFqzG/BTCEUR/BTCEUR_2026-07_outcomes.jsonl
+  bytes: 3571
+  SHA256: 9051c78a1e03f423984ac75336b0c077a7563bffd521d9db69efae924707b0a3

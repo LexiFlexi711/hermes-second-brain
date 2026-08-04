@@ -53,33 +53,44 @@ Hermes must:
 
 Second brain root:
 
-`~/system/second-brain`
+`/home/sjoe/system/hermes-second-brain/second-brain`
 
-Raw inbox:
+### Curated wiki structuur
 
-`~/system/second-brain/raw/inbox/`
+| Directory | Inhoud |
+|-----------|--------|
+| `wiki/projects/` | Projectpagina's |
+| `wiki/entities/` | Agent persona's en rollen |
+| `wiki/concepts/` | Concepten en beleid |
+| `wiki/decisions/` | Beslissingen (gearchiveerd uit meetings) |
+| `wiki/fixes/` | Opgeloste problemen |
+| `wiki/synthesis/` | Meeting rapporten |
+| `wiki/skills/` | Skill samenvattingen |
 
-Curated wiki:
+Index: `/home/sjoe/system/hermes-second-brain/second-brain/wiki/index.md`
 
-`~/system/second-brain/wiki/`
+Change log: `/home/sjoe/system/hermes-second-brain/second-brain/wiki/log.md`
 
-Index:
+### Raw structuur
 
-`~/system/second-brain/wiki/index.md`
+| Directory | Inhoud |
+|-----------|--------|
+| `raw/inbox/` | Nieuwe input, wachtend op verwerking |
+| `raw/sources/` | Externe bronnen |
+| `raw/prompts/` | Bewaarde prompts |
+| `raw/project-logs/` | Project status logs |
+| `raw/sessions/` | Hermes sessie samenvattingen |
 
-Change log:
+Graph output: `/home/sjoe/system/hermes-second-brain/second-brain/graphify-out/`
 
-`~/system/second-brain/wiki/log.md`
+### Scripts
 
-Graph output:
-
-`~/system/second-brain/graphify-out/`
-
-Scripts:
-
-`~/system/hermes-second-brain/scripts/wiki-graph.py`
-
-`~/system/hermes-second-brain/scripts/wiki-lint.py`
+| Script | Functie |
+|--------|---------|
+| `scripts/wiki-graph.py` | Wiki graaf visualisatie genereren |
+| `scripts/wiki-lint.py` | Lint check (frontmatter, broken links, orphans, stale inbox) |
+| `scripts/wiki-index-gen.py` | Index voorstel genereren uit frontmatter |
+| `scripts/meeting-sync.sh` | Meetings synchroniseren naar synthesis + index/log updaten |
 
 ## Delegation Pattern
 
@@ -93,7 +104,7 @@ Scripts:
 
 Example instruction to Hermes:
 
-`Use Noa Second Brain. Read ~/system/second-brain/.hermes.md first. Create exactly this file with write_file: <path>. Do not modify any other files.`
+`Use Noa Second Brain. Read /home/sjoe/system/hermes-second-brain/second-brain/.hermes.md first. Create exactly this file with write_file: <path>. Do not modify any other files.`
 
 ## Ingest Rules
 
@@ -132,3 +143,48 @@ Default mode:
 - report.
 
 Claude Code delegates. Hermes executes. Lexi decides.
+
+## Hermes v01 — Actuele status (2026-06-12)
+
+Branch: main — commit 91e24243 "Layer 4 trendline lab: upper+lower TL + structure marking"
+
+Tests: 74 passed (was 51 bij merge d4acaf44)
+
+### Belangrijkste helpers (hermes_v01.py)
+
+- `_find_recent_horizontal_zone(fractals, close, side)` → cluster recente fractals op prijs, return horizontale zone dict
+- `_should_prefer_horizontal_zone(horizontal, diagonal, close)` → quality gate voor local lines
+- `_should_show_wedge_label(x_cross, last_i, chart_span)` → wedge-label alleen in laatste 25%
+- `_reject_bad_falling_local_lower(local_lower, bodems, close, last_index)` → reject dalende oranje lijn bij vlakke bodems, >2% weg, of <3 touches
+- `_select_local_lower(bodems, close, last_index)` → centrale selector (gebruikt door structure_roles + chart_engine)
+
+### Split-brain opgelost
+
+`_select_local_lower()` wordt gebruikt in zowel structure_roles() als chart_engine.py (orange_tl).
+
+### Zie synthesis
+
+`wiki/synthesis/hermes-v01-micro-fixes-2026-06-10.md`
+
+## Hermes Architectuur (2026-06-12)
+
+Zie `wiki/projects/hermes-architecture.md` voor volledig overzicht.
+
+Lagen:
+- **Orchestrator**: `hermes_v02.py` — centrale facade, roept alle layers aan
+- **Layer 1** (`layer1_charts/`): data fetch + dashboard + chart rendering
+- **Layer 2** (`layer2_structure_v2/`): swing points, S/R, purper lijn
+- **Layer 3** (`layer2_structure_v2/layer3_label.py`): D/U/R + range detectie
+- **Layer 4** (`layer4_trendline_lab/`): trendlines + HH/HL/LH/LL/EH/EL labels
+
+Nieuwe orchestrator contracts:
+- `hermes_v02.read_structure(pair, tf)` → samengestelde output
+- `hermes_v02.read_mtf_structure(pair)` → MTF structuur
+
+## Known debt: structure_roles horizontal zone substitution
+
+**Do not use `structure_roles().local_upper` as production truth without
+resolving horizontal-zone substitution vs chart `active_upper()` semantics.**
+
+Zie `wiki/decisions/structure-roles-horizontal-zone-known-debt.md` voor
+volledige consumer-audit.

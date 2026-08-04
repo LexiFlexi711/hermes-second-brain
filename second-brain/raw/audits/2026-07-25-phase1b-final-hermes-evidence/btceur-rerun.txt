@@ -1,0 +1,7 @@
+BTCEUR rerun (idempotent):
+  processed: 1
+  written: 0
+  skipped_existing: 1
+  bytes: 3571 (unchanged)
+  SHA256: 9051c78a1e03f423984ac75336b0c077a7563bffd521d9db69efae924707b0a3 (unchanged)
+  lines: 1 (no revision 2)
