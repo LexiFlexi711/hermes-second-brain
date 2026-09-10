@@ -17,7 +17,7 @@ Een persoonlijke AI-agent bouwen voor Lexi/Noa die kan helpen met serverbeheer, 
 
 - Hermes draait op de server.
 - Hermes versie: v0.14.0.
-- Noa Second Brain staat in `~/system/hermes-second-brain/second-brain/`.
+- Noa Second Brain staat in `/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/`.
 - Hermes gebruikt eigen memory-bestanden in `~/.hermes/`.
 - Het second brain gebruikt `raw/` voor ruwe bronnen en `wiki/` voor gecureerde kennis.
 
@@ -26,8 +26,8 @@ Een persoonlijke AI-agent bouwen voor Lexi/Noa die kan helpen met serverbeheer, 
 - `~/.hermes/SOUL.md`: persoonlijkheid en gedragsregels.
 - `~/.hermes/memories/USER.md`: stabiele info over Lexi.
 - `~/.hermes/memories/MEMORY.md`: korte actieve kernstatus.
-- `~/system/hermes-second-brain/second-brain/wiki/`: gecureerd projectbrein.
-- `~/system/hermes-second-brain/second-brain/raw/`: ruwe input, nooit aanpassen.
+- `/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/wiki/`: gecureerd projectbrein.
+- `/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/raw/`: ruwe input, nooit aanpassen.
 
 ## Harde regels
 

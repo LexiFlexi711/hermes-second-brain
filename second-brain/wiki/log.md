@@ -265,3 +265,25 @@
 
 2026-07-12T12:48:21+02:00 — wiki/projects/noa-reign-roadmap-v2.md: NOA-Reign Roadmap v2 (visie + Fable + Noa). Vervangt v1. Tijdlijn rond 5/8 operatie, 7-weken herstelvenster, Evidence Lab triggers, Phase 1B prioriteit.
 2026-08-12 14:30 — wiki/mcp-stateless-2026-07-28.md aangemaakt (MCP stateless spec 2026-07-28, bron: mcp-use v2 blog + MCP announcement)
+
+## 2026-09-10 — Hermes V03 directorysanering (FASE A-D) afgerond
+
+Vijf losse V03-projectroots teruggebracht tot één canonical projectroot
+`projects/hermes-v03/` met `src/hermes_v03/{analyst,interpreter,outcome,strategy}`,
+centrale `tests/{unit,integration,regression}`, `tools/`, `scripts/`, `docs/`,
+`runtime/` (niet in git), `artifacts/`, `archive/`. De oude roots bestaan niet meer.
+
+Freeze-gate D5+D6: controle op INHOUD i.p.v. pad (blob@frozen vs blob@HEAD),
+fail-closed, 11 regressietests, dekking-rapportage. Frozen referenties en
+manifests ongewijzigd. Phase-1A deviation (cli.py/contracts.py) blijft als
+PRE-EXISTING KNOWN DEVIATION (D7 optie c).
+
+Saneringsgate: 11/14 suites groen vóór én na, 0 nieuwe failures, zelfde oorzaken,
+LOGIC CHANGES = NONE, 416 tests groen.
+
+L4-filler: PRE-EXISTING BROKEN vastgesteld (1624 falende runs / 0 successen,
+eerste 2026-07-06, status=2/INVALIDARGUMENT). Runtime verhuisd naar
+`runtime/l4_store`, unit naar canonical paden, **timer bewust UIT**.
+Aparte opdracht volgt: INCIDENT: L4-FILLER EXIT 2.
+
+Volledige pagina: [[hermes-v03-directorysanering-2026-09-10]]

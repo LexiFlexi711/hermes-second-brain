@@ -1,7 +1,7 @@
 {
-  "generated": "2026-09-10T09:26:10.268098",
-  "total_nodes": 117,
-  "total_edges": 105,
+  "generated": "2026-09-10T15:53:06.457238",
+  "total_nodes": 118,
+  "total_edges": 107,
   "nodes_by_type": {
     "unknown": 45,
     "entity": 4,
@@ -12,7 +12,7 @@
     "concept": 4,
     "governance": 1,
     "synthesis": 7,
-    "project": 24,
+    "project": 25,
     "decision": 7,
     "review": 1
   }

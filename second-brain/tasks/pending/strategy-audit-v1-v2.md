@@ -71,7 +71,7 @@ Voor **elke** van de volgende punten: bewijs tonen (coderegel + uitleg), niet al
 ## Output
 
 Schrijf je bevindingen naar:
-`/home/sjoe/system/hermes-second-brain/second-brain/tasks/done/strategy-audit-v1-v2-resultaat.md`
+`/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/tasks/done/strategy-audit-v1-v2-resultaat.md`
 
 Gebruik dit formaat per bevinding:
 ```

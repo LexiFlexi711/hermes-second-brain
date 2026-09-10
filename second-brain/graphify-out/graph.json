@@ -481,6 +481,12 @@
       "path": "projects/pullback-trader-strategy.md"
     },
     {
+      "id": "hermes-v03-directorysanering-2026-09-10",
+      "label": "Hermes V03 — directorysanering 2026-09-10",
+      "type": "project",
+      "path": "projects/hermes-v03-directorysanering-2026-09-10.md"
+    },
+    {
       "id": "strategy-harness-evaluation-pipeline",
       "label": "Strategy Harness Evaluation Pipeline",
       "type": "project",
@@ -706,6 +712,11 @@
   "edges": [
     {
       "source": "log",
+      "target": "2026-09-10-second-brain-commit-gap",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
       "target": "causal-snapshot-tape-v0",
       "type": "wiki-link"
     },
@@ -842,6 +853,11 @@
     {
       "source": "log",
       "target": "ohlc-bridge-ssh-disconnect-systemd",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "hermes-v03-directorysanering-2026-09-10",
       "type": "wiki-link"
     },
     {

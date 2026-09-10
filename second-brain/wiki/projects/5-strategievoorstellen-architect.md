@@ -352,7 +352,7 @@ def check_bridge_contract():
 Permanent bewaard in second brain:
 
 ```yaml
-# ~/system/hermes-second-brain/second-brain/wiki/concepts/data-contracts.md
+# /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/wiki/concepts/data-contracts.md
 contracts:
   bridge_v1:
     location: "crypto-data/logs/bridge/"
@@ -480,7 +480,7 @@ python run.py compare l3_trend vs v3a --pair BTC/EUR
 Na elke `validate`-run schrijft de runner JSON naar second brain:
 
 ```
-~/system/hermes-second-brain/second-brain/raw/validation/
+/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/raw/validation/
 ├── 2026-06-17_l3_trend_BTC-EUR.json
 ├── 2026-06-17_l2_sr_ETH-EUR.json
 └── 2026-06-17_comparison_v3a-vs-l3_trend.json
@@ -569,7 +569,7 @@ jobs:
 Baselines bewaard in:
 
 ```
-~/system/hermes-second-brain/second-brain/wiki/projects/layer9-baselines/
+/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/wiki/projects/layer9-baselines/
 ├── 2026-06-01.json    # eerste baseline (L2-L8)
 ├── 2026-06-10.json    # na L4 trendline fix
 ├── 2026-06-15.json    # na L7 ma-cross fix
@@ -603,11 +603,11 @@ python -m layer9.validation_runner \
   --pairs BTC/EUR,ETH/EUR,SOL/EUR \
   --tfs 15m,60m,240m \
   --count 500 \
-  --output /home/sjoe/system/hermes-second-brain/second-brain/raw/validation/
+  --output /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/raw/validation/
 python -m layer9.compare_baseline \
   --current results.json \
   --baseline layer9/baselines/latest.json \
-  --output /home/sjoe/system/hermes-second-brain/second-brain/raw/validation/comparison.md
+  --output /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/raw/validation/comparison.md
 ```
 
 Output wordt automatisch naar second brain geschreven en beschikbaar voor volgende Hermes sessie.

@@ -40,7 +40,7 @@ AANBEVELING: focus op V2-validatie voor nieuwe strategieën toe te voegen.
 
 ```
 Journal rapporten: projects/crypto-tradebot/logs/journal/
-Second brain:      /home/sjoe/system/hermes-second-brain/second-brain/
+Second brain:      /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/
 Scout output:      projects/crypto-test-bot-v3/research/ (als beschikbaar)
 ```
 

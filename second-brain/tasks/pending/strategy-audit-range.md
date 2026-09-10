@@ -69,7 +69,7 @@ Maar de audit was snel gedaan. Hermes moet nu een **diepte-audit** doen zoals ge
 
 ## Output
 
-`/home/sjoe/system/hermes-second-brain/second-brain/tasks/done/strategy-audit-range-resultaat.md`
+`/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/tasks/done/strategy-audit-range-resultaat.md`
 
 Zelfde formaat als V1/V2 audit:
 ```

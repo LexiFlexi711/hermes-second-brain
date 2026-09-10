@@ -94,7 +94,7 @@ Hermes must:
 
 Second brain root:
 
-`/home/sjoe/system/hermes-second-brain/second-brain`
+`/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain`
 
 ### Curated wiki structuur
 
@@ -108,9 +108,9 @@ Second brain root:
 | `wiki/synthesis/` | Meeting rapporten |
 | `wiki/skills/` | Skill samenvattingen |
 
-Index: `/home/sjoe/system/hermes-second-brain/second-brain/wiki/index.md`
+Index: `/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/wiki/index.md`
 
-Change log: `/home/sjoe/system/hermes-second-brain/second-brain/wiki/log.md`
+Change log: `/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/wiki/log.md`
 
 ### Raw structuur
 
@@ -122,7 +122,7 @@ Change log: `/home/sjoe/system/hermes-second-brain/second-brain/wiki/log.md`
 | `raw/project-logs/` | Project status logs |
 | `raw/sessions/` | Hermes sessie samenvattingen |
 
-Graph output: `/home/sjoe/system/hermes-second-brain/second-brain/graphify-out/`
+Graph output: `/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/graphify-out/`
 
 ### Scripts
 
@@ -148,7 +148,7 @@ Graph output: `/home/sjoe/system/hermes-second-brain/second-brain/graphify-out/`
 
 Example instruction to Hermes:
 
-`Use Noa Second Brain. Read /home/sjoe/system/hermes-second-brain/second-brain/.hermes.md first. Create exactly this file with write_file: <path>. Do not modify any other files.`
+`Use Noa Second Brain. Read /mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/.hermes.md first. Create exactly this file with write_file: <path>. Do not modify any other files.`
 
 ## Ingest Rules
 

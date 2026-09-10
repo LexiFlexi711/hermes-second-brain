@@ -38,6 +38,6 @@ Fee drempel:
 ## Output
 
 Sla resultaat op in:
-`/home/sjoe/system/hermes-second-brain/second-brain/tasks/done/v1-backtest-fee-analyse-resultaat.md`
+`/mnt/otherdrive1/dataLexi/LexiProjects/NOA-Reign/second-brain/tasks/done/v1-backtest-fee-analyse-resultaat.md`
 
 Kort rapport, feiten alleen, geen strategie-advies.
