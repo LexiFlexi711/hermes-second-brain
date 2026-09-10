@@ -15,6 +15,15 @@
   Claude is klaar wanneer de bestanden + log-entry + index geschreven zijn en meldt dat.
 - Delegation Pattern stap 6 toegevoegd/aangepast (write-back, geen git voor Claude).
 - Directe aanleiding: de commit-gap 04-08 → 10-09 waardoor Claude "niets nieuws" zag.
+- **Aanvulling:** `wiki/reviews/<project>/` en `wiki/audits/` vallen NIET onder de gewone
+  wiki-regel — `wiki-index-gen.py` scant enkel `*.md` op het eerste niveau van elke submap,
+  dus een review in een project-submap moet handmatig in `wiki/index.md`.
+- **Incident (bewezen):** `wiki/reviews/` en `wiki/reviews/crypto-tradebot/` zijn
+  **root:root 755** → schrijven als `sjoe` geeft `Permission denied` (gereproduceerd met
+  `touch`, exit 1). Géén SMB/NAS- en géén MCP-allowlist-probleem; 21 root-owned paden in de
+  tree (allemaal juni 2026, o.a. de reviews-map, `wiki/projects/eveline-mail-*`,
+  `wiki/synthesis/l8-*`, `raw/inbox/hermes-skills-2026-06-10.md`).
+  Fix gepland: `sudo chown -R sjoe:sjoe` — wacht op Lexi's akkoord.
 
 ## 2026-09-10 — Causal Snapshot Tape V0.2 FROZEN + second-brain commit-gap hersteld
 - **Type:** project + freeze + fix

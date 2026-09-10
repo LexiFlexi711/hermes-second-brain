@@ -41,7 +41,13 @@ Per afgeronde taak of sessie schrijft Claude:
 1. **Ruwe input** → `raw/` (sessieverslag, prompt, bronbestand).
    `raw/` wordt na aanmaak nooit meer aangepast.
 2. **Gecureerde kennis** → `wiki/` (project-, fix-, decision- of conceptpagina)
-   met YAML frontmatter.
+   met YAML frontmatter. Bevindingen van Claude (reviewer) horen in
+   `wiki/reviews/<project>/` of `wiki/audits/` — zie de uitzondering hieronder.
+   - **Claude's eigen bevindingen (reviewer-output)** → `wiki/reviews/<project>/<onderwerp>-review-<datum>.md`
+   - **Audit-achtig werk** (code-review, hygiëne, toegang) → `wiki/audits/<onderwerp>-<datum>.md`
+   - **Let op:** `wiki-index-gen.py` scant enkel `*.md` op het EERSTE niveau van elke wiki-submap.
+     Een bestand in `wiki/reviews/<project>/...md` komt dus NIET automatisch in `index.md` —
+     die entry moet handmatig toegevoegd worden.
 3. **Changelog** → één entry in `wiki/log.md`
    (formaat: `## YYYY-MM-DD — titel` + Type / Bestanden / punten / status).
 4. **Index** → `python3 ~/system/hermes-second-brain/scripts/wiki-index-gen.py --write`
