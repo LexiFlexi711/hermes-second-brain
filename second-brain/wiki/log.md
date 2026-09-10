@@ -1,15 +1,19 @@
 
 # Wiki Log
 
-## 2026-09-10 — CLAUDE.md aangescherpt: Claude moet eigen activiteiten wegschrijven
+## 2026-09-10 — CLAUDE.md: Claude = Reviewer + verplichte write-back (zonder git)
 - **Type:** governance + fix
 - **Bestanden:** `CLAUDE.md`, [[2026-09-10-second-brain-commit-gap]]
 - "Claude Code" → "Claude" (11×), titel nu "Noa Second Brain — Claude Guide".
+- **Rol gewijzigd: `Claude = Director` → `Claude = Reviewer`** — onafhankelijke reviewer,
+  falsificatie i.p.v. bevestiging, verdict GREEN/ORANGE/RED met redenen, controleert of werk
+  is weggeschreven; beslist/voert niet uit als eigenaar. Slotzin nu "Claude reviews.
+  Hermes executes. Lexi decides."
 - Nieuwe verplichte sectie **"Claude moet zijn eigen activiteiten wegschrijven (VERPLICHT)"**:
-  raw/ → wiki/ → wiki/log.md → index → `git add -A && git commit && git push`.
-  Harde regel: een taak is pas afgerond als de activiteit in `wiki/log.md` staat
-  én gecommit én gepusht is; niet-gecommit telt niet als opgeslagen.
-- Delegation Pattern uitgebreid met stap 6 (Claude schrijft eigen activiteit terug).
+  raw/ → wiki/ → wiki/log.md → index (`wiki-index-gen.py --write` + lint + graph).
+  **Claude doet GEEN `git add/commit/push` — Noa (Hermes) commit + pusht.**
+  Claude is klaar wanneer de bestanden + log-entry + index geschreven zijn en meldt dat.
+- Delegation Pattern stap 6 toegevoegd/aangepast (write-back, geen git voor Claude).
 - Directe aanleiding: de commit-gap 04-08 → 10-09 waardoor Claude "niets nieuws" zag.
 
 ## 2026-09-10 — Causal Snapshot Tape V0.2 FROZEN + second-brain commit-gap hersteld

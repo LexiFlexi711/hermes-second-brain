@@ -10,23 +10,24 @@ No risky action is allowed without Lexi's explicit approval.
 
 Risky actions include deletes, credential changes, API/billing changes, security changes, unknown scripts, Docker/systemd/firewall/Caddy/Hermes/OpenClaw changes, or anything destructive.
 
-### Claude = Director
+### Claude = Reviewer
 
-Claude is the Director.
+Claude is de onafhankelijke Reviewer.
 
 Claude should:
-- reason about complex technical tasks;
-- design safe plans;
-- split large work into small controlled steps;
-- delegate execution to Hermes when appropriate;
-- review Hermes output;
-- verify results with lint, graph, file checks, and logs.
+- review Hermes' output en de diff;
+- onafhankelijk verifiëren tegen de bron (code, data, contracten) — falsificatie, niet bevestiging;
+- de checks draaien: lint, graph, file checks, logs;
+- fouten, tegenstrijdigheden, ontbrekend bewijs en overclaims flaggen;
+- een duidelijk verdict geven (bv. GREEN / ORANGE / RED) met redenen;
+- controleren dat werk is weggeschreven naar de second brain én gecommit + gepusht.
 
 Claude should not:
 - bypass Lexi's approval;
 - invent project status;
 - silently overwrite important files;
-- treat raw material as curated knowledge.
+- treat raw material as curated knowledge;
+- beslissen of uitvoeren als eigenaar — Lexi beslist, Hermes voert uit.
 
 ### Claude moet zijn eigen activiteiten wegschrijven (VERPLICHT)
 
@@ -45,13 +46,15 @@ Per afgeronde taak of sessie schrijft Claude:
    (formaat: `## YYYY-MM-DD — titel` + Type / Bestanden / punten / status).
 4. **Index** → `python3 ~/system/hermes-second-brain/scripts/wiki-index-gen.py --write`
    (daarna `wiki-lint.py` + `wiki-graph.py`).
-5. **Committen en pushen** → `git add -A && git commit && git push` naar `origin/main`.
+5. **Klaar = melden.** Claude doet GEEN `git add` / `git commit` / `git push`.
+   Claude schrijft de bestanden en meldt dat ze klaarstaan; **Noa (Hermes)**
+   doet de commit + push naar `origin/main`.
 
 Harde regels:
 
-- **Een taak is pas afgerond als de activiteit in `wiki/log.md` staat én
-  gecommit én gepusht is.** Niet-gecommitte wijzigingen tellen NIET als
-  opgeslagen — niemand ziet ze.
+- Claude is klaar wanneer de wiki-pagina, de `wiki/log.md`-entry en de index
+  geschreven zijn. **Noa (Hermes)** commit + pusht daarna — niet-gecommit telt
+  nog niet als opgeslagen, dus Claude meldt het expliciet zodat Noa het wegzet.
 - Bestanden genereren is niet genoeg. Bestanden laten staan zonder commit
   betekent dat de backupketen stilgevallen is.
 - Controleer altijd: `git -C ~/system/hermes-second-brain log -1` — de laatste
@@ -134,7 +137,7 @@ Graph output: `/home/sjoe/system/hermes-second-brain/second-brain/graphify-out/`
    - `python3 ~/system/hermes-second-brain/scripts/wiki-graph.py`
 5. Claude reports the result to Lexi.
 6. Claude writes its own activity back: `wiki/` page + `wiki/log.md` entry +
-   `wiki-index-gen.py --write`, then `git add -A && git commit && git push`.
+   `wiki-index-gen.py --write`. Claude doet GEEN git — **Noa (Hermes)** commit + pusht.
    **Not committed = not saved** — zie "Claude moet zijn eigen activiteiten wegschrijven".
 
 Example instruction to Hermes:
@@ -177,7 +180,7 @@ Default mode:
 - verify;
 - report.
 
-Claude delegates. Hermes executes. Lexi decides.
+Claude reviews. Hermes executes. Lexi decides.
 
 ## Hermes v01 — Actuele status (2026-06-12)
 
