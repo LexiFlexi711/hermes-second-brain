@@ -1,5 +1,8 @@
 # Noa-Hermes Second Brain
 
+## Start hier
+- [[SECOND_BRAIN]] — gedeeld contract voor Noa/ChatGPT, Claude en Hermes
+
 ## Maps of Content
 - [[MOC/hermes-core]]
 - [[MOC/crypto-tradebot]]

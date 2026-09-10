@@ -7,7 +7,7 @@ updated: 2026-05-29
 
 # Second Brain eigenaarschap
 
-Afspraak om dubbele schrijfacties te vermijden tussen Claude (grote broer) en Hermes.
+Afspraak om dubbele schrijfacties en conflicterende waarheid te vermijden tussen Noa/ChatGPT, Claude en Hermes. `SECOND_BRAIN.md` is bovenliggend wanneer deze oudere tabel ermee botst.
 
 ## Eigenaarschap per sectie
 
@@ -23,10 +23,11 @@ Afspraak om dubbele schrijfacties te vermijden tussen Claude (grote broer) en He
 
 ## Regels
 
-1. **Hermes schrijft nooit naar wiki/projects/** tenzij Claude dat expliciet vraagt.
-2. **Claude schrijft nooit naar tasks/done/** — dat is Hermes haar werkgebied.
-3. **Tasks/pending/** schrijft Claude, Hermes leest alleen.
-4. **Bij twijfel:** Hermes schrijft naar `raw/inbox/` en Claude verwerkt naar de juiste plek.
+1. **Noa/ChatGPT, Claude en Hermes mogen duurzame kennis terugschrijven** wanneer hun opdracht dat vereist en het bewijs duidelijk is.
+2. **Claude schrijft reviewer-output primair naar `wiki/reviews/` of `wiki/audits/`** en niet naar `tasks/done/`.
+3. **Hermes schrijft uitvoeringsresultaten primair naar `tasks/done/`**, maar mag relevante project/fix/status-wiki bijwerken wanneer dat onderdeel is van de opdracht.
+4. **Noa/ChatGPT bewaakt cross-project architectuur, beslissingen en consistentie** en schrijft die terug naar de passende wiki/decision/protocol-pagina.
+5. **Bij twijfel of onvolledig bewijs:** schrijf eerst naar `raw/inbox/`; promoveer pas naar `wiki/` na verificatie.
 
 ## Periodieke cleanup
 

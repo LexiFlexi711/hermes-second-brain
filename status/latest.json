@@ -1,20 +1,20 @@
 {
-  "timestamp": "2026-09-10T07:30:01.218599+00:00",
-  "timestamp_readable": "2026-09-10 07:30 UTC",
+  "timestamp": "2026-09-10T08:00:02.040810+00:00",
+  "timestamp_readable": "2026-09-10 08:00 UTC",
   "all_ok": false,
   "sections": {
     "\ud83d\udda5\ufe0f  Server": {
       "label": "\ud83d\udda5\ufe0f  Server",
       "status": "OK",
-      "details": "hostname: lexi-server | uptime: up 12 weeks, 6 days, 20 hours, 22 minutes | load: 3.32 2.72 1.62 | cpu: 21.4% | ram: 6.2Gi/15Gi (vrij: 9.3Gi) | disk /: 111G/105G (52%)",
+      "details": "hostname: lexi-server | uptime: up 12 weeks, 6 days, 20 hours, 52 minutes | load: 0.68 0.61 0.84 | cpu: 3.3% | ram: 5.8Gi/15Gi (vrij: 9.7Gi) | disk /: 111G/105G (52%)",
       "raw": {
         "hostname": "lexi-server",
-        "uptime": "up 12 weeks, 6 days, 20 hours, 22 minutes",
-        "load": "3.32 2.72 1.62",
-        "cpu_pct": "21.4",
-        "ram_used": "6.2Gi",
+        "uptime": "up 12 weeks, 6 days, 20 hours, 52 minutes",
+        "load": "0.68 0.61 0.84",
+        "cpu_pct": "3.3",
+        "ram_used": "5.8Gi",
         "ram_total": "15Gi",
-        "ram_avail": "9.3Gi",
+        "ram_avail": "9.7Gi",
         "disk_used": "111G",
         "disk_avail": "105G",
         "disk_pct": "52%"
@@ -265,14 +265,14 @@
     "\ud83d\udce6 Backups": {
       "label": "\ud83d\udce6 Backups",
       "status": "OK",
-      "details": "script OK | laatste: 2026-09-10 03:30:02 | leeftijd: 6.0h",
+      "details": "script OK | laatste: 2026-09-10 03:30:02 | leeftijd: 6.5h",
       "raw": {
         "script_exists": true,
         "log_exists": true,
         "last_run": "2026-09-10 03:30:02",
         "log_done": true,
         "latest_backup": "config_20260910_0330",
-        "backup_age_hours": 6.0,
+        "backup_age_hours": 6.5,
         "backup_count": 41,
         "backup_dir": "/mnt/otherdrive1/backups"
       }
