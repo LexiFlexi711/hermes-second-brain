@@ -1,0 +1,1 @@
+/home/sjoe/.hermes/scripts/sync-sessions.py

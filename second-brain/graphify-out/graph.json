@@ -1,10 +1,22 @@
 {
   "nodes": [
     {
+      "id": "mcp-stateless-2026-07-28",
+      "label": "mcp-stateless-2026-07-28",
+      "type": "unknown",
+      "path": "mcp-stateless-2026-07-28.md"
+    },
+    {
       "id": "log",
       "label": "log",
       "type": "unknown",
       "path": "log.md"
+    },
+    {
+      "id": "crypto-data-ohlc-bridge-dedup-hardening-rc2-rc3-2026-08-05",
+      "label": "crypto-data-ohlc-bridge-dedup-hardening-rc2-rc3-2026-08-05",
+      "type": "unknown",
+      "path": "crypto-data-ohlc-bridge-dedup-hardening-rc2-rc3-2026-08-05.md"
     },
     {
       "id": "lennox",
@@ -31,10 +43,76 @@
       "path": "entities/secretary-agent.md"
     },
     {
+      "id": "2026-08-02-morning-top5",
+      "label": "2026-08-02-morning-top5",
+      "type": "unknown",
+      "path": "scout/2026-08-02-morning-top5.md"
+    },
+    {
+      "id": "2026-08-03-morning-top5",
+      "label": "2026-08-03-morning-top5",
+      "type": "unknown",
+      "path": "scout/2026-08-03-morning-top5.md"
+    },
+    {
+      "id": "2026-08-01-morning-top5",
+      "label": "2026-08-01-morning-top5",
+      "type": "unknown",
+      "path": "scout/2026-08-01-morning-top5.md"
+    },
+    {
+      "id": "2026-08-04-morning-top5",
+      "label": "2026-08-04-morning-top5",
+      "type": "unknown",
+      "path": "scout/2026-08-04-morning-top5.md"
+    },
+    {
+      "id": "2026-07-31-morning-top5",
+      "label": "2026-07-31-morning-top5",
+      "type": "unknown",
+      "path": "scout/2026-07-31-morning-top5.md"
+    },
+    {
       "id": "composio-top-hermes-skills",
       "label": "Top Hermes Skills from Composio",
       "type": "source_summary",
       "path": "skills/composio-top-hermes-skills.md"
+    },
+    {
+      "id": "hermes-skill-tool-hygiene-audit-2026-07-07",
+      "label": "\"Hermes Skill / Tool Hygiene Audit\"",
+      "type": "audit",
+      "path": "audits/hermes-skill-tool-hygiene-audit-2026-07-07.md"
+    },
+    {
+      "id": "hermes-interpreter-outcome-codereview-2026-07-27",
+      "label": "\"Hermes Interpreter -> Outcome Codereview 2026-07-27\"",
+      "type": "audit",
+      "path": "audits/hermes-interpreter-outcome-codereview-2026-07-27.md"
+    },
+    {
+      "id": "hermes-autonomie-policy",
+      "label": "\"Hermes Autonomie Policy\"",
+      "type": "policy",
+      "path": "policies/hermes-autonomie-policy.md"
+    },
+    {
+      "id": "hermes-health-monitor-policy",
+      "label": "\"Hermes Health-Monitor Policy\"",
+      "type": "policy",
+      "path": "policies/hermes-health-monitor-policy.md"
+    },
+    {
+      "id": "hermes-context-policy",
+      "label": "\"Hermes Context Policy\"",
+      "type": "policy",
+      "path": "policies/hermes-context-policy.md"
+    },
+    {
+      "id": "hermes-final-review-policy",
+      "label": "\"Hermes Final Review Policy\"",
+      "type": "policy",
+      "path": "policies/hermes-final-review-policy.md"
     },
     {
       "id": "2026-05-17-hermes-yaml-prefix-fix",
@@ -49,6 +127,18 @@
       "path": "fixes/2026-05-28-data-bridge-migratie-git-cleanup.md"
     },
     {
+      "id": "2026-06-15-hermes-api-key-envfix",
+      "label": "Hermes API Key Env Fix",
+      "type": "fix",
+      "path": "fixes/2026-06-15-hermes-api-key-envfix.md"
+    },
+    {
+      "id": "hermes-v01-structuur-audit",
+      "label": "hermes-v01-structuur-audit",
+      "type": "unknown",
+      "path": "fixes/hermes-v01-structuur-audit.md"
+    },
+    {
       "id": "v1-backtest-fee-analyse",
       "label": "V1 Backtest — Fee Analyse",
       "type": "fix",
@@ -61,10 +151,40 @@
       "path": "fixes/pullback-bounce-v0-backtest.md"
     },
     {
+      "id": "layer4-5m-trendline-fix-2026-06-12",
+      "label": "layer4-5m-trendline-fix-2026-06-12",
+      "type": "unknown",
+      "path": "fixes/layer4-5m-trendline-fix-2026-06-12.md"
+    },
+    {
+      "id": "hermes-mcp-cleanup-health-monitor-fix",
+      "label": "\"Hermes MCP Cleanup + Health-Monitor Fix\"",
+      "type": "fix",
+      "path": "fixes/hermes-mcp-cleanup-health-monitor-fix.md"
+    },
+    {
+      "id": "2026-06-08-hermes-v01-active-upper-lower-score",
+      "label": "Hermes v01 — active_upper/lower score-based rewrite",
+      "type": "fix",
+      "path": "fixes/2026-06-08-hermes-v01-active-upper-lower-score.md"
+    },
+    {
+      "id": "2026-07-01-l4-audit-integrity-hardening",
+      "label": "2026-07-01-l4-audit-integrity-hardening",
+      "type": "fix",
+      "path": "fixes/2026-07-01-l4-audit-integrity-hardening.md"
+    },
+    {
       "id": "2026-06-02-v3a-backtest-divergentie",
       "label": "2026-06-02-v3a-backtest-divergentie",
       "type": "unknown",
       "path": "fixes/2026-06-02-v3a-backtest-divergentie.md"
+    },
+    {
+      "id": "moa-unknown-toolset-config-2026-06-26",
+      "label": "\"MOA unknown toolset — opgelost\"",
+      "type": "fix",
+      "path": "fixes/moa-unknown-toolset-config-2026-06-26.md"
     },
     {
       "id": "watchdog-reboot-2026-05-31",
@@ -73,10 +193,34 @@
       "path": "fixes/watchdog-reboot-2026-05-31.md"
     },
     {
+      "id": "2026-08-25-hermes-update-mcp-repair",
+      "label": "Hermes update v0.20.5 + MCP reparaties (20 aug 2026)",
+      "type": "fix",
+      "path": "fixes/2026-08-25-hermes-update-mcp-repair.md"
+    },
+    {
+      "id": "2026-09-10-second-brain-commit-gap",
+      "label": "Second Brain — commit-gap 2026-08-04 → 2026-09-10",
+      "type": "fix",
+      "path": "fixes/2026-09-10-second-brain-commit-gap.md"
+    },
+    {
+      "id": "2026-06-21-l88-stale-archive-repair",
+      "label": "2026-06-21-l88-stale-archive-repair",
+      "type": "unknown",
+      "path": "fixes/2026-06-21-l88-stale-archive-repair.md"
+    },
+    {
       "id": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
       "label": "Stuck trades door stale cache_freshness in-memory bug",
       "type": "fix",
       "path": "fixes/2026-05-29-stuck-trades-cache-freshness-in-memory-bug.md"
+    },
+    {
+      "id": "2026-06-07-outer-envelope-tunnel-v5",
+      "label": "\"FASE 1C — outer-envelope tunnel scorer v1-v5 afgekeurd\"",
+      "type": "fix",
+      "path": "fixes/2026-06-07-outer-envelope-tunnel-v5.md"
     },
     {
       "id": "2026-05-17-hermes-brain-read-test",
@@ -85,16 +229,76 @@
       "path": "fixes/2026-05-17-hermes-brain-read-test.md"
     },
     {
+      "id": "2026-06-08-hermes-v01-flask-dashboard",
+      "label": "Hermes v01 — Live Flask Dashboard",
+      "type": "fix",
+      "path": "fixes/2026-06-08-hermes-v01-flask-dashboard.md"
+    },
+    {
       "id": "status-overview-ram-fix",
       "label": "status_overview.py — RAM-column fix",
       "type": "fix",
       "path": "fixes/status-overview-ram-fix.md"
     },
     {
+      "id": "ohlc-bridge-ssh-disconnect-systemd",
+      "label": "OHLC Bridge Writer — SSH disconnect fix + systemd service",
+      "type": "fix",
+      "path": "fixes/ohlc-bridge-ssh-disconnect-systemd.md"
+    },
+    {
+      "id": "layer3-label-audit-20260612",
+      "label": "layer3-label-audit-20260612",
+      "type": "unknown",
+      "path": "fixes/layer3-label-audit-20260612.md"
+    },
+    {
+      "id": "ollama-cloud-lanes",
+      "label": "Ollama Cloud Lanes",
+      "type": "concept",
+      "path": "concepts/ollama-cloud-lanes.md"
+    },
+    {
       "id": "skill-creation-policy",
       "label": "Skill Creation Policy",
       "type": "concept",
       "path": "concepts/skill-creation-policy.md"
+    },
+    {
+      "id": "lexi-trend-line-methodology",
+      "label": "lexi-trend-line-methodology",
+      "type": "unknown",
+      "path": "concepts/lexi-trend-line-methodology.md"
+    },
+    {
+      "id": "openrouter-kimi-free-agent",
+      "label": "OpenRouter Kimi Free Agent",
+      "type": "concept",
+      "path": "concepts/openrouter-kimi-free-agent.md"
+    },
+    {
+      "id": "2026-07-10-verified-delegation-policy",
+      "label": "Verified Delegation Policy — No Synthetic Agents",
+      "type": "governance",
+      "path": "governance/2026-07-10-verified-delegation-policy.md"
+    },
+    {
+      "id": "downtrend-near-resistance-archetype",
+      "label": "downtrend-near-resistance-archetype",
+      "type": "unknown",
+      "path": "research/downtrend-near-resistance-archetype.md"
+    },
+    {
+      "id": "eveline-mail-analyse-2026-06-22",
+      "label": "Eveline Mail Analyse — 22 Juni 2026",
+      "type": "synthesis",
+      "path": "projects/eveline-mail-analyse-2026-06-22.md"
+    },
+    {
+      "id": "l4-raw-blobs-dedup-audit",
+      "label": "\"L4 RAW_BLOBS DEDUP AUDIT — 0% DEDUP VERKLAARD\"",
+      "type": "project",
+      "path": "projects/l4-raw-blobs-dedup-audit.md"
     },
     {
       "id": "crypto-data-pipeline",
@@ -109,16 +313,58 @@
       "path": "projects/webdesign-mini-agency.md"
     },
     {
+      "id": "hermes-v01-layer2-v02-status",
+      "label": "hermes-v01-layer2-v02-status",
+      "type": "unknown",
+      "path": "projects/hermes-v01-layer2-v02-status.md"
+    },
+    {
+      "id": "hermes-layer8-market-context-baseline",
+      "label": "hermes-layer8-market-context-baseline",
+      "type": "unknown",
+      "path": "projects/hermes-layer8-market-context-baseline.md"
+    },
+    {
       "id": "crypto-test-botv3-pipeline",
       "label": "Crypto Test Bot V3 — Scripts en Pipeline",
       "type": "project",
       "path": "projects/crypto-test-botv3-pipeline.md"
     },
     {
+      "id": "hermes-layer9-reporting-contract",
+      "label": "hermes-layer9-reporting-contract",
+      "type": "unknown",
+      "path": "projects/hermes-layer9-reporting-contract.md"
+    },
+    {
       "id": "2026-05-26-sessie-model-routing-langfuse",
       "label": "\"Sessie 26 Mei — Model routing optimalisatie + Governance + Langfuse setup\"",
       "type": "synthesis",
       "path": "projects/2026-05-26-sessie-model-routing-langfuse.md"
+    },
+    {
+      "id": "hermes-v03-status-2026-06-23",
+      "label": "hermes-v03-status-2026-06-23",
+      "type": "unknown",
+      "path": "projects/hermes-v03-status-2026-06-23.md"
+    },
+    {
+      "id": "market-situation-canonical-calendar-v0-predicates-v01",
+      "label": "Market Situation V0 — Canonical Calendar Replication + Nieuwe Predicates V0.1",
+      "type": "project",
+      "path": "projects/market-situation-canonical-calendar-v0-predicates-v01.md"
+    },
+    {
+      "id": "hermes-layer9-validation-lab-ontwerp",
+      "label": "hermes-layer9-validation-lab-ontwerp",
+      "type": "unknown",
+      "path": "projects/hermes-layer9-validation-lab-ontwerp.md"
+    },
+    {
+      "id": "l4-autofill-24u-status",
+      "label": "\"24U L4 AUTOFILL STATUS — ETHEUR + BTCEUR STABIEL\"",
+      "type": "project",
+      "path": "projects/l4-autofill-24u-status.md"
     },
     {
       "id": "crypto-tradebot",
@@ -139,6 +385,36 @@
       "path": "projects/crypto-test-bot-architectuur.md"
     },
     {
+      "id": "5-strategievoorstellen-architect",
+      "label": "\"DE ARCHITECT — 5 Strategievoorstellen\"",
+      "type": "concept",
+      "path": "projects/5-strategievoorstellen-architect.md"
+    },
+    {
+      "id": "hermes-architecture",
+      "label": "hermes-architecture",
+      "type": "unknown",
+      "path": "projects/hermes-architecture.md"
+    },
+    {
+      "id": "causal-snapshot-tape-v0",
+      "label": "Causal Snapshot Tape V0.2 — Level/Event Tape + Tijdigheid (FROZEN)",
+      "type": "project",
+      "path": "projects/causal-snapshot-tape-v0.md"
+    },
+    {
+      "id": "strategy-harness-evaluation-phase1b-primitives",
+      "label": "Strategy Harness Evaluation Phase 1B Primitives",
+      "type": "project",
+      "path": "projects/strategy-harness-evaluation-phase1b-primitives.md"
+    },
+    {
+      "id": "trader-story-a1a2-story-linker-v0",
+      "label": "Trader-Story A1/A2 — Audit, RFC, Standalone Story Linker V0 + Blind Review",
+      "type": "project",
+      "path": "projects/trader-story-a1a2-story-linker-v0.md"
+    },
+    {
       "id": "crypto-test-botv3",
       "label": "Crypto Test Bot V3",
       "type": "project",
@@ -151,10 +427,46 @@
       "path": "projects/hermes-openclaw-noa-agent.md"
     },
     {
+      "id": "outcome-builder-phase-1a",
+      "label": "Outcome Builder Phase 1A",
+      "type": "project",
+      "path": "projects/outcome-builder-phase-1a.md"
+    },
+    {
+      "id": "eveline-mail-analyse-rapport-2026-06-22",
+      "label": "Volledig Mail Analyse Rapport — Lexi vs Eveline",
+      "type": "synthesis",
+      "path": "projects/eveline-mail-analyse-rapport-2026-06-22.md"
+    },
+    {
+      "id": "hermes-vision-capture",
+      "label": "\"Hermes Vision Capture\"",
+      "type": "project",
+      "path": "projects/hermes-vision-capture.md"
+    },
+    {
+      "id": "a0-snapshot-readout",
+      "label": "a0-snapshot-readout",
+      "type": "unknown",
+      "path": "projects/a0-snapshot-readout.md"
+    },
+    {
+      "id": "noa-reign-roadmap-v2",
+      "label": "NOA-Reign — Roadmap v2",
+      "type": "project",
+      "path": "projects/noa-reign-roadmap-v2.md"
+    },
+    {
       "id": "e10k-per-maand-bijverdienste",
       "label": "€10k/maand Bijverdienste — Missie",
       "type": "project",
       "path": "projects/e10k-per-maand-bijverdienste.md"
+    },
+    {
+      "id": "l4-runner-v2-production-active",
+      "label": "\"L4 RUNNER V2 PRODUCTIE ACTIEF — PAIR-ISOLATED MODE\"",
+      "type": "project",
+      "path": "projects/l4-runner-v2-production-active.md"
     },
     {
       "id": "weekly-scout",
@@ -169,10 +481,76 @@
       "path": "projects/pullback-trader-strategy.md"
     },
     {
+      "id": "strategy-harness-evaluation-pipeline",
+      "label": "Strategy Harness Evaluation Pipeline",
+      "type": "project",
+      "path": "projects/strategy-harness-evaluation-pipeline.md"
+    },
+    {
+      "id": "hermes-v03-interpreter",
+      "label": "\"Hermes-v03-interpreter — apart project naast Hermes-v03\"",
+      "type": "project",
+      "path": "projects/hermes-v03-interpreter.md"
+    },
+    {
+      "id": "hermes-layer9-final-baseline",
+      "label": "hermes-layer9-final-baseline",
+      "type": "unknown",
+      "path": "projects/hermes-layer9-final-baseline.md"
+    },
+    {
       "id": "crypto-tradebot-research-overview",
       "label": "Crypto Tradebot — Volledig Onderzoeksoverzicht",
       "type": "project",
       "path": "projects/crypto-tradebot-research-overview.md"
+    },
+    {
+      "id": "2026-08-04-telegram-setup",
+      "label": "2026-08-04-telegram-setup",
+      "type": "unknown",
+      "path": "noa-future/2026-08-04-telegram-setup.md"
+    },
+    {
+      "id": "2026-08-04-memory-management",
+      "label": "2026-08-04-memory-management",
+      "type": "unknown",
+      "path": "noa-future/2026-08-04-memory-management.md"
+    },
+    {
+      "id": "2026-08-06-eigen-comm-app",
+      "label": "2026-08-06-eigen-comm-app",
+      "type": "unknown",
+      "path": "noa-future/2026-08-06-eigen-comm-app.md"
+    },
+    {
+      "id": "README",
+      "label": "README",
+      "type": "unknown",
+      "path": "noa-future/README.md"
+    },
+    {
+      "id": "2026-08-04-architectuur-shell",
+      "label": "2026-08-04-architectuur-shell",
+      "type": "unknown",
+      "path": "noa-future/2026-08-04-architectuur-shell.md"
+    },
+    {
+      "id": "2026-08-04-centrale-hub-visie",
+      "label": "2026-08-04-centrale-hub-visie",
+      "type": "unknown",
+      "path": "noa-future/2026-08-04-centrale-hub-visie.md"
+    },
+    {
+      "id": "2026-08-04-audit-roadmap",
+      "label": "2026-08-04-audit-roadmap",
+      "type": "unknown",
+      "path": "noa-future/2026-08-04-audit-roadmap.md"
+    },
+    {
+      "id": "second-brain-read-policy",
+      "label": "second-brain-read-policy",
+      "type": "unknown",
+      "path": "protocols/second-brain-read-policy.md"
     },
     {
       "id": "team-meeting-009",
@@ -199,6 +577,12 @@
       "path": "synthesis/meeting-008b-pullback-v1-v2-v3-full-audit.md"
     },
     {
+      "id": "hermes-v01-micro-fixes-2026-06-10",
+      "label": "Hermes v01 — micro-fixes sprint (juni 2026)",
+      "type": "synthesis",
+      "path": "synthesis/hermes-v01-micro-fixes-2026-06-10.md"
+    },
+    {
       "id": "meeting-002",
       "label": "meeting-002",
       "type": "unknown",
@@ -215,6 +599,12 @@
       "label": "meeting-009-pullback-audit",
       "type": "unknown",
       "path": "synthesis/meeting-009-pullback-audit.md"
+    },
+    {
+      "id": "hermes-line-tuning-merge-nota-2026-06-10",
+      "label": "Hermes Line Tuning Candidate — Merge Nota",
+      "type": "synthesis",
+      "path": "synthesis/hermes-line-tuning-merge-nota-2026-06-10.md"
     },
     {
       "id": "2026-06-02-fundament-analyse",
@@ -253,6 +643,12 @@
       "path": "synthesis/meeting-008.md"
     },
     {
+      "id": "l8-market-context-build-2026-06-16",
+      "label": "l8-market-context-build-2026-06-16",
+      "type": "unknown",
+      "path": "synthesis/l8-market-context-build-2026-06-16.md"
+    },
+    {
       "id": "2026-05-20-noa-identity-skill-verworpen",
       "label": "noa-identity skill voorstel — verworpen",
       "type": "decision",
@@ -265,6 +661,30 @@
       "path": "decisions/2026-05-20-hermes-md-startup-owner.md"
     },
     {
+      "id": "model-routing-autonoom-2026-06-29",
+      "label": "\"Model routing — Noa routeert autonoom tussen Flash en Pro\"",
+      "type": "decision",
+      "path": "decisions/model-routing-autonoom-2026-06-29.md"
+    },
+    {
+      "id": "structure-roles-horizontal-zone-known-debt",
+      "label": "structure_roles horizontal zone substitution is non-production known debt",
+      "type": "decision",
+      "path": "decisions/structure-roles-horizontal-zone-known-debt.md"
+    },
+    {
+      "id": "2026-07-10-mcp-tools-decision",
+      "label": "MCP Tools Audit — Beslissing",
+      "type": "decision",
+      "path": "decisions/2026-07-10-mcp-tools-decision.md"
+    },
+    {
+      "id": "l8-market-context-mvp",
+      "label": "l8-market-context-mvp",
+      "type": "unknown",
+      "path": "decisions/l8-market-context-mvp.md"
+    },
+    {
       "id": "2026-05-20-identity-architecture",
       "label": "Identity Architecture — SOUL.md = primaire identiteit",
       "type": "decision",
@@ -275,9 +695,155 @@
       "label": "Skill Creation Policy — apart protocol (Optie B)",
       "type": "decision",
       "path": "decisions/2026-05-20-skill-creation-policy-optie-b.md"
+    },
+    {
+      "id": "hermes-v01-structure-review-2026-06-10",
+      "label": "Hermes v01 Structure Review",
+      "type": "review",
+      "path": "reviews/crypto-tradebot/hermes-v01-structure-review-2026-06-10.md"
     }
   ],
   "edges": [
+    {
+      "source": "log",
+      "target": "causal-snapshot-tape-v0",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "2026-09-10-second-brain-commit-gap",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "2026-09-10-second-brain-commit-gap",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "trader-story-a1a2-story-linker-v0",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "market-situation-canonical-calendar-v0-predicates-v01",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "trader-story-a1a2-story-linker-v0",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "market-situation-canonical-calendar-v0-predicates-v01",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "trader-story-a1a2-story-linker-v0",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "trader-story-a1a2-story-linker-v0",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "strategy-harness-evaluation-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "strategy-harness-evaluation-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "strategy-harness-evaluation-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "strategy-harness-evaluation-phase1b-primitives",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "strategy-harness-evaluation-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "2026-08-25-hermes-update-mcp-repair",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "strategy-harness-evaluation-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "crypto-data-ohlc-bridge-dedup-hardening-rc2-rc3-2026-08-05",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "a0-snapshot-readout",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "hermes-skill-tool-hygiene-audit-2026-07-07",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "hermes-autonomie-policy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "hermes-health-monitor-policy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "hermes-final-review-policy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "hermes-context-policy",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "hermes-mcp-cleanup-health-monitor-fix",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "l4-runner-v2-production-active",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "l4-raw-blobs-dedup-audit",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "l4-autofill-24u-status",
+      "type": "wiki-link"
+    },
+    {
+      "source": "log",
+      "target": "ohlc-bridge-ssh-disconnect-systemd",
+      "type": "wiki-link"
+    },
     {
       "source": "trade-specialist-agent",
       "target": "pullback-trader-strategy",
@@ -339,6 +905,21 @@
       "type": "wiki-link"
     },
     {
+      "source": "2026-06-08-hermes-v01-active-upper-lower-score",
+      "target": "hermes-v01-structuur-audit",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-08-25-hermes-update-mcp-repair",
+      "target": "strategy-harness-evaluation-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "2026-08-25-hermes-update-mcp-repair",
+      "target": "hermes-mcp-cleanup-health-monitor-fix",
+      "type": "wiki-link"
+    },
+    {
       "source": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
       "target": "2026-05-28-data-bridge-migratie-git-cleanup",
       "type": "wiki-link"
@@ -356,6 +937,16 @@
     {
       "source": "2026-05-17-hermes-brain-read-test",
       "target": "2026-05-17-hermes-yaml-prefix-fix",
+      "type": "wiki-link"
+    },
+    {
+      "source": "ohlc-bridge-ssh-disconnect-systemd",
+      "target": "crypto-data-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "ohlc-bridge-ssh-disconnect-systemd",
+      "target": "crypto-tradebot",
       "type": "wiki-link"
     },
     {
@@ -409,6 +1000,11 @@
       "type": "wiki-link"
     },
     {
+      "source": "market-situation-canonical-calendar-v0-predicates-v01",
+      "target": "noa-reign-roadmap-v2",
+      "type": "wiki-link"
+    },
+    {
       "source": "crypto-tradebot",
       "target": "2026-05-29-stuck-trades-cache-freshness-in-memory-bug",
       "type": "wiki-link"
@@ -434,6 +1030,56 @@
       "type": "wiki-link"
     },
     {
+      "source": "causal-snapshot-tape-v0",
+      "target": "trader-story-a1a2-story-linker-v0",
+      "type": "wiki-link"
+    },
+    {
+      "source": "causal-snapshot-tape-v0",
+      "target": "market-situation-canonical-calendar-v0-predicates-v01",
+      "type": "wiki-link"
+    },
+    {
+      "source": "causal-snapshot-tape-v0",
+      "target": "noa-reign-roadmap-v2",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-phase1b-primitives",
+      "target": "strategy-harness-evaluation-pipeline",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-phase1b-primitives",
+      "target": "outcome-builder-phase-1a",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-phase1b-primitives",
+      "target": "noa-reign-roadmap-v2",
+      "type": "wiki-link"
+    },
+    {
+      "source": "trader-story-a1a2-story-linker-v0",
+      "target": "market-situation-canonical-calendar-v0-predicates-v01",
+      "type": "wiki-link"
+    },
+    {
+      "source": "trader-story-a1a2-story-linker-v0",
+      "target": "causal-snapshot-tape-v0",
+      "type": "wiki-link"
+    },
+    {
+      "source": "trader-story-a1a2-story-linker-v0",
+      "target": "noa-reign-roadmap-v2",
+      "type": "wiki-link"
+    },
+    {
+      "source": "trader-story-a1a2-story-linker-v0",
+      "target": "hermes-v03-interpreter",
+      "type": "wiki-link"
+    },
+    {
       "source": "crypto-test-botv3",
       "target": "crypto-tradebot",
       "type": "wiki-link"
@@ -454,6 +1100,26 @@
       "type": "wiki-link"
     },
     {
+      "source": "outcome-builder-phase-1a",
+      "target": "a0-snapshot-readout",
+      "type": "wiki-link"
+    },
+    {
+      "source": "outcome-builder-phase-1a",
+      "target": "hermes-v03-interpreter",
+      "type": "wiki-link"
+    },
+    {
+      "source": "outcome-builder-phase-1a",
+      "target": "l4-runner-v2-production-active",
+      "type": "wiki-link"
+    },
+    {
+      "source": "l4-runner-v2-production-active",
+      "target": "l4-raw-blobs-dedup-audit",
+      "type": "wiki-link"
+    },
+    {
       "source": "pullback-trader-strategy",
       "target": "trade-specialist-agent",
       "type": "wiki-link"
@@ -461,6 +1127,36 @@
     {
       "source": "pullback-trader-strategy",
       "target": "crypto-tradebot",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-pipeline",
+      "target": "strategy-harness-evaluation-phase1b-primitives",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-pipeline",
+      "target": "strategy-harness-evaluation-phase1b-primitives",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-pipeline",
+      "target": "outcome-builder-phase-1a",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-pipeline",
+      "target": "noa-reign-roadmap-v2",
+      "type": "wiki-link"
+    },
+    {
+      "source": "strategy-harness-evaluation-pipeline",
+      "target": "2026-08-25-hermes-update-mcp-repair",
+      "type": "wiki-link"
+    },
+    {
+      "source": "README",
+      "target": "2026-08-06-eigen-comm-app",
       "type": "wiki-link"
     },
     {

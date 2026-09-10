@@ -1,7 +1,7 @@
 ---
 title: Noa Second Brain Index (auto-gegenereerd voorstel)
 type: index
-updated: 2026-07-12 12:48
+updated: 2026-09-10 09:26
 ---
 
 # Noa Second Brain Index
@@ -11,6 +11,7 @@ updated: 2026-07-12 12:48
 
 ## Audits
 
+- [[hermes-interpreter-outcome-codereview-2026-07-27]] — Hermes Interpreter -> Outcome Codereview 2026-07-27 (audit)
 - [[hermes-skill-tool-hygiene-audit-2026-07-07]] — Hermes Skill / Tool Hygiene Audit (audit)
 
 ## Concepts
@@ -51,6 +52,8 @@ updated: 2026-07-12 12:48
 - [[2026-06-15-hermes-api-key-envfix]] — Hermes API Key Env Fix (fix)
 - [[2026-06-21-l88-stale-archive-repair]] — 2026-06-21-l88-stale-archive-repair
 - [[2026-07-01-l4-audit-integrity-hardening]] — 2026-07-01-l4-audit-integrity-hardening (fix)
+- [[2026-08-25-hermes-update-mcp-repair]] — Hermes update v0.20.5 + MCP reparaties (20 aug 2026) (fix)
+- [[2026-09-10-second-brain-commit-gap]] — Second Brain — commit-gap 2026-08-04 → 2026-09-10 (fix)
 - [[hermes-mcp-cleanup-health-monitor-fix]] — Hermes MCP Cleanup + Health-Monitor Fix (fix)
 - [[hermes-v01-structuur-audit]] — hermes-v01-structuur-audit
 - [[layer3-label-audit-20260612]] — layer3-label-audit-20260612
@@ -66,6 +69,16 @@ updated: 2026-07-12 12:48
 
 - [[2026-07-10-verified-delegation-policy]] — Verified Delegation Policy — No Synthetic Agents (governance)
 
+## Noa-future
+
+- [[2026-08-04-architectuur-shell]] — 2026-08-04-architectuur-shell
+- [[2026-08-04-audit-roadmap]] — 2026-08-04-audit-roadmap
+- [[2026-08-04-centrale-hub-visie]] — 2026-08-04-centrale-hub-visie
+- [[2026-08-04-memory-management]] — 2026-08-04-memory-management
+- [[2026-08-04-telegram-setup]] — 2026-08-04-telegram-setup
+- [[2026-08-06-eigen-comm-app]] — 2026-08-06-eigen-comm-app
+- [[readme]] — README
+
 ## Policies
 
 - [[hermes-autonomie-policy]] — Hermes Autonomie Policy (policy)
@@ -78,6 +91,7 @@ updated: 2026-07-12 12:48
 - [[2026-05-26-sessie-model-routing-langfuse]] — Sessie 26 Mei — Model routing optimalisatie + Governance + Langfuse setup (synthesis)
 - [[5-strategievoorstellen-architect]] — DE ARCHITECT — 5 Strategievoorstellen (concept)
 - [[a0-snapshot-readout]] — a0-snapshot-readout
+- [[causal-snapshot-tape-v0]] — Causal Snapshot Tape V0.2 — Level/Event Tape + Tijdigheid (FROZEN) (project)
 - [[crypto-data-pipeline]] — Crypto Data Pipeline (project)
 - [[crypto-test-bot-architectuur]] — crypto-test-bot-architectuur (project)
 - [[crypto-test-botv3-pipeline]] — Crypto Test Bot V3 — Scripts en Pipeline (project)
@@ -100,10 +114,14 @@ updated: 2026-07-12 12:48
 - [[l4-autofill-24u-status]] — 24U L4 AUTOFILL STATUS — ETHEUR + BTCEUR STABIEL (project)
 - [[l4-raw-blobs-dedup-audit]] — L4 RAW_BLOBS DEDUP AUDIT — 0% DEDUP VERKLAARD (project)
 - [[l4-runner-v2-production-active]] — L4 RUNNER V2 PRODUCTIE ACTIEF — PAIR-ISOLATED MODE (project)
+- [[market-situation-canonical-calendar-v0-predicates-v01]] — Market Situation V0 — Canonical Calendar Replication + Nieuwe Predicates V0.1 (project)
 - [[noa-reign-roadmap-v2]] — NOA-Reign — Roadmap v2 (project)
 - [[outcome-builder-phase-1a]] — Outcome Builder Phase 1A (project)
 - [[pullback-trader-strategy]] — Pullback Trader Strategy (project)
+- [[strategy-harness-evaluation-phase1b-primitives]] — Strategy Harness Evaluation Phase 1B Primitives (project)
+- [[strategy-harness-evaluation-pipeline]] — Strategy Harness Evaluation Pipeline (project)
 - [[topic-intelligence-scanner]] — topic-intelligence-scanner (project)
+- [[trader-story-a1a2-story-linker-v0]] — Trader-Story A1/A2 — Audit, RFC, Standalone Story Linker V0 + Blind Review (project)
 - [[webdesign-mini-agency]] — Webdesign Mini-Agency (project)
 - [[weekly-scout]] — Weekly Scout — R&D Department (project)
 
@@ -114,6 +132,14 @@ updated: 2026-07-12 12:48
 ## Research
 
 - [[downtrend-near-resistance-archetype]] — downtrend-near-resistance-archetype
+
+## Scout
+
+- [[2026-07-31-morning-top5]] — 2026-07-31-morning-top5
+- [[2026-08-01-morning-top5]] — 2026-08-01-morning-top5
+- [[2026-08-02-morning-top5]] — 2026-08-02-morning-top5
+- [[2026-08-03-morning-top5]] — 2026-08-03-morning-top5
+- [[2026-08-04-morning-top5]] — 2026-08-04-morning-top5
 
 ## Skills
 

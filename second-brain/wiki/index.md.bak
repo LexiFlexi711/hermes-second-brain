@@ -1,7 +1,7 @@
 ---
 title: Noa Second Brain Index (auto-gegenereerd voorstel)
 type: index
-updated: 2026-07-11 21:22
+updated: 2026-08-06
 ---
 
 # Noa Second Brain Index
@@ -16,6 +16,7 @@ updated: 2026-07-11 21:22
 ## Concepts
 
 - [[lexi-trend-line-methodology]] — lexi-trend-line-methodology
+- [[mcp-stateless-2026-07-28]] — MCP Stateless — 2026-07-28 Spec (concept)
 - [[ollama-cloud-lanes]] — Ollama Cloud Lanes (concept)
 - [[openrouter-kimi-free-agent]] — OpenRouter Kimi Free Agent (concept)
 - [[skill-creation-policy]] — Skill Creation Policy (concept)
@@ -40,6 +41,7 @@ updated: 2026-07-11 21:22
 
 ## Fixes
 
+- [[2026-08-25-hermes-update-mcp-repair]] — Hermes v0.20.5 update + MCP reparaties (fix)
 - [[2026-05-17-hermes-brain-read-test]] — Hermes Brain Read Test (fix)
 - [[2026-05-17-hermes-yaml-prefix-fix]] — Hermes YAML prefix fix (fix)
 - [[2026-05-28-data-bridge-migratie-git-cleanup]] — Data bridge migratie + git cleanup (fix)
@@ -65,6 +67,11 @@ updated: 2026-07-11 21:22
 ## Governance
 
 - [[2026-07-10-verified-delegation-policy]] — Verified Delegation Policy — No Synthetic Agents (governance)
+
+## Noa-Future
+
+- [[noa-future/2026-08-06-eigen-comm-app]] — Eigen communicatie-app met 3D avatar — visie & stappenplan (visie)
+- [[noa-future/README]] — Noa-Future Roadmap — 7 fases naar volledige autonomie (roadmap)
 
 ## Policies
 
@@ -100,8 +107,11 @@ updated: 2026-07-11 21:22
 - [[l4-autofill-24u-status]] — 24U L4 AUTOFILL STATUS — ETHEUR + BTCEUR STABIEL (project)
 - [[l4-raw-blobs-dedup-audit]] — L4 RAW_BLOBS DEDUP AUDIT — 0% DEDUP VERKLAARD (project)
 - [[l4-runner-v2-production-active]] — L4 RUNNER V2 PRODUCTIE ACTIEF — PAIR-ISOLATED MODE (project)
+- [[noa-reign-roadmap-v2]] — NOA-Reign — Roadmap v2 (project)
 - [[outcome-builder-phase-1a]] — Outcome Builder Phase 1A (project)
 - [[pullback-trader-strategy]] — Pullback Trader Strategy (project)
+- [[strategy-harness-evaluation-phase1b-primitives]] — Strategy Harness Evaluation Phase 1B Primitives — frozen (project)
+- [[strategy-harness-evaluation-pipeline]] — Strategy Harness Evaluation Pipeline lineage + freezes (project)
 - [[topic-intelligence-scanner]] — topic-intelligence-scanner (project)
 - [[webdesign-mini-agency]] — Webdesign Mini-Agency (project)
 - [[weekly-scout]] — Weekly Scout — R&D Department (project)
@@ -117,6 +127,10 @@ updated: 2026-07-11 21:22
 ## Skills
 
 - [[composio-top-hermes-skills]] — Top Hermes Skills from Composio (source_summary)
+
+## Reviews
+
+- [[crypto-data-ohlc-bridge-dedup-hardening-rc2-rc3-2026-08-05]] — OHLC Bridge Dedup Hardening RC2→RC3 (review-resolutie)
 
 ## Synthesis
 

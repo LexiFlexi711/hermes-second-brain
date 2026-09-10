@@ -1,6 +1,117 @@
 
 # Wiki Log
 
+## 2026-09-10 — Causal Snapshot Tape V0.2 FROZEN + second-brain commit-gap hersteld
+- **Type:** project + freeze + fix
+- **Bestanden:** [[causal-snapshot-tape-v0]], [[2026-09-10-second-brain-commit-gap]]
+- Kantelpunt: een geometrisch correcte level/interaction-tape is NIET automatisch causaal.
+  Bewezen fouten: HISTORICAL_WINDOW_TRUNCATION (`final_window[:i+1]` → vroege snapshots 3/10/30 candles),
+  TEMPORAL_LEVEL_LEAKAGE (3.474 cluster-preexistentie + 7.901 swing-preconfirmation van 15.062 rijen),
+  en SAME-BAR self-reference.
+- V0.2 lost dit op: rolling-240 per T (`load_window(end=T, limit=240)`), STATE_BEFORE_T (`end=PREV_T`)
+  strikt gescheiden van STATE_AFTER_T, INTERACTION_DURING_T = candle(T) × LEVELS_BEFORE_T,
+  snapshot_level_id zonder lineage. 2400 snapshots (alle 240 bars), 8942 interacties,
+  alle gates groen, bookkeeping net 13 = observed 13, same-bar 266 = 265 cluster + 1 swing,
+  SWING_PROVIDER_REPAINTS = True (1024 zichtbaar / 581 verdwenen / 0 terug).
+  **V0.2_FREEZE_READY = True · CAUSAL_SNAPSHOT_TAPE_V0.2 = FROZEN**
+- Fix: second brain was sinds **2026-08-04** niet meer gecommit/gepusht (147 gewijzigde/untracked
+  bestanden) terwijl de wiki-inhoud t/m 26-08 liep → Claude zag "niets nieuws". Oorzaak en herstel
+  in [[2026-09-10-second-brain-commit-gap]].
+
+## 2026-09-08 — Trader-Story A1/A2: audit → RFC → Standalone Story Linker V0 + blind review
+- **Type:** project + audit
+- **Bestanden:** [[trader-story-a1a2-story-linker-v0]]
+- A1 (BREAKOUT→RETEST→HOLD) en A2 (HTF TREND→LTF PULLBACK→LEVEL HOLD) = `ARCHITECTURALLY_NOT_YET_TESTABLE`
+  (v03 kent geen event-chain over 3+ snapshots en geen level-identiteit over tijd).
+- RFC-eindadvies **A. STANDALONE_STORY_LINKER_SUFFICIENT** (9/10 levels deterministisch volgbaar;
+  geen persistente Hermes-laag nodig). `LEVEL_MATCH_CONTRACT_V0` gefrozen.
+- Story Linker V0 in `tmp/` (24 tests green); dry replay 9 weken: A1 643/65/132/446, A2 22/14/8.
+- FASE 3A blind review pack: 58 charts, SET A=18/B1=20/B2=20, seed `20260908`, ASOF-safety PASS.
+- Render-les: eigen matplotlib-renderer afgekeurd → **bestaande `L5_chart.render_chart`** hergebruikt.
+- Adversarial re-audit REV_0050..0058 onder STORY CONTRACT V1 → `SYSTEMIC_LEVEL_PROVIDER_BIAS = True`
+  (relevant level was vernauwd tot generated 60m-zones).
+
+## 2026-09-08 — Market Situation V0: canonical calendar replication + nieuwe predicates V0.1
+- **Type:** project + study
+- **Bestanden:** [[market-situation-canonical-calendar-v0-predicates-v01]]
+- `CANONICAL_CALENDAR_REPLICATION_V0_COMPLETE`: 9 weken × 672 canonical_T, 0 failures;
+  CAL_05 discovery-week byte-identiek (5975 situations, hash `8a2cf8f4…`).
+  `MTF_DIRECTION_CONFLICT` bleek 4 pos / 4 neg → eerdere observatie NIET bevestigd.
+- `NEW_MARKET_SITUATION_PREDICATES_V01_VALIDATED`: `LEVEL_PROXIMITY_STATE`,
+  `WICK_BIAS_STATE`, `HIGH_VOLATILITY_STATE` additief toegevoegd; 27/27 tests;
+  `EXISTING_SIX_CHANGED = NO`, `RUNNER_CHANGED = NO`.
+
+## 2026-09-07 — Market Situation V0 — menselijke visuele review voorbereid
+- **Type:** project
+- **Bestanden:** [[trader-story-a1a2-story-linker-v0]], [[market-situation-canonical-calendar-v0-predicates-v01]]
+- Historische scale validation volledig PASS (672 evaluaties, 0 PIT-failures, 0 determinism-mismatches,
+  0 duplicate identities, boundary off-by-one gecorrigeerd). Enkel de menselijke visuele audit reste.
+- 30 bestaande charts (al gegenereerd via de echte `L5_chart` `render_chart()`) verplaatst naar een
+  toegankelijke locatie buiten `/tmp`. Geen charts opnieuw gegenereerd, geen nieuwe random sample.
+
+## 2026-09-06 — 2% prijs-swings augustus 2026 herberekend
+- **Type:** fix + analyse
+- **Bestanden:** [[trader-story-a1a2-story-linker-v0]]
+- Na de correctie van 03-09 zijn de 2%-swingtellingen opnieuw opgebouwd met correcte chronologie.
+
+## 2026-09-05 — Media download gestart (Telegram)
+- **Type:** media
+- Telegram-sessie: download gestart via de *arr/qBittorrent-stack.
+
+## 2026-09-03 — Correctie: 2% price-swing count ONGELDIG
+- **Type:** fix
+- **Bestanden:** [[trader-story-a1a2-story-linker-v0]]
+- De eerdere 1H-swingoutput bevat aantoonbare chronologische onmogelijkheden (opeenvolgende
+  extreme met timestamp vóór de vorige; meerdere HIGH↔LOW legs binnen exact dezelfde 1H-timestamp).
+  Met 1H OHLC kan intrabar-ordering niet bepaald worden → tellingen niet bewezen; opnieuw opgebouwd.
+
+## 2026-09-01 — Post-Phase1D evaluation readiness + thin end-to-end driver
+- **Type:** project
+- **Bestanden:** [[strategy-harness-evaluation-pipeline]]
+- Readiness-discovery op de gefrozen base `fd117d9f` (wat kan de pipeline nu werkelijk, wat ontbreekt
+  contractueel vóór de eerste strategie-evaluatie). Daarna de kleinst mogelijke end-to-end driver
+  bovenop Phase1A→Phase1D (geen nieuwe fase, geen nieuwe metrics, geen strategie-run).
+
+## 2026-08-31 — Phase1D numeric threshold policy — methodologische wording fix (RC2)
+- **Type:** fix + methodology
+- **Bestanden:** [[strategy-harness-evaluation-pipeline]]
+- RC1 `41b1f31c`, frozen semantic contract `be76dd55`. Enkel overclaiming in de woordvoering
+  gecorrigeerd; het getal (`min_raw_N=30`, `min_cluster_N=30`) bleef ongewijzigd en is door
+  Claude expliciet aanvaard. Geen threshold-wijziging, geen nieuw onderzoekstraject.
+
+## 2026-08-26 — Strategy Harness Evaluation Phase 1B primitives gefrozen
+- **Type:** project + freeze
+- **Bestanden:** [[strategy-harness-evaluation-pipeline]], [[strategy-harness-evaluation-phase1b-primitives]]
+- Phase1B RC1 `a30fce5e` → RC2 `ea7e0467` → RC3 `1c824599` → review `45e8f1ca` (GREEN 0/0/0/3) → freeze `ca1bfd2a`
+- Tag: `strategy-harness-evaluation-phase1b-primitives-frozen-20260826` — niet gepusht
+- Phase1B 123 passed, Phase1A 52, Phase3B 68/9s, Outcome 186, Guardrail 70/12s, full core 462/17/21s (0 nieuw)
+
+## 2026-08-25 — Phase1A join gefrozen + Hermes/MCP reparaties
+- **Type:** freeze + fix
+- **Bestanden:** [[strategy-harness-evaluation-pipeline]], [[2026-08-25-hermes-update-mcp-repair]]
+- Phase1A join review `4d996d26` (GREEN 0/0/0/2) → freeze `45109f2e`; tag `strategy-harness-evaluation-phase1a-join-frozen-20260825`
+- Hermes update v0.20.5 (gateway PID 956674), filesystem MCP `--args` fix, health-monitor better-sqlite3 op `/usr/bin/node` v24
+
+## 2026-08-19 — Evaluation Phase0 contract + Phase3B gefrozen
+- **Type:** freeze
+- **Bestand:** [[strategy-harness-evaluation-pipeline]]
+- Phase3B `213d77db` + Phase0 contract `1225cd8e` (review `2d06134d` GREEN)
+- Tag: `strategy-harness-evaluation-contract-phase0-frozen-20260819`
+
+## 2026-08-06 — Eigen communicatie-app met 3D avatar (visie-beslissing)
+- **Type:** visie-beslissing
+- Lexi beslist: eigen app met 3D avatar, niveau C (volledige GSM-controle)
+- Roadmap herzien naar 7 fases: Telegram → PWA → 3D → Native → Hub → Autonomie → Relatie
+- Nieuw document: [[noa-future/2026-08-06-eigen-comm-app]]
+- README.md en roadmap geüpdatet
+
+## 2026-08-05 — OHLC Bridge Dedup Hardening RC3 (Claude ORANGE review resolutie)
+- **Type:** review-resolutie
+- **Bestand:** [[crypto-data-ohlc-bridge-dedup-hardening-rc2-rc3-2026-08-05]]
+- Claude ORANGE-review → 3 findings RESOLVED: MEDIUM pairs_failed counting, LOW count_archive_lines ambigu, LOW Unicode decode test
+- Commit: `5fbba6a8` op `candidate/crypto-data-ohlc-bridge-dedup-hardening-rc3-20260805`
+- 40/40 tests PASS. Niet gepusht.
+
 ## 2026-07-11 — A0 Phase 1 per-TF rendering + empty section fixes
 - **Type:** synthesis + patch
 - **Bestanden:** [[a0-snapshot-readout]], [[2026-07-11-a0-per-tf-rendering]]
@@ -129,3 +240,4 @@
 - No-backflow regel: outcome data gescheiden van ASOF
 
 2026-07-12T12:48:21+02:00 — wiki/projects/noa-reign-roadmap-v2.md: NOA-Reign Roadmap v2 (visie + Fable + Noa). Vervangt v1. Tijdlijn rond 5/8 operatie, 7-weken herstelvenster, Evidence Lab triggers, Phase 1B prioriteit.
+2026-08-12 14:30 — wiki/mcp-stateless-2026-07-28.md aangemaakt (MCP stateless spec 2026-07-28, bron: mcp-use v2 blog + MCP announcement)

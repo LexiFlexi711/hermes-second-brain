@@ -1,15 +1,19 @@
 {
-  "generated": "2026-06-06T09:09:26.036012",
-  "total_nodes": 46,
-  "total_edges": 51,
+  "generated": "2026-09-10T09:26:10.268098",
+  "total_nodes": 117,
+  "total_edges": 105,
   "nodes_by_type": {
-    "unknown": 14,
+    "unknown": 45,
     "entity": 4,
     "source_summary": 1,
-    "fix": 7,
-    "concept": 1,
-    "project": 12,
-    "synthesis": 3,
-    "decision": 4
+    "audit": 2,
+    "policy": 4,
+    "fix": 17,
+    "concept": 4,
+    "governance": 1,
+    "synthesis": 7,
+    "project": 24,
+    "decision": 7,
+    "review": 1
   }
 }
