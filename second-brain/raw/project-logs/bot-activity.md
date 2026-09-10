@@ -160,3 +160,17 @@
 
 ## sync 2026-09-08T17:36:45
 - `34dc263f8703` 2026-09-08 — fix(hermes-v03): historical synthesize as-of coverage — pass end_ts to loader
+
+## sync 2026-09-10T17:41:31
+- `2df2bb8f9fa8` 2026-09-10 — fix(v03): test_source_provenance.py buiten pytest-collectie + canonieke paden
+- `838ecba6678b` 2026-09-10 — refactor(v03) FASE A-D afronding: README + root-tidy
+- `7b6439aa5d88` 2026-09-10 — refactor(v03) FASE D: hermes-v03-strategy-harness -> src/hermes_v03/strategy
+- `3cbc9d4d9f2c` 2026-09-10 — refactor(v03) FASE C: hermes-v03-outcome -> src/hermes_v03/outcome
+- `f52a46df6a58` 2026-09-10 — refactor(v03) FASE B runtime/path-sanering (aparte commit)
+- `9e211f196ccd` 2026-09-10 — refactor(v03) FASE B: interpreter -> src/hermes_v03/interpreter (+ tests/tools/docs)
+- `6c3a8604b194` 2026-09-10 — docs(v03): PRE-FASE-B baseline-record (saneringsgate)
+- `8b06d354d10b` 2026-09-10 — gate(D5+D6): freeze-check path-independent (INHOUD i.p.v. pad) + fail-closed backflow
+- `f3c85a7d83d3` 2026-09-10 — refactor(v03) FASE A fix: a0 cli.py terug naar de BEVROREN inhoud (pure move)
+- `711e20df1c8e` 2026-09-10 — refactor(v03) FASE A vervolg: harness a0_adapter pad-fix
+- `8984b9c5cfb7` 2026-09-10 — refactor(v03) FASE A: analyst -> projects/hermes-v03/src/hermes_v03/analyst
+- `8755c810daa5` 2026-09-10 — checkpoint(safety): V03 pre-layout — in-flight werk + untracked source/test/doc vastgelegd voor de sanering

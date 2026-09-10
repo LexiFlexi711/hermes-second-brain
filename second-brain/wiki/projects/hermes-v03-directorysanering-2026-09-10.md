@@ -84,18 +84,44 @@ Baseline-record: `projects/hermes-v03/docs/sanering_baseline_20260910.{md,json}`
 
 **0 nieuwe failures, oorzaken ongewijzigd, LOGIC CHANGES = NONE.**
 
-## L4-filler: PRE-EXISTING BROKEN (belangrijk)
+## L4-filler: GEFIXT 2026-09-10 — root cause TF-lijst (1440m)
 
-De filler was al stuk **vóór** de sanering: `status=2/INVALIDARGUMENT` bij elke run,
-**1624 falende runs en 0 successen** in 30 dagen; eerste falende run in het journal
-`Jul 06 12:45:03` (~66 dagen). Args zijn allemaal geldig, dus exit 2 komt uit een
-guard in de tool zelf.
+Status: **GEFIXT** (commit `ea0f6f7e`). De timer staat nog steeds UIT tot Lexi
+hem expliciet aanzet.
 
-Daarom (D8, optie a): runtime verhuisd, systemd-unit naar canonical paden,
-`daemon-reload` — maar **timer blijft UIT** en de unit draagt de status
-`PRE-EXISTING BROKEN — DISABLED PENDING SEPARATE REPAIR`.
-De fout zelf is **niet** gerepareerd (buiten scope); daarvoor komt een aparte
-opdracht **INCIDENT: L4-FILLER EXIT 2**.
+Bewezen root cause (exit code 2):
+`tools/fill_l4_snapshot_store.py` `DEFAULT_TFS` had 5 timeframes
+(1m/5m/15m/60m/240m) terwijl `L2_collect_mtf` / `L3_snapshot_build` /
+`L4_snapshot_store` er **6** eisen incl. `1440m`. L2 rapporteert dan
+`1440m: geen input` -> `bundle_usable=False` -> `status=dry_run_failed` -> **exit 2**.
+
+Fix (minimaal): `1440m` toegevoegd aan `DEFAULT_TFS` en `TF_SECONDS_MAP`.
+Regressietest `tests/regression/test_l4_filler_tf_contract.py` was eerst RED
+(3 failed) en is na de fix GREEN (4 passed).
+
+Bewezen tijdlijn (uit 17 331 run-logs, niet uit aannames):
+
+| periode | uitkomst |
+|---|---|
+| 2026-07-06 -> 2026-09-03 | ~262 successen/dag, nul failures (15 314 runs) |
+| 2026-09-04 | 93 ok / 169 failures — omslagdag |
+| 2026-09-05 -> 2026-09-10 | 0 ok / 262 failures per dag, altijd `1440m: geen input` |
+
+Dus **PRE-EXISTING SINDS 2026-09-04**, niet sinds juli.
+
+Correctie op een eerdere claim: in het FASE B-rapport stond "0 successen sinds
+juli (1624 failures)". Dat was fout — veroorzaakt door
+`grep -c "status=0/SUCCESS"` op systemd-output. Voor een `Type=oneshot` logt
+systemd succes als **"Finished l4-filler.service"** (15 685x), niet als
+`status=0/SUCCESS`. De filler was dus twee maanden gezond en ging stuk op
+2026-09-04.
+
+Bewijs na de fix:
+- manual run met exact hetzelfde command: **exit 0**, `status=success`, 2/2 pairs,
+  snapshot_id `...1m5m15m60m240m1440m`, output in `runtime/l4_store/{ETHEUR,BTCEUR}/2026-09.sqlite`
+- `PRAGMA integrity_check = ok` (859 / 879 snapshots intact)
+- systemd service 1x: `Result=success`, `ExecMainStatus=0`, journal "Finished"
+- timer: `inactive` + `disabled`
 
 ## Geleerde lessen
 

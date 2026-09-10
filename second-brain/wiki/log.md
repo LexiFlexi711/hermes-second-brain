@@ -287,3 +287,19 @@ eerste 2026-07-06, status=2/INVALIDARGUMENT). Runtime verhuisd naar
 Aparte opdracht volgt: INCIDENT: L4-FILLER EXIT 2.
 
 Volledige pagina: [[hermes-v03-directorysanering-2026-09-10]]
+
+## 2026-09-10 — L4-FILLER EXIT 2 opgelost (root cause bewezen)
+
+Root cause: `tools/fill_l4_snapshot_store.py::DEFAULT_TFS` had 5 timeframes,
+L2/L3/L4 eisen er 6 incl. `1440m` -> `bundle_usable=False` -> `dry_run_failed`
+-> exit code 2. PRE-EXISTING SINDS 2026-09-04 (bewezen uit 17 331 run-logs:
+262 successen/dag tot 09-03, omslag 09-04, 262 failures/dag vanaf 09-05).
+
+Fix: `1440m` toegevoegd aan `DEFAULT_TFS` + `TF_SECONDS_MAP` (2 regels).
+Regressietest eerst RED -> na fix GREEN. Manual run exit 0, service 1x
+Result=success, timer blijft DISABLED. Commit `ea0f6f7e`.
+
+Correctie: de eerdere claim "0 successen sinds juli" was fout (systemd logt
+oneshot-succes als "Finished", niet als status=0/SUCCESS).
+
+Pagina: [[hermes-v03-directorysanering-2026-09-10]]
