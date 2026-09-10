@@ -1,7 +1,7 @@
 ---
 title: Noa Second Brain Index (auto-gegenereerd voorstel)
 type: index
-updated: 2026-09-10 09:26
+updated: 2026-09-10 09:31
 ---
 
 # Noa Second Brain Index

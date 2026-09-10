@@ -1,10 +1,10 @@
 ┌─────────────────────────────────────────────┐
 │       NOA STATUS RAPPORT                     │
-│       2026-09-10 07:00 UTC            │
+│       2026-09-10 07:30 UTC            │
 └─────────────────────────────────────────────┘
 
   ✅ 🖥️  Server
-     hostname: lexi-server | uptime: up 12 weeks, 6 days, 19 hours, 52 minutes | load: 0.71 0.60 0.52 | cpu: 8% | ram: 5.7Gi/15Gi (vrij: 9.8Gi) | disk /: 110G/106G (52%)
+     hostname: lexi-server | uptime: up 12 weeks, 6 days, 20 hours, 22 minutes | load: 3.32 2.72 1.62 | cpu: 21.4% | ram: 6.2Gi/15Gi (vrij: 9.3Gi) | disk /: 111G/105G (52%)
 
   ✅ 🐳 Docker
      21/21 running
@@ -16,7 +16,7 @@
      20 pending
 
   ✅ 📦 Backups
-     script OK | laatste: 2026-09-10 03:30:02 | leeftijd: 5.5h
+     script OK | laatste: 2026-09-10 03:30:02 | leeftijd: 6.0h
 
   ✅ 💰 Dagbudget
      geen data — hermes insights niet beschikbaar

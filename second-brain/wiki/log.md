@@ -1,6 +1,17 @@
 
 # Wiki Log
 
+## 2026-09-10 — CLAUDE.md aangescherpt: Claude moet eigen activiteiten wegschrijven
+- **Type:** governance + fix
+- **Bestanden:** `CLAUDE.md`, [[2026-09-10-second-brain-commit-gap]]
+- "Claude Code" → "Claude" (11×), titel nu "Noa Second Brain — Claude Guide".
+- Nieuwe verplichte sectie **"Claude moet zijn eigen activiteiten wegschrijven (VERPLICHT)"**:
+  raw/ → wiki/ → wiki/log.md → index → `git add -A && git commit && git push`.
+  Harde regel: een taak is pas afgerond als de activiteit in `wiki/log.md` staat
+  én gecommit én gepusht is; niet-gecommit telt niet als opgeslagen.
+- Delegation Pattern uitgebreid met stap 6 (Claude schrijft eigen activiteit terug).
+- Directe aanleiding: de commit-gap 04-08 → 10-09 waardoor Claude "niets nieuws" zag.
+
 ## 2026-09-10 — Causal Snapshot Tape V0.2 FROZEN + second-brain commit-gap hersteld
 - **Type:** project + freeze + fix
 - **Bestanden:** [[causal-snapshot-tape-v0]], [[2026-09-10-second-brain-commit-gap]]

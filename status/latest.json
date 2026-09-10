@@ -1,22 +1,22 @@
 {
-  "timestamp": "2026-09-10T07:00:01.462693+00:00",
-  "timestamp_readable": "2026-09-10 07:00 UTC",
+  "timestamp": "2026-09-10T07:30:01.218599+00:00",
+  "timestamp_readable": "2026-09-10 07:30 UTC",
   "all_ok": false,
   "sections": {
     "\ud83d\udda5\ufe0f  Server": {
       "label": "\ud83d\udda5\ufe0f  Server",
       "status": "OK",
-      "details": "hostname: lexi-server | uptime: up 12 weeks, 6 days, 19 hours, 52 minutes | load: 0.71 0.60 0.52 | cpu: 8% | ram: 5.7Gi/15Gi (vrij: 9.8Gi) | disk /: 110G/106G (52%)",
+      "details": "hostname: lexi-server | uptime: up 12 weeks, 6 days, 20 hours, 22 minutes | load: 3.32 2.72 1.62 | cpu: 21.4% | ram: 6.2Gi/15Gi (vrij: 9.3Gi) | disk /: 111G/105G (52%)",
       "raw": {
         "hostname": "lexi-server",
-        "uptime": "up 12 weeks, 6 days, 19 hours, 52 minutes",
-        "load": "0.71 0.60 0.52",
-        "cpu_pct": "8",
-        "ram_used": "5.7Gi",
+        "uptime": "up 12 weeks, 6 days, 20 hours, 22 minutes",
+        "load": "3.32 2.72 1.62",
+        "cpu_pct": "21.4",
+        "ram_used": "6.2Gi",
         "ram_total": "15Gi",
-        "ram_avail": "9.8Gi",
-        "disk_used": "110G",
-        "disk_avail": "106G",
+        "ram_avail": "9.3Gi",
+        "disk_used": "111G",
+        "disk_avail": "105G",
         "disk_pct": "52%"
       }
     },
@@ -31,43 +31,43 @@
         "containers": [
           {
             "name": "webssh",
-            "status": "Up About an hour",
+            "status": "Up 2 hours",
             "image": "wettyoss/wetty:latest",
             "ports": "3000/tcp, 127.0.0.1:7681->7681/tcp"
           },
           {
             "name": "nextcloud-db",
-            "status": "Up About an hour",
+            "status": "Up 2 hours",
             "image": "mariadb:latest",
             "ports": "3306/tcp"
           },
           {
             "name": "prowlarr",
-            "status": "Up About an hour",
+            "status": "Up 2 hours",
             "image": "lscr.io/linuxserver/prowlarr:latest",
             "ports": "0.0.0.0:9696->9696/tcp, [::]:9696->9696/tcp"
           },
           {
             "name": "chromium",
-            "status": "Up About an hour",
+            "status": "Up 2 hours",
             "image": "lscr.io/linuxserver/chromium:latest",
             "ports": "127.0.0.1:3000->3000/tcp, 3001/tcp"
           },
           {
             "name": "n8n",
-            "status": "Up About an hour",
+            "status": "Up 2 hours",
             "image": "n8nio/n8n:next",
             "ports": "127.0.0.1:5678->5678/tcp"
           },
           {
             "name": "netdata",
-            "status": "Up About an hour (healthy)",
+            "status": "Up 2 hours (healthy)",
             "image": "netdata/netdata:latest",
             "ports": "0.0.0.0:19999->19999/tcp, [::]:19999->19999/tcp"
           },
           {
             "name": "sabnzbd",
-            "status": "Up About an hour",
+            "status": "Up 2 hours",
             "image": "lscr.io/linuxserver/sabnzbd:latest",
             "ports": "0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp"
           },
@@ -265,14 +265,14 @@
     "\ud83d\udce6 Backups": {
       "label": "\ud83d\udce6 Backups",
       "status": "OK",
-      "details": "script OK | laatste: 2026-09-10 03:30:02 | leeftijd: 5.5h",
+      "details": "script OK | laatste: 2026-09-10 03:30:02 | leeftijd: 6.0h",
       "raw": {
         "script_exists": true,
         "log_exists": true,
         "last_run": "2026-09-10 03:30:02",
         "log_done": true,
         "latest_backup": "config_20260910_0330",
-        "backup_age_hours": 5.5,
+        "backup_age_hours": 6.0,
         "backup_count": 41,
         "backup_dir": "/mnt/otherdrive1/backups"
       }
