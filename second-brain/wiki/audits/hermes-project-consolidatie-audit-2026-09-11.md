@@ -182,3 +182,6 @@ GIT
 
 Migratie **NIET** gestart. Wacht op nieuwe expliciete opdracht van Lexi.
 Zie ook scope-correctie op [[hermes-v03-directorysanering-2026-09-10]].
+
+> **UPDATE 2026-09-11:** de migratie is inmiddels **UITGEVOERD** — zie
+> [[hermes-project-consolidatie-uitgevoerd-2026-09-11]] (commit `9d1d6e18`).

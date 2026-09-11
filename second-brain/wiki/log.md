@@ -324,3 +324,23 @@ Pagina: [[hermes-v03-directorysanering-2026-09-10]]
   `wiki/projects/hermes-v03-directorysanering-2026-09-10.md` (scope-correctie),
   bron: `/mnt/otherdrive1/dataLexi/NOA-Reign_audit_consolidatie_20260911.md`
 - **Pagina:** [[hermes-project-consolidatie-audit-2026-09-11]]
+
+## 2026-09-11 — Hermes-project consolidatie UITGEVOERD
+
+De volledige migratie naar één canonical root is uitgevoerd en bewezen
+(commit `9d1d6e18`, branch `refactor/v03-unified-layout-20260910`).
+
+- **Root:** `projects/hermes-project/` is nu de enige Hermes-projectroot.
+- **Moves:** hermes-v03, crypto-data, crypto-tradebot, crypto-test-bot-v3,
+  validation_charts_v7 (→ charts/validation_v7), legacy → archive/,
+  root scripts/ → scripts/, root-scratch → archive/root-scratch/.
+  Alles via atomaire rename (zelfde device).
+- **systemd:** ohlc-bridge + l4-filler naar canonical paden; timer blijft disabled.
+- **cron:** 3 regels naar canonical paden, geheractiveerd.
+- **Tests:** hermes-v03 418 passed/0 failed; gate 11/14 (identiek baseline);
+  A0 frozen groen; NEW REGRESSIONS = 0; LOGIC CHANGES = NONE.
+- **Runtime:** ohlc-bridge active (union 26, ok 156), :5001 HTTP 200,
+  l4-filler one-shot success (2/2 pairs, 6 TF incl 1440m).
+- **Eindcriteria:** active roots buiten hermes-project = 0, oude path refs = 0,
+  broken refs = 0.
+- **Pagina:** [[hermes-project-consolidatie-uitgevoerd-2026-09-11]]

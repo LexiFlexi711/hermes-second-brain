@@ -110,6 +110,7 @@ updated: 2026-09-10 18:07
 - [[hermes-openclaw-noa-agent]] — Hermes OpenClaw Noa Agent (project)
 - [[hermes-v01-layer2-v02-status]] — hermes-v01-layer2-v02-status
 - [[hermes-v03-directorysanering-2026-09-10]] — Hermes V03 — directorysanering 2026-09-10 (project)
+- [[hermes-project-consolidatie-uitgevoerd-2026-09-11]] — Hermes-project — consolidatie UITGEVOERD 2026-09-11 (project)
 - [[hermes-v03-interpreter]] — Hermes-v03-interpreter — apart project naast Hermes-v03 (project)
 - [[hermes-v03-status-2026-06-23]] — hermes-v03-status-2026-06-23
 - [[hermes-vision-capture]] — Hermes Vision Capture (project)
