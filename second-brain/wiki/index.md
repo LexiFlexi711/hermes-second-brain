@@ -13,6 +13,7 @@ updated: 2026-09-10 18:07
 
 - [[hermes-interpreter-outcome-codereview-2026-07-27]] — Hermes Interpreter -> Outcome Codereview 2026-07-27 (audit)
 - [[hermes-skill-tool-hygiene-audit-2026-07-07]] — Hermes Skill / Tool Hygiene Audit (audit)
+- [[hermes-project-consolidatie-audit-2026-09-11]] — Hermes-project — consolidatie-audit 2026-09-11 (audit)
 
 ## Concepts
 

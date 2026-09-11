@@ -303,3 +303,24 @@ Correctie: de eerdere claim "0 successen sinds juli" was fout (systemd logt
 oneshot-succes als "Finished", niet als status=0/SUCCESS).
 
 Pagina: [[hermes-v03-directorysanering-2026-09-10]]
+
+## 2026-09-11 — Volledige Hermes-project consolidatie-audit
+
+- **Wat:** read-only consolidatie-audit van de hele NOA-Reign-root. Wat hoort
+  onder één canonical root `projects/hermes-project/`? Inventaris + afhankelijkheden
+  + feiten. Geen moves, geen code, geen systemd/cron-wijzigingen.
+- **Feit:** `crypto-data` is **bewezen onderdeel** van het Hermes-project —
+  `hermes-v03/L0_data/__init__.py` (r16) heeft een hardcoded pad naar
+  `projects/crypto-data`; outcome_builder leest live_cache/ohlc_archive;
+  `run_outcome_build.sh` verwijst ernaar; `ohlc-bridge.service` draait eruit.
+- **Feit:** de V03-sanering van 2026-09-10 was **slechts een gedeeltelijke**
+  projectconsolidatie (alleen de V03-subprojectroots). De volledige
+  Hermes-projectconsolidatie staat nog OPEN.
+- **Correctie:** main `b07daaf8` is een **ancestor** van HEAD (`8b1c9c24`);
+  HEAD loopt ~30 commits vóór. Geen divergentie.
+- **Conclusie:** JA MAAR MET BLOCKERS (7 harde verplaatsingsblockers).
+- **Status:** ✅ audit afgerond — **migratie NIET uitgevoerd**
+- **Bestanden:** `wiki/audits/hermes-project-consolidatie-audit-2026-09-11.md`,
+  `wiki/projects/hermes-v03-directorysanering-2026-09-10.md` (scope-correctie),
+  bron: `/mnt/otherdrive1/dataLexi/NOA-Reign_audit_consolidatie_20260911.md`
+- **Pagina:** [[hermes-project-consolidatie-audit-2026-09-11]]

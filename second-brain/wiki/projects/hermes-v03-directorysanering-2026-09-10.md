@@ -1,14 +1,26 @@
 ---
 title: Hermes V03 — directorysanering 2026-09-10
 type: project
-status: afgerond (FASE A-D)
+status: afgerond (FASE A-D) — LET OP: dit was alleen de V03-subprojectconsolidatie, NIET de volledige Hermes-projectconsolidatie
 tags: [hermes-v03, refactor, directory, freeze-gate, governance]
-updated: 2026-09-10
+updated: 2026-09-11
 ---
 
 # Hermes V03 — directorysanering (2026-09-10)
 
-Doel: van vijf losse V03-projectroots terug naar **één canonical softwareproject**
+> **Scope-correctie (2026-09-11):** deze sanering consolideerde **alleen** de
+> losse V03-subprojectroots (`analyst` / `interpreter` / `outcome` /
+> `strategy-harness`) naar één V03-root `projects/hermes-v03/`.
+> Zij consolideerde **NIET** het volledige Hermes-project.
+>
+> De volledige consolidatie van `crypto-data`, de overige actieve
+> botonderdelen, runtime-services, cron-afhankelijkheden en de overige
+> projectdelen staat **nog OPEN**. Zie de audit
+> [[hermes-project-consolidatie-audit-2026-09-11]] (conclusie:
+> JA MAAR MET BLOCKERS). Gebruik deze pagina dus **niet** als bewijs dat
+> "heel Hermes" al geconsolideerd is.
+
+Doel van deze fase was: van vijf losse V03-projectroots terug naar **één canonical V03-softwareproject**
 zonder aan logica, strategie, entry/exit of optimalisatie te komen. Alleen structuur.
 
 ## Eindresultaat
