@@ -344,3 +344,24 @@ De volledige migratie naar één canonical root is uitgevoerd en bewezen
 - **Eindcriteria:** active roots buiten hermes-project = 0, oude path refs = 0,
   broken refs = 0.
 - **Pagina:** [[hermes-project-consolidatie-uitgevoerd-2026-09-11]]
+
+## 2026-09-14 — BTCEUR CASE 1 — Trade-Moment Map gedocumenteerd
+
+De bestaande gelockte momentenkaart van 2026-09-11 is afgerond als **documentatie
+achteraf**: rapport naast de lock geschreven, niets nieuw geanalyseerd.
+
+- **Wat:** `case1_trade_moments_report.md` + `case1_trade_moments_report.json` naast
+  `case1_trade_moments_lock.json` (map `charts/case1-trade-moments-20260911/`).
+- **Lock ongewijzigd:** SHA256 `9f31e9bb…b1ba964` identiek vóór en na (gelockt
+  2026-09-11T13:06:44Z, ge-unblinded 13:07:02Z).
+- **Case-periode:** 2026-09-01 → 2026-09-10 (bevestigd door Lexi).
+- **Inhoud:** 12 momenten (6 ALERT · 4 TRADE · 1 CONFIRMATION · 1 LATE), outcome enkel
+  voor de TRADE-momenten, 3 gemiste major moves, `NOT_RECORDED` voor velden die de
+  oorspronkelijke run niet vastlegde (sequence, 240m/60m/15m-context,
+  indicator_confirmation, invalidation).
+- **Open onderzoeksvraag (NIET onderzocht):** waarom leiden correcte downside alerts
+  niet tot een shortbeslissing?
+- **Waarom:** Lexi's opdracht om bestaand werk af te ronden zonder nieuw onderzoek.
+- **Bestanden:** `wiki/projects/btceur-case1-trade-moment-map-2026-09-11.md`
+- **Status:** ✅ voltooid
+- **Pagina:** [[btceur-case1-trade-moment-map-2026-09-11]]

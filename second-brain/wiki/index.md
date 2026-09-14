@@ -1,7 +1,7 @@
 ---
 title: Noa Second Brain Index (auto-gegenereerd voorstel)
 type: index
-updated: 2026-09-10 18:07
+updated: 2026-09-14 11:13
 ---
 
 # Noa Second Brain Index
@@ -12,8 +12,8 @@ updated: 2026-09-10 18:07
 ## Audits
 
 - [[hermes-interpreter-outcome-codereview-2026-07-27]] — Hermes Interpreter -> Outcome Codereview 2026-07-27 (audit)
-- [[hermes-skill-tool-hygiene-audit-2026-07-07]] — Hermes Skill / Tool Hygiene Audit (audit)
 - [[hermes-project-consolidatie-audit-2026-09-11]] — Hermes-project — consolidatie-audit 2026-09-11 (audit)
+- [[hermes-skill-tool-hygiene-audit-2026-07-07]] — Hermes Skill / Tool Hygiene Audit (audit)
 
 ## Concepts
 
@@ -92,6 +92,7 @@ updated: 2026-09-10 18:07
 - [[2026-05-26-sessie-model-routing-langfuse]] — Sessie 26 Mei — Model routing optimalisatie + Governance + Langfuse setup (synthesis)
 - [[5-strategievoorstellen-architect]] — DE ARCHITECT — 5 Strategievoorstellen (concept)
 - [[a0-snapshot-readout]] — a0-snapshot-readout
+- [[btceur-case1-trade-moment-map-2026-09-11]] — BTCEUR CASE 1 — Trade-Moment Map (walk-forward) 2026-09-11 (project)
 - [[causal-snapshot-tape-v0]] — Causal Snapshot Tape V0.2 — Level/Event Tape + Tijdigheid (FROZEN) (project)
 - [[crypto-data-pipeline]] — Crypto Data Pipeline (project)
 - [[crypto-test-bot-architectuur]] — crypto-test-bot-architectuur (project)
@@ -108,9 +109,9 @@ updated: 2026-09-10 18:07
 - [[hermes-layer9-reporting-contract]] — hermes-layer9-reporting-contract
 - [[hermes-layer9-validation-lab-ontwerp]] — hermes-layer9-validation-lab-ontwerp
 - [[hermes-openclaw-noa-agent]] — Hermes OpenClaw Noa Agent (project)
+- [[hermes-project-consolidatie-uitgevoerd-2026-09-11]] — Hermes-project — consolidatie UITGEVOERD 2026-09-11 (project)
 - [[hermes-v01-layer2-v02-status]] — hermes-v01-layer2-v02-status
 - [[hermes-v03-directorysanering-2026-09-10]] — Hermes V03 — directorysanering 2026-09-10 (project)
-- [[hermes-project-consolidatie-uitgevoerd-2026-09-11]] — Hermes-project — consolidatie UITGEVOERD 2026-09-11 (project)
 - [[hermes-v03-interpreter]] — Hermes-v03-interpreter — apart project naast Hermes-v03 (project)
 - [[hermes-v03-status-2026-06-23]] — hermes-v03-status-2026-06-23
 - [[hermes-vision-capture]] — Hermes Vision Capture (project)
