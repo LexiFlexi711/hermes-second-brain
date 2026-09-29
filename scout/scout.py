@@ -58,10 +58,12 @@ SOURCE_TIMEOUT = 8
 # Sources pad
 sys.path.insert(0, str(SCOUT_DIR))
 from sources.hackernews import fetch as hn_fetch
-from sources.reddit import fetch as reddit_fetch
 from sources.github import fetch as github_fetch
-from sources.reddit_opportunity import fetch as reddit_opp_fetch
 from sources.googlenews import fetch as googlenews_fetch
+# Reddit sources verwijderd 2026-09-29: reddit.com/…/search.json geeft HTTP 403 Blocked
+# zonder OAuth → beide sources leverden 0 items in 78 rapporten (45 nutteloze requests/dag).
+# Bestanden sources/reddit.py en sources/reddit_opportunity.py blijven staan voor het
+# geval Lexi later OAuth toevoegt. Bewijs: ~/.hermes/cache/scratch/scout_proof.py
 
 
 # ── Crypto-filter (alleen voor Opportunity/Lexi profiel) ─────────────────
@@ -100,6 +102,23 @@ def is_crypto_noise(title: str, description: str = "") -> bool:
 
 from sources.hermes_releases import check as hermes_check
 
+import re as _re
+
+
+def _norm_title(t: str) -> str:
+    """Normaliseer titel voor dedup. Nodig omdat Google News per dag een NIEUWE
+    redirect-URL uitgeeft voor hetzelfde artikel → URL-dedup alleen faalt (bewezen 2026-09-29)."""
+    t = _re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
+    return t[:120]
+
+
+def _week_to_dt(week_str: str):
+    """'2026-W39' → datetime van de maandag van die week (UTC). None als onparseerbaar."""
+    try:
+        return datetime.strptime(week_str + "-1", "%Y-W%W-%w").replace(tzinfo=timezone.utc)
+    except Exception:
+        return None
+
 
 def run_profile(label: str, emoji: str, terms: list[str], sources: list[tuple[str, callable]], seen: dict, week_str: str, filter_fn=None) -> tuple[int, int, int, list[str]]:
     """Run een profiel door alle sources. Retourneert (new, skip, filtered, sections)."""
@@ -116,13 +135,18 @@ def run_profile(label: str, emoji: str, terms: list[str], sources: list[tuple[st
         new_items: list[dict] = []
         for item in items:
             url = item.get("url", "")
-            if url in seen:
+            title = item.get("title", "")
+            tkey = f"t::{_norm_title(title)}" if title else ""
+            # Dedup op URL ÉN genormaliseerde titel (Google News-URL's wisselen per dag)
+            if url in seen or (tkey and tkey in seen):
                 skip_total += 1
                 continue
-            if filter_fn and filter_fn(item.get("title", ""), item.get("meta", "")):
+            if filter_fn and filter_fn(title, item.get("meta", "")):
                 filtered += 1
                 continue
             seen[url] = week_str
+            if tkey:
+                seen[tkey] = week_str
             new_items.append(item)
             new_total += 1
 
@@ -151,13 +175,11 @@ def main() -> None:
     # Sources (zelfde voor Noa & Claude — tech focus)
     sources = [
         ("Hacker News", lambda terms: hn_fetch(terms, week_ago_ts)),
-        ("Reddit",      lambda terms: reddit_fetch(terms)),
         ("GitHub",      lambda terms: github_fetch(terms, week_ago_date)),
     ]
 
     # Opportunity profiel gebruikt eigen sources
     opportunity_sources = [
-        ("Reddit — Freelance/Entrepreneur", lambda terms: reddit_opp_fetch(terms)),
         ("Google News", lambda terms: googlenews_fetch(terms)),
     ]
 
@@ -279,10 +301,21 @@ def main() -> None:
     with open(LOG_DIR / "scout.log", "a") as lf:
         lf.write(f"[{now.strftime('%Y-%m-%d %H:%M')}] {msg}\n")
 
-    # Bewaar seen (max 500)
-    if len(seen) > 500:
-        seen = dict(list(seen.items())[-500:])
-    SEEN_FILE.write_text(json.dumps(seen, indent=2))
+    # Snoei seen op TIJD (14 dagen), niet op aantal. De waarde is de week-string.
+    # Oude regel (max 500 entries) gaf een venster van ~2 weken bij 20 items/dag
+    # maar gooide bij drukte ook recente entries weg — en de entries zelf bleven
+    # maandelijks terugkomen. Zie audit 2026-09-29.
+    cutoff = now - timedelta(days=14)
+    pruned: dict = {}
+    for key, val in seen.items():
+        dt = _week_to_dt(val) if isinstance(val, str) else None
+        if dt is not None and dt >= cutoff:
+            pruned[key] = val
+    dropped = len(seen) - len(pruned)
+    if len(pruned) > 20000:          # vangnet tegen ongelimiteerde groei
+        pruned = dict(list(pruned.items())[-20000:])
+    SEEN_FILE.write_text(json.dumps(pruned, indent=2))
+    print(f"  seen_urls: {len(seen)} → {len(pruned)} (snoei >14d: -{dropped})")
 
 
 if __name__ == "__main__":
