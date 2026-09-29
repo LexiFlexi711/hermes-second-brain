@@ -1,6 +1,6 @@
 # Second Brain Wiki Index
 
-Laatst bijgewerkt: 2026-07-10
+Laatst bijgewerkt: 2026-09-29
 
 ## Fixes
 
@@ -11,6 +11,7 @@ Laatst bijgewerkt: 2026-07-10
 
 ## Audits
 
+- [2026-09-29 Scout bron-audit + A/B/C fix](audits/2026-09-29-scout-bron-audit-en-abc-fix.md)
 - [2026-06-15 L6 120-Candle Math Audit](audits/2026-06-15-l6-120-candle-math-audit.md)
 
 ## Projecten
